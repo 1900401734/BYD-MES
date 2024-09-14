@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Data>
+	<isUpdate>true</isUpdate>
+	<AddRColList>
+		<sql>ALTER TABLE [Printers] ADD ip  varchar(200)</sql>
+		<sql>ALTER TABLE [Printers] ADD prot  varchar(200)</sql>
+		<sql>ALTER TABLE [Printers] ADD printCode  varchar(200)</sql>
+	</AddRColList>
+	<!--<SqlList>
+		<sql>update [Printers] SET ip = '192.168.0.17' WHERE ID = 1</sql>
+		<sql>update [Printers] SET prot = '9100' WHERE ID = 1</sql>
+	</SqlList>
+	-->
+</Data>
