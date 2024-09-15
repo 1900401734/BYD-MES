@@ -295,7 +295,7 @@ namespace MesDatas
         string[] kpisPointSets = new string[] { };  // 生产指标点位集合
         string[] kpisNameSets = new string[] { };   // 生产指标名称集合
 
-        List<BarcodeVefictn> listbarcodeVal = new List<BarcodeVefictn>();
+        List<BarcodeVefictn> barcodeVefictnList = new List<BarcodeVefictn>();
 
         // 字典用于存储每个CheckBox的初始状态
         private Dictionary<System.Windows.Forms.CheckBox, bool> checkBoxStates = new Dictionary<System.Windows.Forms.CheckBox, bool>();
@@ -329,7 +329,7 @@ namespace MesDatas
 
             PLCBarQRCode();             // 条码验证表格
 
-            listbarcodeVal = BarcodeVefictnServer.GetBarcodeVefictnList(LanguageId);
+            barcodeVefictnList = BarcodeVefictnServer.GetBarcodeVefictnList(LanguageId);
 
             this.lblDeviceName.Text = txtDeviceName.Text;   // 写机台名称
             FontStyle fontStyle = FontStyle.Bold;           // 设置字体粗细
@@ -354,7 +354,7 @@ namespace MesDatas
             try
             {
                 ConiferFile coniferFile = ConiferFile.GetJson();
-                label52.Text = "版本号: " + coniferFile.Version;
+                lblVersion.Text = "版本号: " + coniferFile.Version;
             }
             catch { }
         }
@@ -437,8 +437,8 @@ namespace MesDatas
 
             // 初始状态为待机
             lblProductResult.Text = resources.GetString("label_Value");
-            lblProductResult.ForeColor = B;
-            lblProductResult.BackColor = W;
+            lblProductResult.ForeColor = Color.Black;
+            lblProductResult.BackColor = Color.White;
 
             // 联机用户验证失败,直接返回
             if (OffLineType == 0 && isMesLoginSuccessful == false)
@@ -745,7 +745,8 @@ namespace MesDatas
         bool IsRunningplc_tabPage = true;
         bool IsRunningPZL = true;
         object lockQueue1 = new object();
-        object lockQueue = new object();//pathText
+        object lockQueue = new object();
+
         public static string path4 = System.AppDomain.CurrentDomain.BaseDirectory + "SystemDateBase.mdb";
         public static string pathText = System.AppDomain.CurrentDomain.BaseDirectory + "logfault.txt";
         public static string userFileuRL = "D:\\BYD_Users\\Users_Data.MDB";
@@ -801,6 +802,9 @@ namespace MesDatas
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         private void Process_MES()
         {
             while (IsRunningplc_MES)
@@ -841,6 +845,9 @@ namespace MesDatas
             }
         }
 
+        /// <summary>
+        /// 显示登录状态，登录信息
+        /// </summary>
         private void Process_Offline()
         {
             //while (IsRunning)
@@ -850,14 +857,14 @@ namespace MesDatas
             if (OffLineType == 1)
             {
 
-                label19.Text = resources.GetString("loginMode1");
-                label41.Text = $"{LoginUser.ToString()} ({LoginName})";
+                lblLoginMode.Text = resources.GetString("loginMode1");
+                lblCurrentUser.Text = $"{LoginUser} ({LoginName})";
 
             }
             else if (OffLineType == 0)
             {
-                label19.Text = resources.GetString("loginMode");
-                label41.Text = $"{LoginUser.ToString()} ({LoginName})";
+                lblLoginMode.Text = resources.GetString("loginMode");
+                lblCurrentUser.Text = $"{LoginUser} ({LoginName})";
             }
             //  }));
 
@@ -3029,15 +3036,15 @@ namespace MesDatas
 
                 barcodeValidation = null;
 
-                for (int i = 0; i < listbarcodeVal.Count; i++)
+                for (int i = 0; i < barcodeVefictnList.Count; i++)
                 {
                     // BarcodeStartPLC：D1000 = 1 时可以从PLC读条码
-                    var plcValue = KeyenceMcNet.ReadInt32(listbarcodeVal[i].BarcodeStartPLC).Content;
+                    var plcValue = KeyenceMcNet.ReadInt32(barcodeVefictnList[i].BarcodeStartPLC).Content;
 
                     // 读到1开始读取条码
                     if (plcValue == 1)
                     {
-                        barcodeValidation = listbarcodeVal[i];
+                        barcodeValidation = barcodeVefictnList[i];
                         break;
                     }
                 }
@@ -3305,12 +3312,12 @@ namespace MesDatas
                 }
 
                 //扫物料，置3
-                var Read_data = KeyenceMcNet.ReadInt32(listbarcodeVal[0].BarcodeStartPLC).Content;
+                var Read_data = KeyenceMcNet.ReadInt32(barcodeVefictnList[0].BarcodeStartPLC).Content;
                 if (Read_data == 3)
                 {
                     Invoke(new Action(() =>
                     {
-                        barcodeValidation = listbarcodeVal[0];
+                        barcodeValidation = barcodeVefictnList[0];
                         ushort barcodeLength = barcodeValidation.GetBarcodeLength();
                         string rawBarcode = KeyenceMcNet.ReadString(barcodeValidation.BarcodePositionPLC, barcodeLength).Content;
                         barcodeInfo = CodeNum.FormatString(rawBarcode);
