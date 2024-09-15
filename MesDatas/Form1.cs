@@ -220,12 +220,12 @@ namespace MesDatas
         public Stopwatch sw = new Stopwatch();
         public string Runtime = DateTime.Now.Year.ToString() + "年" + DateTime.Now.Month.ToString() + "月" + DateTime.Now.Day.ToString() + "日" + DateTime.Now.Hour.ToString() + "：" + DateTime.Now.Minute.ToString() + "：" + DateTime.Now.Second.ToString();
 
-        /*public enum Language
+        public enum Language
         {
             ChineseSimplified,//简体中文
             English, //英语
             Thai //泰语
-        }*/
+        }
 
         Assembly asm = Assembly.GetExecutingAssembly();
         ResourceManager resources = null;
