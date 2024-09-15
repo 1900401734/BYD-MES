@@ -12,7 +12,7 @@ namespace MesDatas.Utiey
     class CodeNum
     {
         /// <summary>
-        /// //对string 转double ➗1000 在转string
+        /// 对string 转double ➗1000 在转string
         /// </summary>
         /// <param name="ss"></param>
         /// <returns></returns>
@@ -36,7 +36,7 @@ namespace MesDatas.Utiey
         }
 
         /// <summary>
-        /// //对string 转double ➗100 在转string
+        /// 对string 转double ➗100 在转string
         /// </summary>
         /// <param name="ss"></param>
         /// <returns></returns>
@@ -60,7 +60,7 @@ namespace MesDatas.Utiey
         }
 
         /// <summary>
-        /// //对string 转double ➗100 在转string(取2为)
+        /// 对string 转double ➗100 在转string(取2为)
         /// </summary>
         /// <param name="ss"></param>
         /// <returns></returns>
@@ -103,7 +103,7 @@ namespace MesDatas.Utiey
         }
 
         /// <summary>
-        /// //对string 转double ➗10 在转string
+        /// 对string 转double ➗10 在转string
         /// </summary>
         /// <param name="ss"></param>
         /// <returns></returns>

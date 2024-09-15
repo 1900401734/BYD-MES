@@ -8,33 +8,52 @@ namespace MesDatas.Utiey
 {
     class TypeRead
     {
-        public static string Typerdess(string redss,string typelen)
+        public static string Typerdess(string plcValue, string typelen)
         {
             string bb = "";
+
+            // ÷100
             if (typelen.Equals("0"))
             {
-                bb = CodeNum.PNumCode(redss);
+                bb = CodeNum.PNumCode(plcValue);
             }
-            else if(typelen.Equals("1")){
-                bb = CodeNum.PNtimeCode(redss);
-                
-            }else if (typelen.Equals("2"))
+
+            // ÷10
+            else if (typelen.Equals("1"))
             {
-                bb = CodeNum.PdounInCode(redss);
-            }else if (typelen.Equals("3"))
-            {
-                bb = CodeNum.PNumOKAG(redss);
+                bb = CodeNum.PNtimeCode(plcValue);
             }
-            else if(typelen.Equals("4"))
+
+            // ÷100（保留两位小数）
+            else if (typelen.Equals("2"))
             {
-                bb = redss;
-            }else if (typelen.Equals("5"))
-            {
-                bb = CodeNum.PThousdCode(redss);
-            }else if (typelen.Equals("6"))
-            {
-                bb = CodeNum.PThouInCode(redss);
+                bb = CodeNum.PdounInCode(plcValue);
             }
+
+            // 转成OK/NG
+            else if (typelen.Equals("3"))
+            {
+                bb = CodeNum.PNumOKAG(plcValue);
+            }
+
+            // 实际值
+            else if (typelen.Equals("4"))
+            {
+                bb = plcValue;
+            }
+
+            // ÷1000
+            else if (typelen.Equals("5"))
+            {
+                bb = CodeNum.PThousdCode(plcValue);
+            }
+
+            // ÷1000（保留3位小数）
+            else if (typelen.Equals("6"))
+            {
+                bb = CodeNum.PThouInCode(plcValue);
+            }
+
             return bb;
         }
     }

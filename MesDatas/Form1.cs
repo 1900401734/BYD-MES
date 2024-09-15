@@ -1957,12 +1957,15 @@ namespace MesDatas
 
         DataTable maxminTable = null;
 
+        /// <summary>
+        /// 实时更新上下限数据
+        /// </summary>
         public void Bind_MaxMinValue()
         {
             while (IsRunningplc_ReadMaxMin)
             {
                 PLCMaxMin();
-                Thread.Sleep(1800);
+                Thread.Sleep(1500);
                 Application.DoEvents();
             }
         }
@@ -1992,7 +1995,7 @@ namespace MesDatas
                 maxMinValues = new List<MaxMinValue>();
                 for (int i = 0; i < boardTable.Rows.Count; i++)
                 {
-                    Console.WriteLine($"{i}生产数据读取中");
+                    Console.WriteLine($"生产数据读取中{i}");
                     MaxMinValue value = new MaxMinValue();
 
                     value.BoardName = boardTable.Rows[i]["BoardName"].ToString();
@@ -2027,9 +2030,11 @@ namespace MesDatas
             BeginInvoke(new Action(() =>
             {
                 Console.WriteLine("开始");
+
                 if (isPlcConnected == true)
                 {
                     List<MaxMinValue> maxMinList = this.maxMinList;
+
                     if (maxminTable == null)
                     {
                         maxminTable = new DataTable();
@@ -2052,6 +2057,7 @@ namespace MesDatas
                                 dr["上限值"] = (boardTable.Rows[i]["MaxBoardCode"].ToString());
                                 dr["下限值"] = (boardTable.Rows[i]["MinBoardCode"].ToString());
                                 dr["实际值"] = (boardTable.Rows[i]["BoardCode"].ToString());
+
                                 if (dr["实际值"].Equals("NG") || dr["实际值"].Equals("OK"))
                                 {
                                     dr["测试结果"] = dr["实际值"];
@@ -2060,15 +2066,20 @@ namespace MesDatas
                                 {
                                     dr["测试结果"] = (boardTable.Rows[i]["ResultBoardCode"].ToString());
                                 }
+
                                 maxminTable.Rows.Add(dr);
                             }
                         }
+
                         dataGridViewDynamic4.DataSource = maxminTable;
                         dataGridViewDynamic4.Columns[1].Width = 280;
+
+                        // 禁用列排序
                         for (int i = 0; i < dataGridViewDynamic4.Columns.Count; i++)
                         {
                             dataGridViewDynamic4.Columns[i].SortMode = DataGridViewColumnSortMode.NotSortable;
                         }
+
                     }
                     else
                     {
@@ -2082,20 +2093,24 @@ namespace MesDatas
                                     {
                                         dataGridViewDynamic4.Rows[i].Cells[0].Value = (i + 1);
                                         dataGridViewDynamic4.Rows[i].Cells[1].Value = boardTable.Rows[i]["BoardName"].ToString();
-                                        dataGridViewDynamic4.Rows[i].Cells[2].Value = maxMinList[i].StandardCode.ToString();//PLCCodeNum(boardTable.Rows[i]["StandardCode"].ToString());
-                                        dataGridViewDynamic4.Rows[i].Cells[3].Value = maxMinList[i].MaxBoardCode.ToString();//PLCCodeNum(boardTable.Rows[i]["MaxBoardCode"].ToString());
-                                        dataGridViewDynamic4.Rows[i].Cells[4].Value = maxMinList[i].MinBoardCode.ToString();//PLCCodeNum(boardTable.Rows[i]["MinBoardCode"].ToString());
-                                        dataGridViewDynamic4.Rows[i].Cells[5].Value = maxMinList[i].BoardCode.ToString();// PLCCodeNum(boardTable.Rows[i]["BoardCode"].ToString());
+                                        dataGridViewDynamic4.Rows[i].Cells[2].Value = maxMinList[i].StandardCode.ToString();
+                                        dataGridViewDynamic4.Rows[i].Cells[3].Value = maxMinList[i].MaxBoardCode.ToString();
+                                        dataGridViewDynamic4.Rows[i].Cells[4].Value = maxMinList[i].MinBoardCode.ToString();
+                                        dataGridViewDynamic4.Rows[i].Cells[5].Value = maxMinList[i].BoardCode.ToString();
+
                                         string shujuViewValew5 = dataGridViewDynamic4.Rows[i].Cells[5].Value.ToString();
+
                                         if (shujuViewValew5.Equals("NG") || shujuViewValew5.Equals("OK"))
                                         {
                                             dataGridViewDynamic4.Rows[i].Cells[6].Value = shujuViewValew5;
                                         }
                                         else
                                         {
-                                            dataGridViewDynamic4.Rows[i].Cells[6].Value = maxMinList[i].Result.ToString();// PLCCodeNum(boardTable.Rows[i]["ResultBoardCode"].ToString());
+                                            dataGridViewDynamic4.Rows[i].Cells[6].Value = maxMinList[i].Result.ToString();
                                         }
+
                                         string str = dataGridViewDynamic4.Rows[i].Cells["测试结果"].Value.ToString();
+
                                         if (str.Equals("OK"))
                                         {
                                             dataGridViewDynamic4.Rows[i].Cells["测试结果"].Style.BackColor = Color.Green;
@@ -2109,56 +2124,12 @@ namespace MesDatas
                                             dataGridViewDynamic4.Rows[i].Cells["测试结果"].Style.BackColor = Color.White;
                                         }
                                     }
-
                                 }
-                                //dataGridViewDynamic4.Rows[i].Cells[0].Value = (i + 1);
-                                //dataGridViewDynamic4.Rows[i].Cells[1].Value = boardTable.Rows[i]["BoardName"].ToString();
-                                //dataGridViewDynamic4.Rows[i].Cells[2].Value = PLCCodeNum(boardTable.Rows[i]["StandardCode"].ToString());
-                                //dataGridViewDynamic4.Rows[i].Cells[3].Value = PLCCodeNum(boardTable.Rows[i]["MaxBoardCode"].ToString());
-                                //dataGridViewDynamic4.Rows[i].Cells[4].Value = PLCCodeNum(boardTable.Rows[i]["MinBoardCode"].ToString());
-                                //dataGridViewDynamic4.Rows[i].Cells[5].Value = PLCCodeNum(boardTable.Rows[i]["BoardCode"].ToString());
-                                //string shujuViewValew5 = dataGridViewDynamic4.Rows[i].Cells[5].Value.ToString();
-                                //if (shujuViewValew5.Equals("NG") || shujuViewValew5.Equals("OK"))
-                                //{
-                                //    dataGridViewDynamic4.Rows[i].Cells[6].Value = shujuViewValew5;
-                                //}
-                                //else
-                                //{
-                                //    dataGridViewDynamic4.Rows[i].Cells[6].Value = PLCCodeNum(boardTable.Rows[i]["ResultBoardCode"].ToString());
-                                //}
-                                //string str = dataGridViewDynamic4.Rows[i].Cells["测试结果"].Value.ToString();
-                                //if (str.Equals("OK"))
-                                //{
-                                //    dataGridViewDynamic4.Rows[i].Cells["测试结果"].Style.BackColor = Color.Green;
-                                //}
-                                //else if (str.Equals("NG"))
-                                //{
-                                //    dataGridViewDynamic4.Rows[i].Cells["测试结果"].Style.BackColor = Color.Red;
-                                //}
-                                ////maxminTable.Rows[i]["序号"] = (i + 1);
-                                ////maxminTable.Rows[i]["测试项目"] = boardTable.Rows[i]["BoardName"].ToString();
-                                ////maxminTable.Rows[i]["标准值"] = PLCCodeNum(boardTable.Rows[i]["StandardCode"].ToString());
-                                ////maxminTable.Rows[i]["上限值"] = PLCCodeNum(boardTable.Rows[i]["MaxBoardCode"].ToString());
-                                ////maxminTable.Rows[i]["下限值"] = PLCCodeNum(boardTable.Rows[i]["MinBoardCode"].ToString());
-                                ////maxminTable.Rows[i]["实际值"] = PLCCodeNum(boardTable.Rows[i]["BoardCode"].ToString());
-                                ////if (maxminTable.Rows[i]["实际值"].Equals("NG") || maxminTable.Rows[i]["实际值"].Equals("OK"))
-                                ////{
-                                ////    maxminTable.Rows[i]["测试结果"] = maxminTable.Rows[i]["实际值"];
-                                ////}
-                                ////else
-                                ////{
-                                ////    maxminTable.Rows[i]["测试结果"] = PLCCodeNum(boardTable.Rows[i]["ResultBoardCode"].ToString());
-                                ////}
-
                             }
-
                         }
                     }
-
-                    //dataGridViewDynamic4.DataSource = maxminTable;
-
-
                 }
+
                 Console.WriteLine("结束");
             })).AsyncWaitHandle.WaitOne();
 
@@ -2702,10 +2673,10 @@ namespace MesDatas
                 try
                 {
                     LogMsg("生产数据本地保存中...");
-                    DateTime times_Month = DateTime.Now;
-                    string times_Month_string0 = times_Month.Year.ToString();
-                    string times_Month_string1 = times_Month.Month.ToString();
-                    Test(lblDataPath.Text + "\\" + times_Month_string0 + "年" + times_Month_string1 + "月" + "生产数据.mdb");
+                    DateTime time = DateTime.Now;
+                    string year = time.Year.ToString();
+                    string month = time.Month.ToString();
+                    Test($"{lblDataPath.Text}\\{year}年{month}月生产数据.mdb");
                     LogMsg("生产数据本地保存完成");
                 }
                 catch (Exception ex)
@@ -2788,69 +2759,7 @@ namespace MesDatas
                 }
 
                 string sql = "insert into Sheet1 (" + str + ") values (" + str1 + ")";
-
-
                 bool result = mdb.Add(sql.ToString());
-                //DataTable dt = new DataTable("Sheet1");
-                //DataColumn pcode = new DataColumn("产品", typeof(string));
-                //dt.Columns.Add(pcode);
-                //DataColumn dccode = new DataColumn("条码", typeof(string));
-                //dt.Columns.Add(dccode);
-                //DataColumn dcName = new DataColumn("测试人", typeof(string));
-                //dt.Columns.Add(dcName);
-                //DataColumn dctime = new DataColumn("测试时间", typeof(string));
-                //dt.Columns.Add(dctime);
-                //DataColumn dcOKNG = new DataColumn("测试结果", typeof(string));
-                //dt.Columns.Add(dcOKNG);
-
-
-                //for (int i = 0; i < testItems.Length; i++)
-                //{
-                //    //var aa = i;
-                //    DataColumn "aa"+i = new DataColumn(testItems[i], typeof(string));
-                //    dt.Columns.Add(aa);
-                //}
-                ///////每台机定制参数
-                ////DataColumn JHQS = new DataColumn("卷簧圈数", typeof(string));
-                ////dt.Columns.Add(JHQS);
-                ////DataColumn JHNL = new DataColumn("卷簧扭力", typeof(string));
-                ////dt.Columns.Add(JHNL);
-                ////DataColumn YL = new DataColumn("压力", typeof(string));
-                ////dt.Columns.Add(YL);
-                ////DataColumn XC = new DataColumn("行程", typeof(string));
-                ////dt.Columns.Add(XC);
-                ///////每台机定制参数
-
-                //DataColumn dcheightPLC = new DataColumn("PLC配方", typeof(string));
-                //dt.Columns.Add(dcheightPLC);
-                //DataColumn dcFileVersion = new DataColumn("文件版本", typeof(string));
-                //dt.Columns.Add(dcFileVersion);
-                //DataColumn dcSoftwareVersion  = new DataColumn("软件版本", typeof(string));
-                //dt.Columns.Add(dcSoftwareVersion);
-                //DataRow dr = dt.NewRow();   
-                //dt.Rows.Add(dr);
-                ////dt.Rows.Add();
-                //// dt.Rows.Add("时间", DateTime.Now);
-                ////   dt.Rows.Add(dt.Rows[0].ItemArray);
-                //DateTime now = DateTime.Now;
-                //dr[0] = textBox2.Text;
-                //dr[1] = barcodeID;
-                //dr[2] = label41.Text;
-                //dr[3] = now.ToString("yyyy年MM月dd日 HH:mm:ss");//times_Month_string0+"年"+ times_Month_string1+ "月"+ times_Month_string2 + "日"+" "+ times_Month_string3+ ":" + times_Month_string4 + ":" + times_Month_string5;
-                //dr[4] = Value[9999];
-
-                ////每台机定制参数
-                //dr[5] = Parameter_txt[3692];
-                //dr[6] = Parameter_txt[3694];
-                //dr[7] = Parameter_txt[3696];
-                //dr[8] = Parameter_txt[3698];
-                ////每台机定制参数
-
-                //dr[9] = Parameter_Model[17000]; 
-                //dr[10] = Parameter_Model[17500];
-                //dr[11] = Parameter_Model[17800];
-                //mdb.DatatableToMdb("Sheet1", dt);
-
                 mdb.CloseConnection();
             }));
         }
@@ -2992,14 +2901,14 @@ namespace MesDatas
                 dr[8] = systemInfo.Site;
                 dr[9] = systemInfo.Url;
                 dr[10] = "";
-                dr[11] = ""; //systemInfo.FileVersion;
-                dr[12] = ""; //systemInfo.SoftwareVersion;
-                dr[13] = ""; //systemInfo.UserCheckCmd;
-                dr[14] = ""; //systemInfo.UserCheckPass;
-                dr[15] = ""; //systemInfo.UserCheckFail;
-                dr[16] = ""; //systemInfo.CodeCheckCmd;
-                dr[17] = ""; //systemInfo.CodeCheckPass;
-                dr[18] = ""; //systemInfo.CodeSendCmd;
+                dr[11] = "";
+                dr[12] = "";
+                dr[13] = "";
+                dr[14] = "";
+                dr[15] = "";
+                dr[16] = "";
+                dr[17] = "";
+                dr[18] = "";
                 mdb.DatatableToMdb("SytemInfo", dt);
             }
 
@@ -3561,26 +3470,27 @@ namespace MesDatas
                     // 生产数据上传看板
                     if (isDashboardConnected)
                     {
-                        System.Threading.Thread thread = new System.Threading.Thread(SendReceived);
+                        Thread thread = new Thread(SendReceived);
                         thread.IsBackground = true;
                         thread.Start();
                     }
 
+                    // 生产数据保存到本地
                     Invoke(new Action(() =>
                     {
                         Num = Num + 1;
-                        System.Threading.Thread threadLeft = new System.Threading.Thread(显示结果_Left);
+                        Thread threadLeft = new Thread(显示结果_Left);
                         threadLeft.IsBackground = true;
                         threadLeft.Start();
 
-                        lblRunningStatus.Text = resources.GetString("Read_data");
-                        lblOperatePrompt.Text = resources.GetString("Wait");
-                        System.Threading.Thread threadsaveInfo = new System.Threading.Thread(saveInfo);
+                        lblRunningStatus.Text = resources.GetString("Read_data");   // 本地数据保存中
+                        lblOperatePrompt.Text = resources.GetString("Wait");        // 请等待
+                        Thread threadsaveInfo = new Thread(saveInfo);
                         threadsaveInfo.IsBackground = true;
                         threadsaveInfo.Start();
 
-                        lblRunningStatus.Text = resources.GetString("Read_data_OK");
-                        lblOperatePrompt.Text = resources.GetString("Continue_production");
+                        lblRunningStatus.Text = resources.GetString("Read_data_OK");        // 本地数据保存完成 
+                        lblOperatePrompt.Text = resources.GetString("Continue_production"); // 请取下产品继续生产
                         LogMsg("数据读取完成");
                         LogMsg("生产结果读取完成...");
 
@@ -3611,43 +3521,50 @@ namespace MesDatas
         private static string ProcessPointData_PLC(string plcPointInfo)
         {
             string outputStr = "";
+
             if (plcPointInfo.Equals("NO"))
             {
                 outputStr = "null";
             }
+
             else if (plcPointInfo.Contains(":"))
             {
                 // 获取索引标志 D1090:H-3
                 int index = plcPointInfo.IndexOf(":");
                 int index1 = plcPointInfo.IndexOf("-");
+
                 // 获取类型
                 string dataType = plcPointInfo.Substring(index + 1, 1);
+
                 // 获取保留小数位
                 ushort length = 0;
                 ushort.TryParse(plcPointInfo.Substring(index1 + 1), out length);
+
                 // 获取PLC点位
                 string plcAddress = plcPointInfo.Substring(0, index);
 
                 if (dataType == "H")
                 {
                     string aa = "";
-                    // var ss = KeyenceMcNet.ReadInt32(code).Content.ToString();
-                    OperateResult<short> readss = KeyenceMcNet.ReadInt16(plcAddress);
-                    if (readss.IsSuccess)
+                    OperateResult<short> result = KeyenceMcNet.ReadInt16(plcAddress);
+
+                    if (result.IsSuccess)
                     {
-                        aa = TypeRead.Typerdess(readss.Content.ToString(), length.ToString());
+                        aa = TypeRead.Typerdess(result.Content.ToString(), length.ToString());
                     }
                     else
                     {
                         aa = "null";
                     }
                     outputStr = aa;
+
                 }        // short
+
                 else if (dataType == "I")
                 {
                     string aa = "";
-                    // var ss = KeyenceMcNet.ReadInt32(code).Content.ToString();
                     OperateResult<int> readss = KeyenceMcNet.ReadInt32(plcAddress);
+
                     if (readss.IsSuccess)
                     {
                         aa = TypeRead.Typerdess(readss.Content.ToString(), length.ToString());
@@ -3657,12 +3574,14 @@ namespace MesDatas
                         aa = "null";
                     }
                     outputStr = aa;
+
                 }   // Int32
+
                 else if (dataType == "F")
                 {
                     string aa = "";
-                    // var ss = KeyenceMcNet.ReadInt32(code).Content.ToString();
                     OperateResult<float> readss = KeyenceMcNet.ReadFloat(plcAddress);
+
                     if (readss.IsSuccess)
                     {
                         aa = TypeRead.Typerdess(readss.Content.ToString(), length.ToString());
@@ -3672,12 +3591,14 @@ namespace MesDatas
                         aa = "null";
                     }
                     outputStr = aa;
+
                 }   // float
+
                 else if (dataType == "J")
                 {
                     string aa = "";
-                    // var ss = KeyenceMcNet.ReadInt32(code).Content.ToString();
                     OperateResult<int> readss = KeyenceMcNet.ReadInt32(plcAddress);
+
                     if (readss.IsSuccess)
                     {
 
@@ -3688,12 +3609,14 @@ namespace MesDatas
                         aa = "null";
                     }
                     outputStr = aa;
+
                 }   // Int32
+
                 else if (dataType == "N")
                 {
                     string aa = "";
-                    // var ss = KeyenceMcNet.ReadInt32(code).Content.ToString();
                     OperateResult<int> readss = KeyenceMcNet.ReadInt32(plcAddress);
+
                     if (readss.IsSuccess)
                     {
                         aa = CodeNum.PNumOKAG(readss.Content.ToString());
@@ -3703,12 +3626,14 @@ namespace MesDatas
                         aa = "null";
                     }
                     outputStr = aa;
+
                 }   // Int32
+
                 else if (dataType == "O")
                 {
                     string aa = "";
-                    // var ss = KeyenceMcNet.ReadInt32(code).Content.ToString();
                     OperateResult<int> readss = KeyenceMcNet.ReadInt32(plcAddress);
+
                     if (readss.IsSuccess)
                     {
                         aa = readss.Content.ToString();
@@ -3718,12 +3643,14 @@ namespace MesDatas
                         aa = "null";
                     }
                     outputStr = aa;
+
                 }   // Int32
+
                 else if (dataType == "S")
                 {
                     string ss = "";
-                    // var ss = KeyenceMcNet.ReadString(code, len).Content;
                     OperateResult<string> readss = KeyenceMcNet.ReadString(plcAddress, length);
+
                     if (readss.IsSuccess)
                     {
                         ss = CodeNum.FormatString(readss.Content.ToString());
@@ -3733,13 +3660,16 @@ namespace MesDatas
                         ss = "null";
                     }
                     outputStr = ss;
+
                 }   // string
+
                 else
                 {
                     var ss = KeyenceMcNet.ReadString(plcAddress, length).Content;
                     outputStr = ss;
                 }                        // string
             }
+
             else
             {
                 string aa = "";
@@ -3755,6 +3685,7 @@ namespace MesDatas
                 }
                 outputStr = aa;
             }
+
             return outputStr;
         }
 
@@ -6115,6 +6046,7 @@ namespace MesDatas
 
             mdb = new mdbDatas(path4);
             boardTable = mdb.Find("select * from Board");
+
             // 检查表格中是否存在数据
             if (boardTable.Rows.Count > 0)
             {
