@@ -61,15 +61,6 @@ namespace MesDatas
     {
         public static int iOperCount = 0;
         public static System.Timers.Timer timer;
-        protected override CreateParams CreateParams
-        {
-            get
-            {
-                CreateParams cp = base.CreateParams;
-                cp.ExStyle |= 0x02000000; // Turn on WS_EX_COMPOSITED
-                return cp;
-            }
-        }
 
         #region ----------------- 登录状态相关的属性与方法 -----------------
 
@@ -184,25 +175,13 @@ namespace MesDatas
 
         #endregion
 
-        public FormCheckCard FormCheckCard = new FormCheckCard();
-        public FormModelControl FormModelControl = new FormModelControl();
-        public FormUser FormUser = new FormUser();
-        public FormEngineer FormEngineer = new FormEngineer();
-        public FormSuperUser FormSuperUser = new FormSuperUser();
-        public FormCode FormCode = new FormCode();
-        public Form工单 Form工单 = new Form工单();
-        public FormCardLogin FormCardLogin = new FormCardLogin();
-        private ModbusTcpNet busTcpClient = null;
-
         public string[] Parameter_txt = new string[10000];
-        public string[] Parameter_txt1 = new string[100];
 
         List<string> list = null;
         List<string> beatList = null;       // 节拍
         List<string> maxList = null;        // 上限
         List<string> minList = null;        // 下限
         List<string> resultList = null;     // 结果
-        List<string> stationList = null;
         List<string> workstNameList = null;
 
         mdbDatas mdb = null;
@@ -210,22 +189,8 @@ namespace MesDatas
         public bool 产品结果;
         public int Num = 0;
         public string barcodeInfo = null;
-        int[] Count = new int[10000];
-        string[] Parameter = new string[10000];
         string[] Value = new string[10000];
-        public string[] userdata = new string[1000];
         string[] Parameter_Model = new string[25000];
-
-        public CSVDeal myCSVDeal = new CSVDeal();
-        public Stopwatch sw = new Stopwatch();
-        public string Runtime = DateTime.Now.Year.ToString() + "年" + DateTime.Now.Month.ToString() + "月" + DateTime.Now.Day.ToString() + "日" + DateTime.Now.Hour.ToString() + "：" + DateTime.Now.Minute.ToString() + "：" + DateTime.Now.Second.ToString();
-
-        public enum Language
-        {
-            ChineseSimplified,//简体中文
-            English, //英语
-            Thai //泰语
-        }
 
         Assembly asm = Assembly.GetExecutingAssembly();
         ResourceManager resources = null;
