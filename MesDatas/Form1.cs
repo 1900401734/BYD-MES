@@ -290,7 +290,7 @@ namespace MesDatas
 
             LoadSystemConfigArgument(); // 读取系统设置
 
-            enterButton_Click(null, null);  // 加载本地数据源
+            BtnRefreshDirectory_Click(null, null);  // 加载本地数据源
 
             PLCBarQRCode();             // 条码验证表格
 
@@ -387,7 +387,7 @@ namespace MesDatas
             }
 
             InsertTable(null, null);
-            richTextBox4.Clear();
+            rtbProductLog.Clear();
             UTYPE.SelectedIndex = 0;
 
             // 为 ADM 权限增加定时器
@@ -521,51 +521,7 @@ namespace MesDatas
             }
         }
 
-        //public void language()
-        //{
-        //    string language = Properties.Settings.Default.DefaultLanguage;
-        //    if (language == "zh-CN")
-        //    {
-        //        //修改默认语言
-        //        MultiLanguage.SetDefaultLanguage("zh-CN");
-        //        this.CurrentSelectedLanguage = Language.ChineseSimplified;
-        //        //对所有打开的窗口重新加载语言
-        //        foreach (Form form in Application.OpenForms)
-        //        {
-        //            LoadAll(form);
-        //        }
-
-        //    }
-        //    else if (language == "en-US")
-        //    {
-        //        //修改默认语言
-        //        MultiLanguage.SetDefaultLanguage("en-US");
-        //        this.CurrentSelectedLanguage = Language.English;
-        //        //对所有打开的窗口重新加载语言
-        //        foreach (Form form in Application.OpenForms)
-        //        {
-        //            LoadAll(form);
-        //        }
-
-        //    }
-        //    else if (language == "th-TH")
-        //    {
-        //        //修改默认语言
-        //        MultiLanguage.SetDefaultLanguage("th-TH");
-        //        this.CurrentSelectedLanguage = Language.Thai;
-        //        //对所有打开的窗口重新加载语言
-        //        foreach (Form form in Application.OpenForms)
-        //        {
-        //            LoadAll(form);
-        //        }
-        //    }
-        //}
-        //private void LoadAll(Form form)
-        //{
-        //    MultiLanguage.LoadLanguage(form, typeof(Form1));
-        //}
-
-        //达到时间间隔发生的方法
+        // 达到时间间隔发生的方法
         private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             iOperCount++;
@@ -645,12 +601,6 @@ namespace MesDatas
 
         private IToolBase LoadTool(string toolPath)
         {
-            //if (InvokeRequired)
-            //{
-            //    Invoke(new delegateLoadTool(LoadTool), new object[] { toolPath });
-            //    return;
-            //}
-
             // @"D:\YCwork\项目文件\2022\21.深圳比亚迪采集软件\MesDatas\ToolSample\bin\Debug\ToolSample.dll"
             try
             {
@@ -680,7 +630,6 @@ namespace MesDatas
 
         private void EnqueueInteracrive(InteractiveEventArgs e)
         {
-            // MessageBox.Show(e.Info);
             Invoke(new Action(() =>
             {
                 lock (lockQueue)
@@ -717,58 +666,7 @@ namespace MesDatas
         public static string userFileuRL = "D:\\BYD_Users\\Users_Data.MDB";
 
         /// <summary>
-        /// 处理交互信息
-        /// </summary>
-        private void ProcesLoop()
-        {
-            while (IsRunning)
-            {
-                InteractiveEventArgs e = null;
-                if (InterractiveQueue.Count > 0)
-                {
-                    lock (lockQueue)
-                    {
-                        Invoke(new Action(() =>
-                        {
-                            e = InterractiveQueue.Dequeue();
-                        }));
-
-                    }
-                    if (e.InfoType == InfoType.Command)
-                    {
-                        Invoke(new Action(() =>
-                        {
-                            SendComamandTest?.Invoke(e);
-                        }));
-
-                    }
-                    else if (e.InfoType == InfoType.Content)
-                    {
-                        Invoke(new Action(() =>
-                        {
-                            //update data to grid view
-                            UpdateDataToDataGridView(e);
-                        }));
-                        //update data to grid view
-
-                    }
-                    else if (e.InfoType == InfoType.LogMsg)
-                    {
-                        Invoke(new Action(() =>
-                        {
-                            //update data to grid view
-                            // ShowLog(e.Value);
-                        }));
-                    }
-
-                }
-                Thread.Sleep(5);
-                Application.DoEvents();
-            }
-        }
-
-        /// <summary>
-        /// 
+        /// 更新PLC状态指示灯 & 向 PLC 反馈看板连接状态
         /// </summary>
         private void Process_MES()
         {
@@ -776,7 +674,6 @@ namespace MesDatas
             {
                 this.BeginInvoke(new Action(() =>
                 {
-                    // 更新PLC状态指示灯
                     if (isPlcConnected == true)
                     {
                         lblPlcStatus.ForeColor = Color.Green;
@@ -788,12 +685,12 @@ namespace MesDatas
                                 if (isDashboardConnected)
                                 {
                                     KeyenceMcNet.Write(deviceInfo.ViewStatus, 1);
-                                    Console.WriteLine("看板已连接");
+                                    //Console.WriteLine("看板已连接");
                                 }
                                 else
                                 {
                                     KeyenceMcNet.Write(deviceInfo.ViewStatus, 0);
-                                    Console.WriteLine("尚未连接到看板");
+                                    //Console.WriteLine("尚未连接到看板");
                                 }
                             }
                         }
@@ -812,34 +709,24 @@ namespace MesDatas
         }
 
         /// <summary>
-        /// 显示登录状态，登录信息
+        /// 更新登录模式，用户登录信息
         /// </summary>
         private void Process_Offline()
         {
-            //while (IsRunning)
-            //{
-            //this.Invoke(new Action(() =>
-            //{
             if (OffLineType == 1)
             {
 
-                lblLoginMode.Text = resources.GetString("loginMode1");
+                lblLoginMode.Text = resources.GetString("loginMode1");  // 离线
                 lblCurrentUser.Text = $"{LoginUser} ({LoginName})";
 
             }
             else if (OffLineType == 0)
             {
-                lblLoginMode.Text = resources.GetString("loginMode");
+                lblLoginMode.Text = resources.GetString("loginMode");   // 在线
                 lblCurrentUser.Text = $"{LoginUser} ({LoginName})";
             }
-            //  }));
-
-            //    Thread.Sleep(100);
-            //    Application.DoEvents();
-            //}
         }
 
-        Stopwatch Stopwatch = new Stopwatch();
         /// <summary>
         /// 读取条码
         /// </summary>
@@ -847,11 +734,7 @@ namespace MesDatas
         {
             while (IsRunningplc_ReadCode)
             {
-                Stopwatch.Restart();
-                // 触发通讯读
                 Button19_Click(null, null);
-                Stopwatch.Stop();
-                Console.WriteLine($"条码耗时：{Stopwatch.ElapsedMilliseconds}");
             }
             Thread.Sleep(50);
             Application.DoEvents();
@@ -864,11 +747,7 @@ namespace MesDatas
         {
             while (IsRunningplc_ReadValue)
             {
-                sw.Restart();
-                // 触发通讯读
                 Button20_Click(null, null);
-                sw.Stop();
-                Console.WriteLine($"读数据总耗时：{sw.ElapsedMilliseconds:F2}");
             }
             Thread.Sleep(50);
             Application.DoEvents();
@@ -1003,49 +882,50 @@ namespace MesDatas
 
         #endregion
 
+        string year = DateTime.Now.Year.ToString();
+        string month = DateTime.Now.Month.ToString();
+        string day = DateTime.Now.Day.ToString();
+        string hour = DateTime.Now.Hour.ToString();
+        string minute = DateTime.Now.Minute.ToString();
+        string second = DateTime.Now.Second.ToString();
+        string millisecond = DateTime.Now.Millisecond.ToString();
+
         private void LogMsg(string msg)
         {
             this.Invoke(new Action(() =>
             {
-                if (richTextBox4.TextLength > 50000)
+                if (rtbProductLog.TextLength > 50000)
                 {
-                    richTextBox4.Clear();
+                    rtbProductLog.Clear();
                 }
-
-                richTextBox4.AppendText(DateTime.Now.Hour.ToString() +
-                    DateTime.Now.Minute.ToString() + DateTime.Now.Second.ToString() + "_" +
-                    DateTime.Now.Millisecond.ToString() + ":" + msg + "\r\n");
-                richTextBox4.ScrollToCaret();
-                SaveCSVlog(msg);
-
+                rtbProductLog.AppendText($"{hour}{minute}{second}{millisecond}:{msg}\r\n");
+                rtbProductLog.ScrollToCaret();
+                SaveCsvLog(msg);
             }));
         }
 
-        public void SaveCSVlog(string log)
+        public void SaveCsvLog(string log)
         {
             try
             {
-                //  myJobManager.Run();
                 if (System.IO.Directory.Exists("D:\\Log") == false)
                 {
                     System.IO.Directory.CreateDirectory("D:\\Log");
                 }
-                // StringBuilder i = new StringBuilder();
                 StringBuilder DataLine = new StringBuilder();
 
-                string strT = DateTime.Now.Hour.ToString() + "时" + DateTime.Now.Minute.ToString() + "分" + DateTime.Now.Second.ToString() + "秒";
+                string strT = $"{hour}时{minute}分{second}秒";
 
                 //列标题
                 // i.Append(log);
                 //行数据
                 DataLine.Append(strT + ":" + log);
-                string FileName = DateTime.Now.Year.ToString() + "-" + DateTime.Now.Month.ToString() + "-" + DateTime.Now.Day.ToString();
-                string FilePath = "D:\\Log" + "\\" + FileName + ".CSV";
+                string FileName = $"{year}-{month}-{day}";
+                string FilePath = $@"D:\Log\{FileName}.CSV";
 
                 if (System.IO.File.Exists(FilePath) == false)
                 {
                     System.IO.StreamWriter stream = new System.IO.StreamWriter(FilePath, true, Encoding.UTF8);
-                    //stream.WriteLine(i);
                     stream.WriteLine(DataLine);
                     stream.Flush();
                     stream.Close();
@@ -1069,48 +949,6 @@ namespace MesDatas
 
         }
 
-        public static bool CreateAccessDatabase(string path)
-        {
-            //如果文件存在反回假
-            if (File.Exists(path))
-            {
-                MessageBox.Show("文件已存在！");
-                return false;
-            }
-
-            try
-            {
-                //如果目录不存在，则创建目录
-                string dirName = Path.GetDirectoryName(path);
-                if (!Directory.Exists(dirName))
-                {
-                    Directory.CreateDirectory(dirName);
-                }
-
-                //创建Catalog目录类
-                ADOX.CatalogClass catalog = new ADOX.CatalogClass();
-
-                string _connectionStr = "Provider=Microsoft.Jet.OLEDB.4.0;" + "Data Source=" + path
-                                         + ";";
-                //根据联结字符串使用Jet数据库引擎创建数据库
-                catalog.Create(_connectionStr);
-
-                //要加上下面这两句，否则创建文件后会有*.ldb文件，一直到程序关闭后
-                System.Runtime.InteropServices.Marshal.FinalReleaseComObject(catalog.ActiveConnection);
-                System.Runtime.InteropServices.Marshal.FinalReleaseComObject(catalog);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(string.Format("数据库创建失败:{0}", ex.Message));
-            }
-        }
-
-        private void UpdateDataToDataGridView(InteractiveEventArgs e)
-        {
-
-            //   dataGridView1.UpdateTestData(e.Name, e.Value, e.IsKey);
-        }
         #endregion
 
         #region  ------------ "Parameters & Tools Manager" ------------
@@ -1438,7 +1276,7 @@ namespace MesDatas
         }
 
         /// <summary>
-        /// 保存MES联机参数到数据库
+        /// 保存 MES 联机参数到数据库
         /// </summary>
         public void SaveParameter_MES()
         {
@@ -1513,14 +1351,13 @@ namespace MesDatas
             string MES反馈;
             string XMLOUT;
             BydMesCom.用户验证(out 验证结果, out MES反馈, out XMLOUT);
-            //UsersVarify(out 验证结果, out MES反馈, out XMLOUT);
 
             if (验证结果 == true)
             {
                 if (MES反馈 != null)
                 {
-                    rtbShowMesLogs.Clear();
-                    rtbShowMesLogs.AppendText(MES反馈);
+                    rtbMesLog.Clear();
+                    rtbMesLog.AppendText(MES反馈);
 
                     lblRunningStatus.ForeColor = G;
                     lblRunningStatus.Text = resources.GetString("onlineUser_OK");   // 联机用户验证成功
@@ -1530,8 +1367,8 @@ namespace MesDatas
                 }
                 else
                 {
-                    rtbShowMesLogs.Clear();
-                    rtbShowMesLogs.AppendText(MES反馈);
+                    rtbMesLog.Clear();
+                    rtbMesLog.AppendText(MES反馈);
 
                     lblRunningStatus.ForeColor = R;
                     lblRunningStatus.Text = resources.GetString("onlineUser_NG");   // 联机用户验证失败
@@ -1540,19 +1377,14 @@ namespace MesDatas
             }
             else
             {
-                rtbShowMesLogs.Clear();
-                rtbShowMesLogs.AppendText(MES反馈);
+                rtbMesLog.Clear();
+                rtbMesLog.AppendText(MES反馈);
 
                 lblRunningStatus.ForeColor = R;
                 lblRunningStatus.Text = resources.GetString("onlineUser_NG");
                 lblOperatePrompt.Text = resources.GetString("Check_param");
             }
         }
-
-        //public void UsersVarify(out bool 验证结果, out string MES反馈, out string XMLOUT)
-        //{
-        //    BydMesCom.用户验证(out 验证结果, out MES反馈, out XMLOUT);
-        //}
 
         NLog.Logger loggerMESBarCoode = NLog.LogManager.GetLogger("MESBarCoodeLog");
         NLog.Logger loggerMESData = NLog.LogManager.GetLogger("MESDataLog");
@@ -1573,11 +1405,11 @@ namespace MesDatas
             string XMLOUT;
             BarCodeVarify(产品条码, out 验证结果, out MES反馈, out XMLOUT);
 
-            rtbShowMesLogs.Clear();
-            rtbShowMesLogs.AppendText(MES反馈);
+            rtbMesLog.Clear();
+            rtbMesLog.AppendText(MES反馈);
             loggerMESBarCoode.Trace(MES反馈);
-            rtbShowMesLogs.SelectionStart = rtbShowMesLogs.Text.Length;
-            rtbShowMesLogs.ScrollToCaret();
+            rtbMesLog.SelectionStart = rtbMesLog.Text.Length;
+            rtbMesLog.ScrollToCaret();
 
             if (验证结果 == true)
             {
@@ -1592,8 +1424,6 @@ namespace MesDatas
         /// <summary>
         /// 结果上传
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void Button7_Click(object sender, EventArgs e)
         {
             Parameter_txt[2006] = "0";
@@ -1659,8 +1489,8 @@ namespace MesDatas
             bool 验证结果; string MES反馈; string XMLOUT;
             UpDateToMes(测试结果, 产品条码, 文件版本, 软件版本, 测试项, out 验证结果, out MES反馈, out XMLOUT);
 
-            rtbShowMesLogs.Clear();
-            rtbShowMesLogs.AppendText(MES反馈);
+            rtbMesLog.Clear();
+            rtbMesLog.AppendText(MES反馈);
             loggerMESData.Trace(MES反馈);
 
             if (验证结果 == true)
@@ -3668,9 +3498,6 @@ namespace MesDatas
         /// 读取
         /// </summary>
         /// <param name="KeyenceMcNet"></param>
-        /// <param name="strarr"></param>
-        /// <param name="strtyp"></param>
-        /// <returns></returns>
         public List<string> PCodenum(string[] strarr, string strtyp)
         {
             List<string> listarr = new List<string>();
@@ -3772,8 +3599,6 @@ namespace MesDatas
         /// <summary>
         /// 选择本地文件存放路径
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void ChangeStoragePath(object sender, EventArgs e)
         {
             string prePath = lblDataPath.Text;
@@ -3783,16 +3608,20 @@ namespace MesDatas
             loggerConfig.Trace($"【变更存放路径】\n原先存放路径：{prePath}\n路径已变更为：{this.lblDataPath.Text}");
         }
 
-        private void enterButton_Click(object sender, EventArgs e)
+        /// <summary>
+        /// 历史数据 > 刷新目录
+        /// </summary>
+        private void BtnRefreshDirectory_Click(object sender, EventArgs e)
         {
-            directoryTreeView.Nodes.Clear();// 每次确定时需要刷新内容
-            string inputText = lblDataPath.Text; // 获得输入框的内容
+            directoryTreeView.Nodes.Clear();        // 每次确定时需要刷新内容
+            string selectedPath = lblDataPath.Text; // 获得输入框的内容
+
             // 文件路径存在
-            if (Directory.Exists(inputText))
+            if (Directory.Exists(selectedPath))
             {
-                TreeNode rootNode = new TreeNode(inputText); // 创建树节点
-                directoryTreeView.Nodes.Add(rootNode); // 加入视图
-                FindDirectory(inputText, rootNode);  //通过递归函数进行目录的遍历
+                TreeNode rootNode = new TreeNode(selectedPath); // 创建树节点
+                directoryTreeView.Nodes.Add(rootNode);          // 加入视图
+                FindDirectory(selectedPath, rootNode);          // 通过递归函数进行目录的遍历
             }
         }
 
@@ -3956,9 +3785,6 @@ namespace MesDatas
             }
             else
             {
-
-
-
                 //if (comboBox3.SelectedIndex == 1)
                 //{
                 if (tbxBrandID.Text.Length > 0)
@@ -4717,9 +4543,8 @@ namespace MesDatas
             {
                 try
                 {
-                    //if (!socket.Connected) return;
                     byte[] buffer = new byte[1024 * 1024 * 3];
-                    //实际接收到的有效字节数
+                    // 实际接收到的有效字节数
                     int len = socket.Receive(buffer);
                     if (len == 0)
                     {
@@ -5005,19 +4830,22 @@ namespace MesDatas
         {
             Invoke(new Action(() =>
             {
-                if (richTextBox3.TextLength > 50000)
+                if (rtbDashboardLog.TextLength > 50000)
                 {
-                    richTextBox3.Clear();
+                    rtbDashboardLog.Clear();
                 }
+
                 string info = string.Format("{0}:{1}\r\n", DateTime.Now.ToString("G"), msg);
-                richTextBox3.AppendText(info);
+                rtbDashboardLog.AppendText(info);
             }));
         }
+
         #endregion
 
         #region ------------ 处理接受过来的数据 ------------
 
         bool sedbool = false;
+
         public void ReceiveData(string strdata)
         {
             string[] dateshuzu = new string[] { };
