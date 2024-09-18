@@ -780,29 +780,30 @@ namespace MesDatas
                     if (isPlcConnected == true)
                     {
                         lblPlcStatus.ForeColor = Color.Green;
+                        try
+                        {
+                            // 向 PLC 反馈看板连接状态
+                            if (!string.IsNullOrEmpty(deviceInfo.ViewStatus))
+                            {
+                                if (isDashboardConnected)
+                                {
+                                    KeyenceMcNet.Write(deviceInfo.ViewStatus, 1);
+                                    Console.WriteLine("看板已连接");
+                                }
+                                else
+                                {
+                                    KeyenceMcNet.Write(deviceInfo.ViewStatus, 0);
+                                    Console.WriteLine("尚未连接到看板");
+                                }
+                            }
+                        }
+                        catch (Exception ex) { }
                     }
                     else
                     {
                         lblPlcStatus.ForeColor = Color.Red;
                     }
-                    try
-                    {
-                        // 向 PLC 反馈看板连接状态
-                        if (!string.IsNullOrEmpty(deviceInfo.ViewStatus))
-                        {
-                            if (isDashboardConnected)
-                            {
-                                KeyenceMcNet.WriteAsync(deviceInfo.ViewStatus, 1);
-                                Console.WriteLine("看板已连接");
-                            }
-                            else
-                            {
-                                KeyenceMcNet.WriteAsync(deviceInfo.ViewStatus, 0);
-                                Console.WriteLine("尚未连接到看板");
-                            }
-                        }
-                    }
-                    catch (Exception ex) { }
+
                 })).AsyncWaitHandle.WaitOne();
 
                 Thread.Sleep(1000);
@@ -838,6 +839,7 @@ namespace MesDatas
             //}
         }
 
+        Stopwatch Stopwatch = new Stopwatch();
         /// <summary>
         /// 读取条码
         /// </summary>
@@ -845,8 +847,11 @@ namespace MesDatas
         {
             while (IsRunningplc_ReadCode)
             {
+                Stopwatch.Restart();
                 // 触发通讯读
                 Button19_Click(null, null);
+                Stopwatch.Stop();
+                Console.WriteLine($"条码耗时：{Stopwatch.ElapsedMilliseconds}");
             }
             Thread.Sleep(50);
             Application.DoEvents();
@@ -859,8 +864,11 @@ namespace MesDatas
         {
             while (IsRunningplc_ReadValue)
             {
+                sw.Restart();
                 // 触发通讯读
                 Button20_Click(null, null);
+                sw.Stop();
+                Console.WriteLine($"读数据总耗时：{sw.ElapsedMilliseconds:F2}");
             }
             Thread.Sleep(50);
             Application.DoEvents();
@@ -1559,7 +1567,7 @@ namespace MesDatas
             Parameter_txt[2002] = "0";
             Parameter_txt[2004] = "0";
 
-            string 产品条码 = barcodeInfo;
+            string 产品条码 = barcodeData;
             bool 验证结果;
             string MES反馈;
             string XMLOUT;
@@ -2882,6 +2890,7 @@ namespace MesDatas
 
         BarcodeVefictn barcodeValidation = null;
 
+        string barcodeData = string.Empty;
         /// <summary>
         /// 读取条码
         /// </summary>
@@ -2941,12 +2950,12 @@ namespace MesDatas
                         LogMsg("准备读码....");
                         ushort barcodeLength = barcodeValidation.GetBarcodeLength();
                         string rawBarcode = KeyenceMcNet.ReadString(barcodeValidation.BarcodePositionPLC, barcodeLength).Content;
-                        barcodeInfo = CodeNum.FormatString(rawBarcode);
-                        txtShowBarcode.Text = barcodeInfo;
-                        LogMsg($"条码【D1100】 = {barcodeInfo}");
+                        barcodeData = CodeNum.FormatString(rawBarcode);
+                        txtShowBarcode.Text = barcodeData;
+                        LogMsg($"条码【D1100】 = {barcodeData}");
 
                         // 判断条码是否为空
-                        if (string.IsNullOrEmpty(barcodeInfo))
+                        if (string.IsNullOrEmpty(barcodeData))
                         {
                             lblScanBarcodeStatus.ForeColor = R;
                             txtShowBarcode.Text = barcodeValidation.NoBarcodePrompt;   // 条码数据：未读到条码
@@ -2979,17 +2988,17 @@ namespace MesDatas
                                     if (!CodeNum.CompareArray(expectedFixtures, frockB))
                                     {
                                         // 判断条码是否在工装里面
-                                        if (expectedFixtures.Contains(barcodeInfo))
+                                        if (expectedFixtures.Contains(barcodeData))
                                         {
                                             if (string.IsNullOrWhiteSpace(txtFixtureBinding.Text))
                                             {
-                                                txtFixtureBinding.Text = barcodeInfo;
+                                                txtFixtureBinding.Text = barcodeData;
                                             }
                                             else
                                             {
-                                                if (!frockB.Contains(barcodeInfo))
+                                                if (!frockB.Contains(barcodeData))
                                                 {
-                                                    txtFixtureBinding.Text = $"{txtFixtureBinding.Text}+{barcodeInfo}";
+                                                    txtFixtureBinding.Text = $"{txtFixtureBinding.Text}+{barcodeData}";
                                                 }
                                             }
 
@@ -3050,14 +3059,14 @@ namespace MesDatas
                                 // 屏蔽查询历史数据
                                 if (chkBanLocalHistoricalData.Checked == false)
                                 {
-                                    if (barcodeInfo != "1")
+                                    if (barcodeData != "1")
                                     {
                                         DateTime time = DateTime.Now;
                                         string currentYear = time.Year.ToString();
                                         string currentMonth = time.Month.ToString();
                                         string dataPath = $"{lblDataPath.Text}\\{currentYear}年{currentMonth}月生产数据.mdb";
                                         mdb = new mdbDatas(dataPath);
-                                        string selectSql = $" select * from Sheet1 where 条码 = '{barcodeInfo}' ";
+                                        string selectSql = $" select * from Sheet1 where 条码 = '{barcodeData}' ";
 
                                         // 屏蔽NG历史数据
                                         if (chkBypassLocalNgHistoricalData.Checked == true)
@@ -3194,11 +3203,11 @@ namespace MesDatas
                         barcodeValidation = barcodeVefictnList[0];
                         ushort barcodeLength = barcodeValidation.GetBarcodeLength();
                         string rawBarcode = KeyenceMcNet.ReadString(barcodeValidation.BarcodePositionPLC, barcodeLength).Content;
-                        barcodeInfo = CodeNum.FormatString(rawBarcode);
-                        txtShowBarcode.Text = barcodeInfo;
-                        LogMsg($"条码【D1100】 = {barcodeInfo}");
+                        barcodeData = CodeNum.FormatString(rawBarcode);
+                        txtShowBarcode.Text = barcodeData;
+                        LogMsg($"条码【D1100】 = {barcodeData}");
 
-                        if (string.IsNullOrEmpty(this.barcodeInfo))
+                        if (string.IsNullOrEmpty(this.barcodeData))
                         {
                             lblScanBarcodeStatus.ForeColor = R;
                             txtShowBarcode.Text = resources.GetString("barCode_State");
@@ -3214,7 +3223,7 @@ namespace MesDatas
                             return;
                         }
                         string[] frockA = textBox42.Text.ToString().Split('+');
-                        if (frockA.Contains(this.barcodeInfo))
+                        if (frockA.Contains(this.barcodeData))
                         {
                             lblScanBarcodeStatus.ForeColor = G;
                             lblRunningStatus.ForeColor = G;
@@ -3277,9 +3286,9 @@ namespace MesDatas
                 bool isVarifySuccessful = false;
 
                 // 条码是否符合规范
-                if (barcodeInfo.Length > 12 && barcodeInfo.Length > ruleLength)
+                if (barcodeData.Length > 12 && barcodeData.Length > ruleLength)
                 {
-                    string actualBarcodePrefix = barcodeInfo.Substring(0, ruleLength);
+                    string actualBarcodePrefix = barcodeData.Substring(0, ruleLength);
                     string[] validationRule = barcodeRule.Split('|');
 
                     // 验证通过
@@ -3318,6 +3327,7 @@ namespace MesDatas
         Color B = Color.Black;
         Color O = Color.Orange;
 
+        Stopwatch sw = Stopwatch.StartNew();
         /// <summary>
         /// 获取生产结果
         /// </summary>
@@ -3338,7 +3348,7 @@ namespace MesDatas
                        //   DateTime.Now.Minute.ToString() + DateTime.Now.Second.ToString() + "_" +
                        //   DateTime.Now.Millisecond.ToString() + ":" + short_D100);
                        lblOperatePrompt.Text = resources.GetString("begin_read_data");  // 开始读取数据
-
+                       barcodeInfo = barcodeData;
                        LogMsg("生产结果数据读取中....");
                        string[] Read_string = new string[10000];
                        //string[] Read_string1 = new string[100];
