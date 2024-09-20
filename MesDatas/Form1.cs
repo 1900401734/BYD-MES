@@ -417,6 +417,8 @@ namespace MesDatas
             else
             {
                 txtWorkOrder.Text = Interaction.InputBox(resources.GetString("InputBox"), resources.GetString("InputBoxName"), "", 100, 100);
+
+                // 超过3次自动退出
                 for (int i = 1; i <= 5; i++)
                 {
                     if (string.IsNullOrWhiteSpace(txtWorkOrder.Text))
@@ -1832,7 +1834,7 @@ namespace MesDatas
         {
             BeginInvoke(new Action(() =>
             {
-                Console.WriteLine("开始");
+                Console.WriteLine("绑定上下限开始");
 
                 if (isPlcConnected == true)
                 {
@@ -1933,7 +1935,7 @@ namespace MesDatas
                     }
                 }
 
-                Console.WriteLine("结束");
+                Console.WriteLine("绑定上下限结束");
             })).AsyncWaitHandle.WaitOne();
 
         }
@@ -2375,7 +2377,8 @@ namespace MesDatas
             //dataGridViewDynamic2.FirstDisplayedScrollingRowIndex = dataGridViewDynamic2.Rows.Count - 1;
 
         }//表格列表表头，根据设备不同自行增减 参照richTextBox.AppendText里边的字符串个数
-         //表头不分左右！！！
+
+        //表头不分左右！！！
 
         //显示行数据↓
         private void 显示结果_Left()
@@ -2396,6 +2399,7 @@ namespace MesDatas
                 {
                     upState = "本地";
                 }
+
                 DateTime now = DateTime.Now;
                 //添加行
                 //int index = this.dataGridViewDynamic2.Rows.Add();
@@ -2407,11 +2411,11 @@ namespace MesDatas
                 dataGdVwRow.Cells[3].Value = txtProductModel.Text;
                 dataGdVwRow.Cells[4].Value = LoginUser.ToString();
                 dataGdVwRow.Cells[5].Value = upState;
-                dataGdVwRow.Cells[6].Value = now.ToString("MM-dd HH:mm:ss");//DateTime.Now.Year.ToString() + "年" + DateTime.Now.Month.ToString() + "月" + DateTime.Now.Day.ToString() + "日" + DateTime.Now.Hour.ToString() + ":" + DateTime.Now.Minute.ToString() + ":" + DateTime.Now.Second.ToString();
+                dataGdVwRow.Cells[6].Value = now.ToString("MM-dd HH:mm:ss");
+
                 int a = 7;
                 if (list.Count > 0)
                 {
-
                     for (int i = 0; i < list.Count; i++)
                     {
                         dataGdVwRow.Cells[a].Value = list[i];
@@ -2721,6 +2725,7 @@ namespace MesDatas
         BarcodeVefictn barcodeValidation = null;
 
         string barcodeData = string.Empty;
+
         /// <summary>
         /// 读取条码
         /// </summary>
@@ -4145,7 +4150,7 @@ namespace MesDatas
         /// </summary>
         private void SYS_Socket_Mo()
         {
-            button18_Click(null, null);
+            BtnRefreshAtBulletin(null, null);
 
             mdb = new mdbDatas(path4);
             DataTable table1 = mdb.Find("select * from SytemSocket where ID = 1");
@@ -4176,27 +4181,27 @@ namespace MesDatas
             buttonColumn.Text = "保存";
             buttonColumn.Name = "btnCol";
             buttonColumn.DefaultCellStyle.NullValue = "保存";
-            dataGridView2.Columns.Add(buttonColumn);
+            dgvWeakInfo.Columns.Add(buttonColumn);
 
             // 再次创建一个新的列对象并设置其属删除
             DataGridViewButtonColumn anotherButtonColumn = new DataGridViewButtonColumn();
             anotherButtonColumn.HeaderText = "操作"; // 第二个按钮的标题文本
             anotherButtonColumn.Name = "btnCol2"; // 第二个按钮的名称
             anotherButtonColumn.DefaultCellStyle.NullValue = "删除";
-            dataGridView2.Columns.Add(anotherButtonColumn);
+            dgvWeakInfo.Columns.Add(anotherButtonColumn);
 
             DataGridViewButtonColumn butnCo = new DataGridViewButtonColumn();
             butnCo.HeaderText = "操作";
             butnCo.Text = "保存";
             butnCo.Name = "btnCol";
             butnCo.DefaultCellStyle.NullValue = "保存";
-            dataGridView3.Columns.Add(butnCo);
+            dgvFaultInfo.Columns.Add(butnCo);
 
             DataGridViewButtonColumn anotrButCo = new DataGridViewButtonColumn();
             anotrButCo.HeaderText = "操作"; // 第二个按钮的标题文本
             anotrButCo.Name = "btnCol2"; // 第二个按钮的名称
             anotrButCo.DefaultCellStyle.NullValue = "删除";
-            dataGridView3.Columns.Add(anotrButCo);
+            dgvFaultInfo.Columns.Add(anotrButCo);
         }
 
         /// <summary>
@@ -4204,40 +4209,33 @@ namespace MesDatas
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void button18_Click(object sender, EventArgs e)
+        private void BtnRefreshAtBulletin(object sender, EventArgs e)
         {
             mdb = new mdbDatas(path4);
 
-            vubPartsTable = mdb.Find("select  [ID] as 编号,[WorkID] as  工位ID, [BoardPosition] as 易损件所在的位置," +
-                " [BoardName] as 易损件的名称,[BoardTheory] as 理论使用次数PLC点位 , " +
-                "[BoardCode] as 已经使用的PLC点位  from VulnbleParts");
+            vubPartsTable = mdb.Find("select  [ID] as 编号, [WorkID] as 工位ID, [BoardPosition] as 易损件所在的位置, " +
+                "[BoardName] as 易损件的名称, [BoardTheory] as 理论使用次数PLC点位, " +
+                "[BoardCode] as 已经使用的PLC点位 from VulnbleParts");
 
             vubPartsTable.Columns["编号"].AutoIncrement = true;
             vubPartsTable.Columns["编号"].ReadOnly = true;
             vubPartsTable.Columns["编号"].AutoIncrementSeed = 0;
 
-            int maxPid = 0;
+            int rowMax = 0;
             if (vubPartsTable.Rows.Count > 0)
             {
-                maxPid = vubPartsTable.AsEnumerable().Max(row => row.Field<int>("编号"));
+                rowMax = vubPartsTable.AsEnumerable().Max(row => row.Field<int>("编号"));
             }
 
             DataRow newRow = vubPartsTable.NewRow();
-            newRow["编号"] = maxPid;
+            newRow["编号"] = rowMax;
 
-            // 刷新 dataGridView2
-            dataGridView2.DataSource = vubPartsTable;
+            // 刷新易损件数据
+            dgvWeakInfo.DataSource = vubPartsTable;
 
+            // 刷新故障信息
             faultsTable = mdb.Find("select ID as 编号, [WorkID] as 工位ID, [CodeID] as 故障点位, Faults as 故障描述 from SytemFaults");
-            // 刷新 dataGridView3
-            dataGridView3.DataSource = faultsTable;
-            /* if (textBox19.Text.Length > 0)
-             {
-                 boardName = textBox20.Text.ToString().Split(new char[] { '|' });//易损件名称
-                 boardCode = textBox19.Text.ToString().Split(new char[] { '|' });//采取PLC易损件使用的点
-                 boardTeory = textBox21.Text.ToString().Split(new char[] { '|' });//易损件的理论值
-                 boardPosition = textBox25.Text.ToString().Split(new char[] { '|' });//易损件所在该机台的位置
-             }*/
+            dgvFaultInfo.DataSource = faultsTable;
             mdb.CloseConnection();
         }
 
@@ -4265,19 +4263,19 @@ namespace MesDatas
             };
 
             // 删除
-            DeleteRowFromDataGridView<int>(dataGridView2, e, "VulnbleParts", "ID", logFields, 2, path4, "btnCol2", fieldAliases, "易损件数据");
+            DeleteRowFromDataGridView<int>(dgvWeakInfo, e, "VulnbleParts", "ID", logFields, 2, path4, "btnCol2", fieldAliases, "易损件数据");
 
             //保存
-            if (dataGridView2.Columns[e.ColumnIndex].Name == "btnCol")
+            if (dgvWeakInfo.Columns[e.ColumnIndex].Name == "btnCol")
             {
                 //说明点击的列是DataGridViewButtonColumn列
-                DataGridViewColumn column = dataGridView2.Columns[e.ColumnIndex];
-                string pid = this.dataGridView2.Rows[e.RowIndex].Cells[2].Value.ToString();
-                string workid = this.dataGridView2.Rows[e.RowIndex].Cells[3].Value.ToString();
-                string bdPosition = this.dataGridView2.Rows[e.RowIndex].Cells[4].Value.ToString();
-                string bdName = this.dataGridView2.Rows[e.RowIndex].Cells[5].Value.ToString();
-                string bdTheory = this.dataGridView2.Rows[e.RowIndex].Cells[6].Value.ToString();
-                string bdCode = this.dataGridView2.Rows[e.RowIndex].Cells[7].Value.ToString();
+                DataGridViewColumn column = dgvWeakInfo.Columns[e.ColumnIndex];
+                string pid = this.dgvWeakInfo.Rows[e.RowIndex].Cells[2].Value.ToString();
+                string workid = this.dgvWeakInfo.Rows[e.RowIndex].Cells[3].Value.ToString();
+                string bdPosition = this.dgvWeakInfo.Rows[e.RowIndex].Cells[4].Value.ToString();
+                string bdName = this.dgvWeakInfo.Rows[e.RowIndex].Cells[5].Value.ToString();
+                string bdTheory = this.dgvWeakInfo.Rows[e.RowIndex].Cells[6].Value.ToString();
+                string bdCode = this.dgvWeakInfo.Rows[e.RowIndex].Cells[7].Value.ToString();
 
                 mdb = new mdbDatas(path4);
                 DataTable table1 = mdb.Find("select * from VulnbleParts where [ID] = " + pid);
@@ -4350,16 +4348,16 @@ namespace MesDatas
             };
 
             // 删除
-            DeleteRowFromDataGridView<string>(dataGridView3, e, "SytemFaults", "ID", logField, 2, path4, "btnCol2", fieldAliases, "故障信息");
+            DeleteRowFromDataGridView<string>(dgvFaultInfo, e, "SytemFaults", "ID", logField, 2, path4, "btnCol2", fieldAliases, "故障信息");
 
             // 保存
-            if (dataGridView3.Columns[e.ColumnIndex].Name == "btnCol")
+            if (dgvFaultInfo.Columns[e.ColumnIndex].Name == "btnCol")
             {
-                DataGridViewColumn column = dataGridView3.Columns[e.ColumnIndex];
-                string pid = this.dataGridView3.Rows[e.RowIndex].Cells[2].Value.ToString();
-                string workID = this.dataGridView3.Rows[e.RowIndex].Cells[3].Value.ToString();
-                string codeID = this.dataGridView3.Rows[e.RowIndex].Cells[4].Value.ToString();
-                string funmae = this.dataGridView3.Rows[e.RowIndex].Cells[5].Value.ToString();
+                DataGridViewColumn column = dgvFaultInfo.Columns[e.ColumnIndex];
+                string pid = this.dgvFaultInfo.Rows[e.RowIndex].Cells[2].Value.ToString();
+                string workID = this.dgvFaultInfo.Rows[e.RowIndex].Cells[3].Value.ToString();
+                string codeID = this.dgvFaultInfo.Rows[e.RowIndex].Cells[4].Value.ToString();
+                string funmae = this.dgvFaultInfo.Rows[e.RowIndex].Cells[5].Value.ToString();
 
                 if (string.IsNullOrWhiteSpace(pid))
                 {
@@ -6092,7 +6090,7 @@ namespace MesDatas
                                            $"成功删除第{primaryKeyCondition}行, 该行的详细数据: \n{logDetail}");
 
                         button23_Click(null, null);
-                        button18_Click(null, null);
+                        BtnRefreshAtBulletin(null, null);
                     }
                 }
 
