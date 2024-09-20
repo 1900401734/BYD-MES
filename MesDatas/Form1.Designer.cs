@@ -33,7 +33,7 @@ namespace MesDatas
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.skinEngine1 = new Sunisoft.IrisSkin.SkinEngine(((System.ComponentModel.Component)(this)));
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.tabPage4 = new System.Windows.Forms.TabPage();
@@ -180,7 +180,7 @@ namespace MesDatas
             this.textBox23 = new System.Windows.Forms.TextBox();
             this.button28 = new System.Windows.Forms.Button();
             this.button27 = new System.Windows.Forms.Button();
-            this.button10 = new System.Windows.Forms.Button();
+            this.btnSaveAtSystemSetting = new System.Windows.Forms.Button();
             this.groupBox17 = new System.Windows.Forms.GroupBox();
             this.tbxReaderDeviceID = new System.Windows.Forms.TextBox();
             this.btnSearchReaderPort = new System.Windows.Forms.Button();
@@ -1218,10 +1218,10 @@ namespace MesDatas
             // Column2
             // 
             this.Column2.DataPropertyName = "用户密码";
-            dataGridViewCellStyle1.Format = "*****";
-            dataGridViewCellStyle1.NullValue = "#";
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.Column2.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Format = "*****";
+            dataGridViewCellStyle2.NullValue = "#";
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.Column2.DefaultCellStyle = dataGridViewCellStyle2;
             resources.ApplyResources(this.Column2, "Column2");
             this.Column2.Name = "Column2";
             this.Column2.ReadOnly = true;
@@ -1440,7 +1440,7 @@ namespace MesDatas
             // 
             this.tabPage12.Controls.Add(this.groupBox32);
             this.tabPage12.Controls.Add(this.groupBox29);
-            this.tabPage12.Controls.Add(this.button10);
+            this.tabPage12.Controls.Add(this.btnSaveAtSystemSetting);
             this.tabPage12.Controls.Add(this.groupBox17);
             this.tabPage12.Controls.Add(this.groupBox3);
             this.tabPage12.Controls.Add(this.groupBox5);
@@ -1548,12 +1548,12 @@ namespace MesDatas
             this.button27.UseVisualStyleBackColor = true;
             this.button27.Click += new System.EventHandler(this.button27_Click);
             // 
-            // button10
+            // btnSaveAtSystemSetting
             // 
-            resources.ApplyResources(this.button10, "button10");
-            this.button10.Name = "button10";
-            this.button10.UseVisualStyleBackColor = true;
-            this.button10.Click += new System.EventHandler(this.Button25_Click);
+            resources.ApplyResources(this.btnSaveAtSystemSetting, "btnSaveAtSystemSetting");
+            this.btnSaveAtSystemSetting.Name = "btnSaveAtSystemSetting";
+            this.btnSaveAtSystemSetting.UseVisualStyleBackColor = true;
+            this.btnSaveAtSystemSetting.Click += new System.EventHandler(this.BtnSaveAtSystemSetting_Click);
             // 
             // groupBox17
             // 
@@ -1697,7 +1697,7 @@ namespace MesDatas
             resources.ApplyResources(this.button3, "button3");
             this.button3.Name = "button3";
             this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.BtnPlcConn_Click);
+            this.button3.Click += new System.EventHandler(this.BtnConnectPlc_Click);
             // 
             // label30
             // 
@@ -3475,7 +3475,7 @@ namespace MesDatas
         private System.Windows.Forms.Label lblDataPath;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnChangeStoragePath;
-        private System.Windows.Forms.Button button10;
+        private System.Windows.Forms.Button btnSaveAtSystemSetting;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Label label30;

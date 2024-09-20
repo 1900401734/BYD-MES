@@ -1,5 +1,6 @@
 ﻿using HFrfid;
 using HslCommunication;
+using HslCommunication.Core;
 using HslCommunication.ModBus;
 using HslCommunication.Profinet.Keyence;
 using HslCommunication.Profinet.Melsec;
@@ -370,7 +371,7 @@ namespace MesDatas
 
             ConnectDashboard(null, null);  // 连接看板
 
-            BtnPlcConn_Click(null, null);       // 连接PLC
+            BtnConnectPlc_Click(null, null);  // 连接PLC
 
             taskProcess_MES = new Task(Process_MES);// 更新PLC状态指示灯 & 向PLC反馈看板连接状态
             taskProcess_MES.Start();
@@ -1520,7 +1521,7 @@ namespace MesDatas
 
         private bool isPlcConnected = false;
 
-        private void BtnPlcConn_Click(object sender, EventArgs e)
+        private void BtnConnectPlc_Click(object sender, EventArgs e)
         {
             try
             {
@@ -2568,7 +2569,7 @@ namespace MesDatas
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Button25_Click(object sender, EventArgs e)
+        private void BtnSaveAtSystemSetting_Click(object sender, EventArgs e)
         {
             SaveSystemConfigArgument();
             loggerConfig.Trace($"系统设置参数保存成功");
@@ -3442,7 +3443,7 @@ namespace MesDatas
         Color B = Color.Black;
         Color O = Color.Orange;
 
-        Stopwatch sw = Stopwatch.StartNew();
+        //Stopwatch sw = Stopwatch.StartNew();
         /// <summary>
         /// 获取生产结果
         /// </summary>
@@ -3465,6 +3466,7 @@ namespace MesDatas
                        lblOperatePrompt.Text = resources.GetString("begin_read_data");  // 开始读取数据
                        barcodeInfo = barcodeData;
                        LogMsg("生产结果数据读取中....");
+
                        string[] Read_string = new string[10000];
                        //string[] Read_string1 = new string[100];
                        list = new List<string>();
@@ -3496,10 +3498,11 @@ namespace MesDatas
                            }
                        }
 
-                       // 产品结果（产品状态）D1078 TotalProductPoint
-                       Read_string[3688] = KeyenceMcNet.ReadInt32(sytemSetDerivedsd.TotalProductPoint).Content.ToString();//产品状态
-                       Parameter_txt[3688] = Convert.ToString(Convert.ToDouble(Read_string[3688]));
+                       // 读产品总结果（产品状态）D1078 TotalProductPoint
+                       Parameter_txt[3688] = KeyenceMcNet.ReadInt32(sytemSetDerivedsd.TotalProductPoint).Content.ToString();
 
+                       //Read_string[3688] = KeyenceMcNet.ReadInt32(sytemSetDerivedsd.TotalProductPoint).Content.ToString();
+                       //Parameter_txt[3688] = Convert.ToString(Convert.ToDouble(Read_string[3688]));
                    }));
 
                     Invoke(new Action(() =>
@@ -3543,15 +3546,15 @@ namespace MesDatas
 
                             if (Parameter_txt[2006] == "1")
                             {
-                                lblRunningStatus.Text = resources.GetString("Mes_upload_OK");
+                                lblRunningStatus.Text = resources.GetString("Mes_upload_OK");   // 联机数据上传成功
                                 lblUploadStatus.ForeColor = G;
                                 //KeyenceMcNet.Write("D3672", Convert.ToInt16(1));
                             }
                             else if (Parameter_txt[2008] == "1")
                             {
-                                lblRunningStatus.Text = resources.GetString("Mes_upload_NG");
+                                lblRunningStatus.Text = resources.GetString("Mes_upload_NG");   // 联机数据上传失败
                                 lblUploadStatus.ForeColor = R;
-                                lblOperatePrompt.Text = resources.GetString("Re_upload");
+                                lblOperatePrompt.Text = resources.GetString("Re_upload");       // 请重新上传
                                 // KeyenceMcNet.Write("D3674", Convert.ToInt16(1));
                             }
                         }));
