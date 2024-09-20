@@ -277,6 +277,7 @@
     <Compile Include="AccessHelper.cs" />
     <Compile Include="AccountManager\ConfigManager.cs" />
     <Compile Include="cActions.cs" />
+    <Compile Include="ControlExtensions.cs" />
     <Compile Include="CSVDeal.cs" />
     <Compile Include="DataGridViewWithSaveing.cs">
       <SubType>Component</SubType>
