@@ -1,5 +1,6 @@
 ﻿using HFrfid;
 using HslCommunication;
+using HslCommunication.Core;
 using HslCommunication.ModBus;
 using HslCommunication.Profinet.Keyence;
 using HslCommunication.Profinet.Melsec;
@@ -334,11 +335,10 @@ namespace MesDatas
             //根据登入信息  分配主界面菜单
             AssignUI();
 
-            // 初始化 CheckBox 的初始状态
             InitializeCheckBoxStates(this.Controls);
-            // 配置Nlog全局变量
+
             LogManager.Configuration.Variables["LoginName"] = LoginName;
-            // 记录登录信息
+
             string loginInfo = $"【用户登录】\n工号：{LoginUser} | 姓名：{LoginName} | 权限：{AccessName} | 登录模式：{LoginMode} | 登录方式：{LoginMethod}";
             loggerAccount.Trace(loginInfo);
 
@@ -371,12 +371,13 @@ namespace MesDatas
 
             ConnectDashboard(null, null);  // 连接看板
 
-            TCP_Connect(null, null);       // 连接PLC
+            BtnConnectPlc_Click(null, null);  // 连接PLC
 
             taskProcess_MES = new Task(Process_MES);// 更新PLC状态指示灯 & 向PLC反馈看板连接状态
             taskProcess_MES.Start();
 
-            Model_Read_Other();                     // 加载产品型号 
+            //Model_Read_Other();                   // 加载产品型号 
+            InitializeModelReadAsync();
 
             Process_Offline();                      // 根据状态写模式
 
@@ -549,6 +550,7 @@ namespace MesDatas
             try
             {
                 Environment.Exit(0);
+                Form1_FormClosing(sender, null);
             }
             catch (Exception)
             {
@@ -1519,7 +1521,7 @@ namespace MesDatas
 
         private bool isPlcConnected = false;
 
-        private void TCP_Connect(object sender, EventArgs e)
+        private void BtnConnectPlc_Click(object sender, EventArgs e)
         {
             try
             {
@@ -1991,8 +1993,6 @@ namespace MesDatas
             });
         }
 
-        List<string> kpiList = null;
-
         private void Model_Read_PLC()
         {
             if (isPlcConnected == true)
@@ -2184,6 +2184,287 @@ namespace MesDatas
             }
         }
 
+        #region
+
+        List<string> kpiList = null;
+
+        private CancellationTokenSource _cts;
+        private readonly object _lockObject = new object();
+
+        private async Task InitializeModelReadAsync()
+        {
+            // 获取用户输入
+            deviceInfo.DeviceStatus = txtDeviceStatePoint.Text;
+            deviceInfo.ProductModel = txtProductModelPoint.Text;
+            deviceInfo.ProductModelLength = txtPMLength.Text;
+            deviceInfo.Save();
+
+            _cts = new CancellationTokenSource();
+
+            try
+            {
+                await Task.Run(async () =>
+                {
+                    while (!_cts.Token.IsCancellationRequested)
+                    {
+                        await Model_Read_PLCAsync(_cts.Token);
+                        await Task.Delay(250, _cts.Token);
+                    }
+                }, _cts.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                // 任务被取消，正常退出
+            }
+            catch (Exception ex)
+            {
+                await ShowErrorMessageAsync($"读取 PLC 数据时发生错误: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// 读取设备运行状态、产品型号、生产信息
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        private async Task Model_Read_PLCAsync(CancellationToken token)
+        {
+            if (!isPlcConnected) return;
+
+            try
+            {
+                // 读取设备运行状态
+                deviceState = await ReadPlcValueAsync(deviceInfo.DeviceStatus, token);
+
+                // 读取产品型号
+                ushort productModelLength = ushort.TryParse(deviceInfo.ProductModelLength, out var length) ? length : (ushort)10;
+                string pModel = await ReadPlcStringAsync(deviceInfo.ProductModel, productModelLength, token);
+                productModel = CodeNum.FormatString(pModel);
+
+                // 读取其他 KPI 数据
+                kpiList = await ReadKpiDataAsync(token);
+
+                // 更新 UI
+                await UpdateUIAsync(token);
+            }
+            catch (OperationCanceledException)
+            {
+                // 任务被取消，正常退出
+            }
+            catch (Exception ex)
+            {
+                await ShowErrorMessageAsync($"读取 PLC 数据时发生错误: {ex.Message}");
+            }
+        }
+
+        private async Task<string> ReadPlcValueAsync(string address, CancellationToken token)
+        {
+            return await Task.Run(() => KeyenceMcNet.ReadInt32(address).Content.ToString(), token);
+        }
+
+        private async Task<string> ReadPlcStringAsync(string address, ushort length, CancellationToken token)
+        {
+            return await Task.Run(() => KeyenceMcNet.ReadString(address, length).Content, token);
+        }
+
+        private async Task<List<string>> ReadKpiDataAsync(CancellationToken token)
+        {
+            var kpiList = new List<string>();
+
+            if (kpisPointSets.Length > 0)
+            {
+                foreach (var pointSet in kpisPointSets)
+                {
+                    if (token.IsCancellationRequested) break;
+
+                    if (pointSet.Contains("-"))
+                    {
+                        kpiList.Add(await ProcessPointDataAsync(pointSet, token));
+                    }
+                    else
+                    {
+                        int index = pointSet.IndexOf(":");
+                        string dataType = pointSet.Substring(index + 1, 1);
+                        string plcAddress = pointSet.Substring(0, index);
+                        string rawData = await ReadPlcValueAsync(plcAddress, token);
+                        kpiList.Add(CodeNum.HandlePlcData(rawData, dataType));
+                    }
+                }
+            }
+
+            return kpiList;
+        }
+
+        private Task<string> ProcessPointDataAsync(string pointSet, CancellationToken token)
+        {
+            return Task.Run(() => ProcessPointData_PLC(pointSet), token);
+        }
+
+        private async Task UpdateUIAsync(CancellationToken token)
+        {
+            if (token.IsCancellationRequested) return;
+
+            await this.InvokeAsync(() =>
+            {
+                // 更新设备状态
+                UpdateDeviceStatus();
+
+                // 读取并更新打印机产品型号
+                txtProductModel.Text = productModel;
+                if (checkBox4.Checked)
+                {
+                    textBox28.Text = txtProductModel.Text;
+                }
+
+                if (checkBox15.Checked)
+                {
+                    textBox52.Text = txtProductModel.Text;
+                }
+
+                // 更新 KPI 数据表格
+                UpdateKpiTable();
+
+                // 更新其他 UI 元素
+                UpdateOtherUIElements();
+            });
+        }
+
+        /// <summary>
+        /// 更新设备状态
+        /// </summary>
+        private void UpdateDeviceStatus()
+        {
+            if (deviceState != null)
+            {
+                switch (deviceState)
+                {
+                    case "1":
+                        lblDeviceStatus.ForeColor = Color.Green;
+                        Fouddinog();
+                        break;
+                    case "2":
+                        lblDeviceStatus.ForeColor = Color.Red;
+                        Namestation("触发故障");
+                        break;
+                    case "3":
+                        lblDeviceStatus.ForeColor = Color.Red;
+                        Namestation("故障停机");
+                        break;
+                    case "4":
+                        lblDeviceStatus.ForeColor = Color.Orange;
+                        Fouddinog();
+                        break;
+                    default:
+                        lblDeviceStatus.ForeColor = Color.Red;
+                        break;
+                }
+            }
+        }
+
+        private void UpdateKpiTable()
+        {
+            if (kpisNameSets.Length == kpisPointSets.Length && kpisPointSets.Length > 0)
+            {
+                if (kpisTable == null)
+                {
+                    InitializeKpiTable();
+                }
+                else
+                {
+                    UpdateExistingKpiTable();
+                }
+            }
+        }
+
+        private void InitializeKpiTable()
+        {
+            kpisTable = new DataTable();
+            kpisTable.Columns.Add("名称", typeof(string));
+            kpisTable.Columns.Add("值", typeof(string));
+
+            for (int i = 0; i < kpisNameSets.Length; i++)
+            {
+                DataRow dr = kpisTable.NewRow();
+                dr["名称"] = kpisNameSets[i];
+                dr["值"] = kpiList[i];
+                kpisTable.Rows.Add(dr);
+            }
+
+            dataGridViewDynamic3.DataSource = kpisTable;
+
+            for (int i = 0; i < dataGridViewDynamic3.Columns.Count; i++)
+            {
+                dataGridViewDynamic3.Columns[i].SortMode = DataGridViewColumnSortMode.NotSortable;
+            }
+        }
+
+        private void UpdateExistingKpiTable()
+        {
+            for (int i = 0; i < kpisNameSets.Length; i++)
+            {
+                dataGridViewDynamic3.Rows[i].Cells[0].Value = kpisNameSets[i];
+                dataGridViewDynamic3.Rows[i].Cells[1].Value = kpiList[i];
+            }
+        }
+
+        private void UpdateOtherUIElements()
+        {
+            if (chkReadRecipeId_PLC.Checked)
+            {
+                UpdateRecipeInfo();
+            }
+        }
+
+        /// <summary>
+        /// 更新配方号
+        /// </summary>
+        /// <returns></returns>
+        private async Task UpdateRecipeInfo()
+        {
+            string currentId = await ReadPlcValueAsync(deviceInfo.RecipeIdPoint, CancellationToken.None);
+            if (recipeId != currentId)
+            {
+                recipeId = currentId;
+                cboBarcodeRuleAndFixtures.SelectedValue = currentId;
+                lblRecipeId.Text = currentId;
+
+                UpdateFixtureInfo();
+            }
+        }
+
+        private void UpdateFixtureInfo()
+        {
+            string[] expectedFixtures = CodeNum.ExtractFixturesInfo(cboBarcodeRuleAndFixtures.Text);
+            string[] frockB = txtFixtureBinding.Text.ToString().Split('+');
+
+            if (!CodeNum.CompareArray(expectedFixtures, frockB))
+            {
+                string frockmm = string.Join(" + ", frockB.Where(frockid => expectedFixtures.Contains(frockid)));
+                txtFixtureBinding.Text = frockmm;
+
+                string[] frockC = frockmm.Split('+');
+
+                if (!CodeNum.CompareArray(expectedFixtures, frockC))
+                {
+                    lblOperatePrompt.Text = resources.GetString("Wait_scan_Jig");
+                }
+            }
+        }
+
+        private Task ShowErrorMessageAsync(string message)
+        {
+            return this.InvokeAsync(() => MessageBox.Show(message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error));
+        }
+
+        // 在窗体关闭时调用此方法
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            _cts?.Cancel();
+            _cts?.Dispose();
+        }
+
+        #endregion
+
         /// <summary>
         /// 触发发送设备故障信息
         /// </summary>
@@ -2288,7 +2569,7 @@ namespace MesDatas
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Button25_Click(object sender, EventArgs e)
+        private void BtnSaveAtSystemSetting_Click(object sender, EventArgs e)
         {
             SaveSystemConfigArgument();
             loggerConfig.Trace($"系统设置参数保存成功");
@@ -3162,7 +3443,7 @@ namespace MesDatas
         Color B = Color.Black;
         Color O = Color.Orange;
 
-        Stopwatch sw = Stopwatch.StartNew();
+        //Stopwatch sw = Stopwatch.StartNew();
         /// <summary>
         /// 获取生产结果
         /// </summary>
@@ -3185,6 +3466,7 @@ namespace MesDatas
                        lblOperatePrompt.Text = resources.GetString("begin_read_data");  // 开始读取数据
                        barcodeInfo = barcodeData;
                        LogMsg("生产结果数据读取中....");
+
                        string[] Read_string = new string[10000];
                        //string[] Read_string1 = new string[100];
                        list = new List<string>();
@@ -3216,10 +3498,11 @@ namespace MesDatas
                            }
                        }
 
-                       // 产品结果（产品状态）D1078 TotalProductPoint
-                       Read_string[3688] = KeyenceMcNet.ReadInt32(sytemSetDerivedsd.TotalProductPoint).Content.ToString();//产品状态
-                       Parameter_txt[3688] = Convert.ToString(Convert.ToDouble(Read_string[3688]));
+                       // 读产品总结果（产品状态）D1078 TotalProductPoint
+                       Parameter_txt[3688] = KeyenceMcNet.ReadInt32(sytemSetDerivedsd.TotalProductPoint).Content.ToString();
 
+                       //Read_string[3688] = KeyenceMcNet.ReadInt32(sytemSetDerivedsd.TotalProductPoint).Content.ToString();
+                       //Parameter_txt[3688] = Convert.ToString(Convert.ToDouble(Read_string[3688]));
                    }));
 
                     Invoke(new Action(() =>
@@ -3263,15 +3546,15 @@ namespace MesDatas
 
                             if (Parameter_txt[2006] == "1")
                             {
-                                lblRunningStatus.Text = resources.GetString("Mes_upload_OK");
+                                lblRunningStatus.Text = resources.GetString("Mes_upload_OK");   // 联机数据上传成功
                                 lblUploadStatus.ForeColor = G;
                                 //KeyenceMcNet.Write("D3672", Convert.ToInt16(1));
                             }
                             else if (Parameter_txt[2008] == "1")
                             {
-                                lblRunningStatus.Text = resources.GetString("Mes_upload_NG");
+                                lblRunningStatus.Text = resources.GetString("Mes_upload_NG");   // 联机数据上传失败
                                 lblUploadStatus.ForeColor = R;
-                                lblOperatePrompt.Text = resources.GetString("Re_upload");
+                                lblOperatePrompt.Text = resources.GetString("Re_upload");       // 请重新上传
                                 // KeyenceMcNet.Write("D3674", Convert.ToInt16(1));
                             }
                         }));
