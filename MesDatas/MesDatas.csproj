@@ -430,6 +430,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RawPrinterHelper.cs" />
+    <Compile Include="SaveHistoricalData\DatabaseOperations.cs" />
     <Compile Include="SqlConverter\SqlToJsonConverter.cs" />
     <Compile Include="UpdateModel\ConiferFile.cs" />
     <Compile Include="Utiey\FaultsBLL.cs" />

@@ -33,7 +33,7 @@ namespace MesDatas
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.skinEngine1 = new Sunisoft.IrisSkin.SkinEngine(((System.ComponentModel.Component)(this)));
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.tabPage4 = new System.Windows.Forms.TabPage();
@@ -1218,10 +1218,10 @@ namespace MesDatas
             // Column2
             // 
             this.Column2.DataPropertyName = "用户密码";
-            dataGridViewCellStyle2.Format = "*****";
-            dataGridViewCellStyle2.NullValue = "#";
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.Column2.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle1.Format = "*****";
+            dataGridViewCellStyle1.NullValue = "#";
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.Column2.DefaultCellStyle = dataGridViewCellStyle1;
             resources.ApplyResources(this.Column2, "Column2");
             this.Column2.Name = "Column2";
             this.Column2.ReadOnly = true;
