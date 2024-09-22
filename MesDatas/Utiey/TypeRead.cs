@@ -15,25 +15,25 @@ namespace MesDatas.Utiey
             // ÷100
             if (typelen.Equals("0"))
             {
-                bb = CodeNum.PNumCode(plcValue);
+                bb = CodeNum.DivBy100(plcValue);
             }
 
             // ÷10
             else if (typelen.Equals("1"))
             {
-                bb = CodeNum.PNtimeCode(plcValue);
+                bb = CodeNum.DivBy10(plcValue);
             }
 
             // ÷100（保留两位小数）
             else if (typelen.Equals("2"))
             {
-                bb = CodeNum.PdounInCode(plcValue);
+                bb = CodeNum.DivBy100Rounded2(plcValue);
             }
 
             // 转成OK/NG
             else if (typelen.Equals("3"))
             {
-                bb = CodeNum.PNumOKAG(plcValue);
+                bb = CodeNum.ConvertToOkNg(plcValue);
             }
 
             // 实际值
@@ -45,13 +45,13 @@ namespace MesDatas.Utiey
             // ÷1000
             else if (typelen.Equals("5"))
             {
-                bb = CodeNum.PThousdCode(plcValue);
+                bb = CodeNum.DivBy1000(plcValue);
             }
 
             // ÷1000（保留3位小数）
             else if (typelen.Equals("6"))
             {
-                bb = CodeNum.PThouInCode(plcValue);
+                bb = CodeNum.DivBy1000Rounded3(plcValue);
             }
 
             return bb;

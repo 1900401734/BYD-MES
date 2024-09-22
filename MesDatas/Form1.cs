@@ -183,7 +183,7 @@ namespace MesDatas
         List<string> maxList = null;        // 上限
         List<string> minList = null;        // 下限
         List<string> resultList = null;     // 结果
-        List<string> workstNameList = null;
+        List<string> workStNameList = null;
 
         mdbDatas mdb = null;
         public string WorkOrder;
@@ -247,7 +247,7 @@ namespace MesDatas
             { IsBackground = true }.Start();
         }
 
-        string[] sequenceNum = new string[] { };    // 工位序号
+        string[] targetStation = new string[] { };  // 目标工位序号
         string[] testItems = new string[] { };      // 测试项目名称
         string[] actualValue = new string[] { };    // 实际值点位
         string[] maxValue = new string[] { };       // 上限点位
@@ -377,14 +377,14 @@ namespace MesDatas
             taskProcess_MES.Start();
 
             //Model_Read_Other();                   // 加载产品型号 
-            InitializeModelReadAsync();
+            InitializeModelReadAsync();             // 读取生产指标
 
             Process_Offline();                      // 根据状态写模式
 
-            workstNameList = new List<string>();
-            if (sequenceNum.Length > 0)
+            workStNameList = new List<string>();
+            if (targetStation.Length > 0)
             {
-                workstNameList = CodeNum.WorkIDName(sequenceNum, stationName);
+                workStNameList = CodeNum.WorkIDName(targetStation, stationName);
             }
 
             InsertTable(null, null);
@@ -1457,7 +1457,7 @@ namespace MesDatas
                 }
             }
 
-            string[] frdeMafrMes = CodeNum.CodeMafror(cboBarcodeRuleAndFixtures.Text, codesTable);
+            string[] frdeMafrMes = CodeNum.GetProductCodes(cboBarcodeRuleAndFixtures.Text, codesTable);
             if (frdeMafrMes.Length > 0)
             {
                 for (int i = 0; i < frdeMafrMes.Length; i++)
@@ -1955,7 +1955,7 @@ namespace MesDatas
 
         #endregion
 
-        private string productModel = " ";  // 产品型号 = 产品名称 = 产品编号，这三种叫法的是同一个东西
+        private string productModel = " ";  // 产品型号 = 产品名称 = 产品编号
         private string D1080 = " ";         // 生产总数
         private string D1084 = " ";         // 工单数量
         private string D1086 = " ";         // 完成数量
@@ -1987,7 +1987,7 @@ namespace MesDatas
         /// <summary>
         /// 读取产品型号
         /// </summary>
-        private void Model_Read_Other()
+        /*private void Model_Read_Other()
         {
             // 获取用户输入
             deviceInfo.DeviceStatus = txtDeviceStatePoint.Text;     // 设备运行状态点位
@@ -2004,9 +2004,9 @@ namespace MesDatas
                     Application.DoEvents();
                 }
             });
-        }
+        }*/
 
-        private void Model_Read_PLC()
+        /*private void Model_Read_PLC()
         {
             if (isPlcConnected == true)
             {
@@ -2176,10 +2176,10 @@ namespace MesDatas
                     }
 
                     // 读取成品名称
-                    /*if (chkReadPName.Checked)
+                    if (chkReadPName.Checked)
                     {
                         txtProductName.Text = CodeNum.FormatString(KeyenceMcNet.ReadString("D1210", 10).Content);
-                    }*/
+                    }
 
                     // 网络打印设置 > 读取PLC型号
                     if (checkBox4.Checked)
@@ -2195,7 +2195,7 @@ namespace MesDatas
                     Application.DoEvents();
                 }));
             }
-        }
+        }*/
 
         #endregion
 
@@ -2238,7 +2238,7 @@ namespace MesDatas
         }
 
         /// <summary>
-        /// 读取设备运行状态、产品型号、生产信息
+        /// 读取设备运行状态、产品型号、生产指标、更新UI
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
@@ -2248,13 +2248,13 @@ namespace MesDatas
 
             try
             {
-                // 读取设备运行状态
+                // 读取设备运行状态 D1007
                 deviceState = await ReadPlcValueAsync(deviceInfo.DeviceStatus, token);
 
-                // 读取产品型号
+                // 读取产品型号 D1120
                 ushort productModelLength = ushort.TryParse(deviceInfo.ProductModelLength, out var length) ? length : (ushort)10;
                 string pModel = await ReadPlcStringAsync(deviceInfo.ProductModel, productModelLength, token);
-                productModel = CodeNum.FormatString(pModel);
+                productModel = CodeNum.CleanString(pModel);
 
                 // 读取其他 KPI 数据
                 kpiList = await ReadKpiDataAsync(token);
@@ -2272,6 +2272,9 @@ namespace MesDatas
             }
         }
 
+        /// <summary>
+        /// ReadInt32
+        /// </summary>
         private async Task<string> ReadPlcValueAsync(string address, CancellationToken token)
         {
             return await Task.Run(() => KeyenceMcNet.ReadInt32(address).Content.ToString(), token);
@@ -2502,7 +2505,7 @@ namespace MesDatas
                                 {
                                     if (!faultsMap.ContainsKey(faultID))
                                     {
-                                        string statssName = CodeNum.WorkIDNm(faultsTable.Rows[i]["工位ID"].ToString(), stationName); //
+                                        string statssName = CodeNum.GetWorkstationNameById(faultsTable.Rows[i]["工位ID"].ToString(), stationName); //
                                         string faultas = "1+" + statssName + "+" + txtDeviceName.Text + "+" + status + "+"
                                          + faultsTable.Rows[i]["故障描述"] + "+" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                                         ShowMsg(faultas);
@@ -2643,24 +2646,24 @@ namespace MesDatas
             {
                 for (int i = 0; i < testItems.Length; i++)
                 {
-                    dataGridViewDynamic2.Columns[a].Width = CodeNum.Doubtowule(txtDisplayWidth.Text);
+                    dataGridViewDynamic2.Columns[a].Width = CodeNum.ParseIntOrDefault(txtDisplayWidth.Text);
                     dataGridViewDynamic2.Columns[a].HeaderText = testItems[i] + unitName[i];
                     a = a + 1;
                     if (!maxValue[i].Equals("NO"))
                     {
-                        dataGridViewDynamic2.Columns[a].Width = CodeNum.Doubtowule(txtDisplayWidth.Text);
+                        dataGridViewDynamic2.Columns[a].Width = CodeNum.ParseIntOrDefault(txtDisplayWidth.Text);
                         dataGridViewDynamic2.Columns[a].HeaderText = testItems[i] + "上限" + unitName[i];
                         a = a + 1;
                     }
                     if (!minValue[i].Equals("NO"))
                     {
-                        dataGridViewDynamic2.Columns[a].Width = CodeNum.Doubtowule(txtDisplayWidth.Text);
+                        dataGridViewDynamic2.Columns[a].Width = CodeNum.ParseIntOrDefault(txtDisplayWidth.Text);
                         dataGridViewDynamic2.Columns[a].HeaderText = testItems[i] + "下限" + unitName[i];
                         a = a + 1;
                     }
                     if (!testResult[i].Equals("NO"))
                     {
-                        dataGridViewDynamic2.Columns[a].Width = CodeNum.Doubtowule(txtDisplayWidth.Text);
+                        dataGridViewDynamic2.Columns[a].Width = CodeNum.ParseIntOrDefault(txtDisplayWidth.Text);
                         dataGridViewDynamic2.Columns[a].HeaderText = testItems[i] + "结果";
                         a = a + 1;
                     }
@@ -2869,7 +2872,7 @@ namespace MesDatas
                 str1.Append("'" + CP + "',");
                 str1.Append("'" + txtWorkOrder.Text + "',");
                 str1.Append("'" + txtFixtureBinding.Text + "',");
-                str1.Append("'" + CodeNum.CodeStrfror(cboBarcodeRuleAndFixtures.Text, codesTable) + "',");
+                str1.Append("'" + CodeNum.GetProductCodeString(cboBarcodeRuleAndFixtures.Text, codesTable) + "',");
                 str1.Append("'" + barcode + "',");
                 str1.Append("'" + LoginUser.ToString() + "',");
                 str1.Append("'" + now.ToString("yyyy年MM月dd日 HH:mm:ss") + "',");
@@ -2890,11 +2893,11 @@ namespace MesDatas
                         if (!maxValue[i].Equals("NO") && !minValue[i].Equals("NO") && !testResult[i].Equals("NO"))
                         {
                             str1.Append(",");
-                            str1.Append("'" + CodeNum.NullECoshu(maxList[i]) + "'");
+                            str1.Append("'" + CodeNum.GetNullIfEmpty(maxList[i]) + "'");
                             str1.Append(",");
-                            str1.Append("'" + CodeNum.NullECoshu(minList[i]) + "'");
+                            str1.Append("'" + CodeNum.GetNullIfEmpty(minList[i]) + "'");
                             str1.Append(",");
-                            str1.Append("'" + CodeNum.NullECoshu(resultList[i]) + "'");
+                            str1.Append("'" + CodeNum.GetNullIfEmpty(resultList[i]) + "'");
                         }
                     }
                 }
@@ -3119,7 +3122,7 @@ namespace MesDatas
                         LogMsg("准备读码....");
                         ushort barcodeLength = barcodeValidation.GetBarcodeLength();
                         string rawBarcode = KeyenceMcNet.ReadString(barcodeValidation.BarcodePositionPLC, barcodeLength).Content;
-                        barcodeData = CodeNum.FormatString(rawBarcode);
+                        barcodeData = CodeNum.CleanString(rawBarcode);
                         txtShowBarcode.Text = barcodeData;
                         LogMsg($"条码【D1100】 = {barcodeData}");
 
@@ -3283,7 +3286,7 @@ namespace MesDatas
                             // 二维码验证
                             if (chkBypassQRcodeValidation.Checked == false)
                             {
-                                string frockA = CodeNum.CodeStrQRcode(cboBarcodeRuleAndFixtures.Text, codesTable);
+                                string frockA = CodeNum.GetQRCodeVerification(cboBarcodeRuleAndFixtures.Text, codesTable);
 
                                 if (VarifyBarcodeRule(barcodeValidation, frockA) == false)
                                 {
@@ -3372,7 +3375,7 @@ namespace MesDatas
                         barcodeValidation = barcodeVefictnList[0];
                         ushort barcodeLength = barcodeValidation.GetBarcodeLength();
                         string rawBarcode = KeyenceMcNet.ReadString(barcodeValidation.BarcodePositionPLC, barcodeLength).Content;
-                        barcodeData = CodeNum.FormatString(rawBarcode);
+                        barcodeData = CodeNum.CleanString(rawBarcode);
                         txtShowBarcode.Text = barcodeData;
                         LogMsg($"条码【D1100】 = {barcodeData}");
 
@@ -3722,7 +3725,7 @@ namespace MesDatas
             ushort secondProductLength = 10;
             ushort.TryParse(sytemSetDerivedsd.SecondProductLength, out secondProductLength);
             string rawBarcode = KeyenceMcNet.ReadString(sytemSetDerivedsd.SecondProductPoint, secondProductLength).Content;
-            barcodeInfo = CodeNum.FormatString(rawBarcode);
+            barcodeInfo = CodeNum.CleanString(rawBarcode);
         }
 
         /// <summary>
@@ -3969,7 +3972,7 @@ namespace MesDatas
                     if (readss.IsSuccess)
                     {
 
-                        aa = CodeNum.PdounInCode(readss.Content.ToString());
+                        aa = CodeNum.DivBy100Rounded2(readss.Content.ToString());
                     }
                     else
                     {
@@ -3986,7 +3989,7 @@ namespace MesDatas
 
                     if (readss.IsSuccess)
                     {
-                        aa = CodeNum.PNumOKAG(readss.Content.ToString());
+                        aa = CodeNum.ConvertToOkNg(readss.Content.ToString());
                     }
                     else
                     {
@@ -4020,7 +4023,7 @@ namespace MesDatas
 
                     if (readss.IsSuccess)
                     {
-                        ss = CodeNum.FormatString(readss.Content.ToString());
+                        ss = CodeNum.CleanString(readss.Content.ToString());
                     }
                     else
                     {
@@ -4044,7 +4047,7 @@ namespace MesDatas
                 if (readss.IsSuccess)
                 {
 
-                    aa = CodeNum.PNumCode(readss.Content.ToString());
+                    aa = CodeNum.DivBy100(readss.Content.ToString());
                 }
                 else
                 {
@@ -5220,7 +5223,7 @@ namespace MesDatas
                          if (readss.IsSuccess)
                          {
                              vulpa = readss.Content.ToString();
-                             kordnme = CodeNum.WorkIDNm(row["工位ID"].ToString(), stationName);
+                             kordnme = CodeNum.GetWorkstationNameById(row["工位ID"].ToString(), stationName);
                              //输出：
                              //4+易损件所在工位+机台名称+ 易损件所在位置+
                              //易损件名称+易损件理论使用次数易损件已使用次数
@@ -5258,7 +5261,7 @@ namespace MesDatas
                          // ShowMsg(chesBBB);
                          // Send(chesBBB);
                      }
-                     string[] prodrow = CodeNum.CodeMafror(cboBarcodeRuleAndFixtures.Text, codesTable);
+                     string[] prodrow = CodeNum.GetProductCodes(cboBarcodeRuleAndFixtures.Text, codesTable);
                      for (int i = 0; i < prodrow.Length; i++)
                      {
                          if (!string.IsNullOrWhiteSpace(prodrow[i]))
@@ -5275,7 +5278,7 @@ namespace MesDatas
                  if (beatList.Count == list.Count &&
                 maxList.Count == minList.Count &&
                 maxList.Count == list.Count &&
-                workstNameList.Count == list.Count &&
+                workStNameList.Count == list.Count &&
                 resultList.Count == list.Count &&
                 list.Count > 0 && testItems.Length > 0)
                  {
@@ -5290,7 +5293,7 @@ namespace MesDatas
                              //则试结果+ 则试节拍+则试项名称+ 则试项上限+则试项下限+测式项实际值
                              if (maxValue[i].Equals("NO") && minValue[i].Equals("NO") && testResult[i].Equals("NO"))
                              {
-                                 string cheshixm = "2+" + workstNameList[i] + "+" + txtWorkOrder.Text + "+" + barcodeInfo + "+"
+                                 string cheshixm = "2+" + workStNameList[i] + "+" + txtWorkOrder.Text + "+" + barcodeInfo + "+"
                                          + LoginUser.ToString() + "+" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") +
                                              "+" + Value[9999] + "+" + D1090 + "+" + testItems[i] + "+" + "" + "+" + "" + "+" + list[i];
                                  bulletindata += "|" + cheshixm;
@@ -5300,7 +5303,7 @@ namespace MesDatas
                              else
                              {
 
-                                 string cheshixm1 = "2+" + workstNameList[i] + "+" + txtWorkOrder.Text + "+" + barcodeInfo + "+"
+                                 string cheshixm1 = "2+" + workStNameList[i] + "+" + txtWorkOrder.Text + "+" + barcodeInfo + "+"
                                   + LoginUser.ToString() + "+" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") +
                                       "+" + Value[9999] + "+" + D1090 + "+" + testItems[i] + "+" + maxList[i] + "+" + minList[i] + "+" + list[i];
                                  bulletindata += "|" + cheshixm1;
@@ -6409,7 +6412,7 @@ namespace MesDatas
             if (boardTable.Rows.Count > 0)
             {
                 // 从数据库表 Board 中的每一行提取特定列的数据，并存储在相应的数组中
-                sequenceNum = boardTable.AsEnumerable().Select(row => row["WorkID"].ToString()).ToArray();
+                targetStation = boardTable.AsEnumerable().Select(row => row["WorkID"].ToString()).ToArray();
                 testItems = boardTable.AsEnumerable().Select(row => row["BoardName"].ToString()).ToArray();
                 actualValue = boardTable.AsEnumerable().Select(row => row["BoardCode"].ToString()).ToArray();
                 maxValue = boardTable.AsEnumerable().Select(row => row["MaxBoardCode"].ToString()).ToArray();
@@ -6551,14 +6554,14 @@ namespace MesDatas
                 //说明点击的列是DataGridViewButtonColumn列
                 DataGridViewColumn column = dataGridView4.Columns[e.ColumnIndex];
                 string pid = this.dataGridView4.Rows[e.RowIndex].Cells[3].Value.ToString();
-                string workID = CodeNum.WorkIDONECodes(this.dataGridView4.Rows[e.RowIndex].Cells[4].Value.ToString());
+                string workID = CodeNum.GetOneIfEmpty(this.dataGridView4.Rows[e.RowIndex].Cells[4].Value.ToString());
                 string boardName = this.dataGridView4.Rows[e.RowIndex].Cells[5].Value.ToString();
                 string boardCode = this.dataGridView4.Rows[e.RowIndex].Cells[6].Value.ToString();
-                string stanCode = CodeNum.NOCodes(this.dataGridView4.Rows[e.RowIndex].Cells[7].Value.ToString());
-                string maxBoardCode = CodeNum.NOCodes(this.dataGridView4.Rows[e.RowIndex].Cells[8].Value.ToString());
-                string minBoardCode = CodeNum.NOCodes(this.dataGridView4.Rows[e.RowIndex].Cells[9].Value.ToString());
-                string resultBoardCode = CodeNum.NOCodes(this.dataGridView4.Rows[e.RowIndex].Cells[10].Value.ToString());
-                string beatBoardCode = CodeNum.NOCodes(this.dataGridView4.Rows[e.RowIndex].Cells[11].Value.ToString());
+                string stanCode = CodeNum.GetNoIfEmpty(this.dataGridView4.Rows[e.RowIndex].Cells[7].Value.ToString());
+                string maxBoardCode = CodeNum.GetNoIfEmpty(this.dataGridView4.Rows[e.RowIndex].Cells[8].Value.ToString());
+                string minBoardCode = CodeNum.GetNoIfEmpty(this.dataGridView4.Rows[e.RowIndex].Cells[9].Value.ToString());
+                string resultBoardCode = CodeNum.GetNoIfEmpty(this.dataGridView4.Rows[e.RowIndex].Cells[10].Value.ToString());
+                string beatBoardCode = CodeNum.GetNoIfEmpty(this.dataGridView4.Rows[e.RowIndex].Cells[11].Value.ToString());
                 string beatBoardA1 = CodeNum.GetNullUnit(this.dataGridView4.Rows[e.RowIndex].Cells[12].Value.ToString());
 
                 ModifyPlcAddress(pid, workID, stanCode, boardName, boardCode, maxBoardCode, minBoardCode, resultBoardCode, beatBoardCode, beatBoardA1);
@@ -6573,14 +6576,14 @@ namespace MesDatas
                 //说明点击的列是DataGridViewButtonColumn列
                 DataGridViewColumn column = dataGridView4.Columns[e.ColumnIndex];
                 string pid = this.dataGridView4.Rows[e.RowIndex].Cells[3].Value.ToString();
-                string workID = CodeNum.WorkIDONECodes(this.dataGridView4.Rows[e.RowIndex].Cells[4].Value.ToString());
+                string workID = CodeNum.GetOneIfEmpty(this.dataGridView4.Rows[e.RowIndex].Cells[4].Value.ToString());
                 string boardName = this.dataGridView4.Rows[e.RowIndex].Cells[5].Value.ToString();
                 string boardCode = this.dataGridView4.Rows[e.RowIndex].Cells[6].Value.ToString();
-                string stanCode = CodeNum.ONECodes(this.dataGridView4.Rows[e.RowIndex].Cells[7].Value.ToString());
-                string maxBoardCode = CodeNum.ONECodes(this.dataGridView4.Rows[e.RowIndex].Cells[8].Value.ToString());
-                string minBoardCode = CodeNum.ONECodes(this.dataGridView4.Rows[e.RowIndex].Cells[9].Value.ToString());
-                string resultBoardCode = CodeNum.ONECodes(this.dataGridView4.Rows[e.RowIndex].Cells[10].Value.ToString());
-                string beatBoardCode = CodeNum.ONECodes(this.dataGridView4.Rows[e.RowIndex].Cells[11].Value.ToString());
+                string stanCode = CodeNum.GetPlusOneIfEmpty(this.dataGridView4.Rows[e.RowIndex].Cells[7].Value.ToString());
+                string maxBoardCode = CodeNum.GetPlusOneIfEmpty(this.dataGridView4.Rows[e.RowIndex].Cells[8].Value.ToString());
+                string minBoardCode = CodeNum.GetPlusOneIfEmpty(this.dataGridView4.Rows[e.RowIndex].Cells[9].Value.ToString());
+                string resultBoardCode = CodeNum.GetPlusOneIfEmpty(this.dataGridView4.Rows[e.RowIndex].Cells[10].Value.ToString());
+                string beatBoardCode = CodeNum.GetPlusOneIfEmpty(this.dataGridView4.Rows[e.RowIndex].Cells[11].Value.ToString());
                 string beatBoardA1 = CodeNum.GetNullUnit(this.dataGridView4.Rows[e.RowIndex].Cells[12].Value.ToString());
                 //int i = dateM.Rows.Count;
                 ModifyPlcAddress(pid, workID, stanCode, boardName, boardCode, maxBoardCode, minBoardCode, resultBoardCode, beatBoardCode, beatBoardA1);

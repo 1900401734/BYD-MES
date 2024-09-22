@@ -1,5 +1,5 @@
-using SqlSugar;
 using MesDatas.DatasServer;
+using SqlSugar;
 namespace MesDatas.DatasModel
 {
     [SugarTable("Codes")]
@@ -19,7 +19,7 @@ namespace MesDatas.DatasModel
         public string MateName { get; set; }    // 产品编码 
 
         [SugarColumn(ColumnName = "MateQRcode", IsNullable = true)]
-        public string MateQRcode { get; set; }
+        public string MateQRcode { get; set; }  // 二维码验证
 
         public string Save()
         {
@@ -29,7 +29,7 @@ namespace MesDatas.DatasModel
                 return CodesServer.GetCodesSave(this);
             }
             else
-            {   
+            {
                 System.Windows.Forms.MessageBox.Show("编号不能为空", "提示");
                 return ID = string.Empty;
             }

@@ -15,15 +15,15 @@ namespace MesDatas.Utiey
             {
                 if (strtyp == "节拍")
                 {
-                    boardBeat = CodeNum.PNtimeCode(boardBeat);
+                    boardBeat = CodeNum.DivBy10(boardBeat);
                 }
                 else if (strtyp == "结果")
                 {
-                    boardBeat = CodeNum.PNumOKAG(boardBeat);
+                    boardBeat = CodeNum.ConvertToOkNg(boardBeat);
                 }
                 else
                 {
-                    boardBeat = CodeNum.PNumCode(boardBeat);
+                    boardBeat = CodeNum.DivBy100(boardBeat);
                 }
             }
             else
