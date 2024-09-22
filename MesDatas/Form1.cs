@@ -78,11 +78,11 @@ namespace MesDatas
         /// <summary>
         /// 0=联机  1=单机
         /// </summary>
-        private int OffLineType { get; set; }
+        private int isOffLine { get; set; }
         public void SetoffLineType(int strText)
         {
-            OffLineType = strText;
-            LoginMode = OffLineType == 0 ? "联机" : "单机";
+            isOffLine = strText;
+            LoginMode = isOffLine == 0 ? "联机" : "单机";
         }
 
         public string LoginMethod { get; private set; }
@@ -178,7 +178,7 @@ namespace MesDatas
 
         public string[] Parameter_txt = new string[10000];
 
-        List<string> list = null;
+        List<string> list = null;           // 实际值
         List<string> beatList = null;       // 节拍
         List<string> maxList = null;        // 上限
         List<string> minList = null;        // 下限
@@ -358,7 +358,7 @@ namespace MesDatas
             }
 
             // 用户登录验证
-            if (OffLineType == 0)
+            if (isOffLine == 0)
             {
                 VarifyUserLogin_MES(null, null);
             }
@@ -407,11 +407,11 @@ namespace MesDatas
             lblProductResult.BackColor = Color.White;
 
             // 联机用户验证失败,直接返回
-            if (OffLineType == 0 && isMesLoginSuccessful == false)
+            if (isOffLine == 0 && isMesLoginSuccessful == false)
             {
                 return;
             }
-            if (OffLineType == 1)
+            if (isOffLine == 1)
             {
                 txtWorkOrder.Text = "111111111111";
             }
@@ -717,14 +717,14 @@ namespace MesDatas
         /// </summary>
         private void Process_Offline()
         {
-            if (OffLineType == 1)
+            if (isOffLine == 1)
             {
 
                 lblLoginMode.Text = resources.GetString("loginMode1");  // 离线
                 lblCurrentUser.Text = $"{LoginUser} ({LoginName})";
 
             }
-            else if (OffLineType == 0)
+            else if (isOffLine == 0)
             {
                 lblLoginMode.Text = resources.GetString("loginMode");   // 在线
                 lblCurrentUser.Text = $"{LoginUser} ({LoginName})";
@@ -751,7 +751,7 @@ namespace MesDatas
         {
             while (IsRunningplc_ReadValue)
             {
-                /*Button20_Click(null, null);*/
+                //Button20_Click(null, null);
                 await ReadData();
             }
             Thread.Sleep(50);
@@ -2692,7 +2692,7 @@ namespace MesDatas
                 {
                     upState = "成功";
                 }
-                else if (OffLineType == 1)
+                else if (isOffLine == 1)
                 {
                     upState = "本地";
                 }
@@ -2702,13 +2702,13 @@ namespace MesDatas
                 //int index = this.dataGridViewDynamic2.Rows.Add();
                 DataGridViewRow dataGdVwRow = new DataGridViewRow();
                 dataGdVwRow.CreateCells(this.dataGridViewDynamic2);
-                dataGdVwRow.Cells[0].Value = Num;
-                dataGdVwRow.Cells[1].Value = barcodeInfo;
-                dataGdVwRow.Cells[2].Value = Value[9999];
-                dataGdVwRow.Cells[3].Value = txtProductModel.Text;
-                dataGdVwRow.Cells[4].Value = LoginUser.ToString();
-                dataGdVwRow.Cells[5].Value = upState;
-                dataGdVwRow.Cells[6].Value = now.ToString("MM-dd HH:mm:ss");
+                dataGdVwRow.Cells[0].Value = Num;                   // 序号
+                dataGdVwRow.Cells[1].Value = barcodeInfo;           // 条码
+                dataGdVwRow.Cells[2].Value = Value[9999];           // 产品结果
+                dataGdVwRow.Cells[3].Value = txtProductModel.Text;  // 产品型号 = 产品名称 = 产品编号
+                dataGdVwRow.Cells[4].Value = LoginUser.ToString();  // 操作员
+                dataGdVwRow.Cells[5].Value = upState;               // 上传状态
+                dataGdVwRow.Cells[6].Value = now.ToString("MM-dd HH:mm:ss");    // 测试时间
 
                 int a = 7;
                 if (list.Count > 0)
@@ -3293,7 +3293,7 @@ namespace MesDatas
                         }
 
                         // 联机上传MES进行条码验证，单机直接通过
-                        if (OffLineType == 1)
+                        if (isOffLine == 1)
                         {
                             lblScanBarcodeStatus.ForeColor = Color.Green;
                             lblRunningStatus.ForeColor = Color.Green;
@@ -3501,7 +3501,7 @@ namespace MesDatas
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Button20_Click(object sender, EventArgs e)
+        /*private void Button20_Click(object sender, EventArgs e)
         {
             if (isPlcConnected == true)
             {
@@ -3658,15 +3658,15 @@ namespace MesDatas
                     }));
                 }
             }
-        }
+        }*/
 
-        #region -------- 优化后，读取生产数据 --------
+        #region -------- 优化后，处理生产数据（读取、上传、保存） --------
 
         private async Task ReadData()
         {
             if (!isPlcConnected) return;
 
-            var plcValue = await Task.Run(() => KeyenceMcNet.ReadInt32(sytemSetDerivedsd.StartProductPoint).Content);
+            var plcValue = await Task.Run(() => KeyenceMcNet.ReadInt32(sytemSetDerivedsd.StartProductPoint).Content);   // D1200
 
             if (plcValue != 1) return;
 
@@ -3688,8 +3688,7 @@ namespace MesDatas
         {
             InvokeOnUIThreadAsync(() =>
            {
-               lblOperatePrompt.Text = resources.GetString("begin_read_data");
-               barcodeInfo = barcodeData;
+               lblOperatePrompt.Text = resources.GetString("begin_read_data");  // 开始读取数据
                LogMsg("生产结果数据读取中....");
            });
         }
@@ -3704,6 +3703,8 @@ namespace MesDatas
                 minList = new List<string>();
                 resultList = new List<string>();
 
+                barcodeInfo = barcodeData;
+
                 if (chkReadBarcodeSecondly.Checked)
                 {
                     ReadBarcodeSecondly();
@@ -3717,12 +3718,16 @@ namespace MesDatas
 
         private void ReadBarcodeSecondly()
         {
+            // 二次读条码：D1050
             ushort secondProductLength = 10;
             ushort.TryParse(sytemSetDerivedsd.SecondProductLength, out secondProductLength);
             string rawBarcode = KeyenceMcNet.ReadString(sytemSetDerivedsd.SecondProductPoint, secondProductLength).Content;
             barcodeInfo = CodeNum.FormatString(rawBarcode);
         }
 
+        /// <summary>
+        /// 读取测试数据
+        /// </summary>
         private async Task ReadTestData()
         {
             if (boardTable.Rows.Count > 0)
@@ -3740,11 +3745,11 @@ namespace MesDatas
                 {
                     var rowData = new
                     {
-                        ListItem = ProcessPointData_PLC(row["BoardCode"].ToString()),
-                        MaxItem = ProcessPointData_PLC(row["MaxBoardCode"].ToString()),
-                        MinItem = ProcessPointData_PLC(row["MinBoardCode"].ToString()),
-                        ResultItem = ProcessPointData_PLC(row["ResultBoardCode"].ToString()),
-                        BeatItem = ProcessPointData_PLC(row["BeatBoardCode"].ToString())
+                        ListItem = ProcessPointData_PLC(row["BoardCode"].ToString()),           // 实际值
+                        MaxItem = ProcessPointData_PLC(row["MaxBoardCode"].ToString()),         // 上限
+                        MinItem = ProcessPointData_PLC(row["MinBoardCode"].ToString()),         // 下限
+                        ResultItem = ProcessPointData_PLC(row["ResultBoardCode"].ToString()),   // 测试结果
+                        BeatItem = ProcessPointData_PLC(row["BeatBoardCode"].ToString())        // 节拍
                     };
 
                     return rowData;
@@ -3790,13 +3795,13 @@ namespace MesDatas
 
         private async Task UploadDataIfOnline()
         {
-            if (OffLineType != 0) return;
+            if (isOffLine == 1) return;
 
             await InvokeOnUIThreadAsync(() =>
             {
                 lblRunningStatus.ForeColor = Color.Black;
-                lblRunningStatus.Text = resources.GetString("Mes_upload");
-                lblOperatePrompt.Text = resources.GetString("Wait");
+                lblRunningStatus.Text = resources.GetString("Mes_upload");  // 联机数据上传中
+                lblOperatePrompt.Text = resources.GetString("Wait");        // 请等待
                 lblUploadStatus.ForeColor = Color.Orange;
 
                 产品结果 = Value[9999] == "OK";
@@ -5435,7 +5440,7 @@ namespace MesDatas
                 case "1":
                     try
                     {
-                        if (OffLineType == 0 && isMesLoginSuccessful == true)
+                        if (isOffLine == 0 && isMesLoginSuccessful == true)
                         {
                             //MessageBox.Show("确认接收生产工单");
                             if (sedbool == true)
