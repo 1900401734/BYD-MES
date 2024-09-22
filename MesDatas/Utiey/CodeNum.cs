@@ -273,11 +273,6 @@ namespace MesDatas.Utiey
             return listarr;
         }
 
-        /// <summary>
-        /// 获取不等于NO的个数
-        /// </summary>
-        /// <param name="list"></param>
-        /// <returns></returns>
         public static int TMaxMinstrhomd(List<string> list)
         {
             int count = 0;
@@ -296,12 +291,27 @@ namespace MesDatas.Utiey
         /// </summary>
         /// <param name="list"></param>
         /// <returns></returns>
-        public static int Tresultstrhomd(string[] strresult)
+        public static int GetValidItems(string[] testItems)
         {
             int count = 0;
-            for (int i = 0; i < strresult.Length; i++)
+
+            for (int i = 0; i < testItems.Length; i++)
             {
-                if (!strresult[i].Equals("NO"))
+                if (!testItems[i].Equals("NO"))
+                {
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        public static int GetValidItems(List<string> testItems)
+        {
+            int count = 0;
+
+            for (int i = 0; i < testItems.Count; i++)
+            {
+                if (!testItems[i].Equals("NO"))
                 {
                     count++;
                 }
