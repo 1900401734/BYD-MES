@@ -1568,7 +1568,7 @@
     <value>2, 2, 2, 2</value>
   </data>
   <data name="groupBox20.Size" type="System.Drawing.Size, System.Drawing">
-    <value>903, 906</value>
+    <value>903, 896</value>
   </data>
   <data name="groupBox20.TabIndex" type="System.Int32, mscorlib">
     <value>9</value>
@@ -1725,7 +1725,7 @@
     <value>2</value>
   </data>
   <data name="tabPage16.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 29</value>
+    <value>4, 39</value>
   </data>
   <data name="tabPage16.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 4, 4, 4</value>
@@ -1734,7 +1734,7 @@
     <value>4, 4, 4, 4</value>
   </data>
   <data name="tabPage16.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1894, 914</value>
+    <value>1894, 904</value>
   </data>
   <data name="tabPage16.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -2880,7 +2880,7 @@
     <value>2, 2, 2, 2</value>
   </data>
   <data name="groupBox35.Size" type="System.Drawing.Size, System.Drawing">
-    <value>900, 906</value>
+    <value>900, 896</value>
   </data>
   <data name="groupBox35.TabIndex" type="System.Int32, mscorlib">
     <value>10</value>
@@ -2901,7 +2901,7 @@
     <value>1</value>
   </data>
   <data name="tabPage17.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 29</value>
+    <value>4, 39</value>
   </data>
   <data name="tabPage17.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 4, 4, 4</value>
@@ -2910,7 +2910,7 @@
     <value>4, 4, 4, 4</value>
   </data>
   <data name="tabPage17.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1894, 914</value>
+    <value>1894, 904</value>
   </data>
   <data name="tabPage17.TabIndex" type="System.Int32, mscorlib">
     <value>2</value>
@@ -5210,7 +5210,7 @@ ADM=5
     <value>51</value>
   </data>
   <data name="dataGridView4.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1862, 560</value>
+    <value>1862, 556</value>
   </data>
   <data name="dataGridView4.TabIndex" type="System.Int32, mscorlib">
     <value>65</value>
@@ -5231,7 +5231,7 @@ ADM=5
     <value>Fill</value>
   </data>
   <data name="groupBox27.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 149</value>
+    <value>4, 143</value>
   </data>
   <data name="groupBox27.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 4, 4, 4</value>
@@ -5240,7 +5240,7 @@ ADM=5
     <value>4, 4, 4, 4</value>
   </data>
   <data name="groupBox27.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1870, 596</value>
+    <value>1870, 592</value>
   </data>
   <data name="groupBox27.TabIndex" type="System.Int32, mscorlib">
     <value>67</value>
@@ -5273,15 +5273,15 @@ ADM=5
     <value>2, 0, 2, 0</value>
   </data>
   <data name="label14.Size" type="System.Drawing.Size, System.Drawing">
-    <value>887, 90</value>
+    <value>1284, 90</value>
   </data>
   <data name="label14.TabIndex" type="System.Int32, mscorlib">
     <value>62</value>
   </data>
   <data name="label14.Text" xml:space="preserve">
-    <value>备注：点位示例：D1020:I-0|D1021:S-2 （注意：没有写NO保存)
-H 16整数  I 32整数 F float类型 （0➗100，1➗10，3[OK?NG]，4实际值 , 5➗1000）
-N32整数(2NG/3OK)  O 32整数  S string类型</value>
+    <value>点位示例：D1020:I-0；D1021:F-2（注意：某一项不存在可以直接不填，直接点击 “NO保存”即可 )
+H: short；  I: Int32；  F: float；  J: Int32, ÷100 (0.00 )；  N: Int32，OK/NG；  O: Int32，直接返回；  S: string，清理特殊字符
+0: ÷100；  1: ÷10；   2：÷100 (0.00)；  3: OK/NG；4: 实际值；5: ÷1000；    6: ÷1000（0.000）</value>
   </data>
   <data name="&gt;&gt;label14.Name" xml:space="preserve">
     <value>label14</value>
@@ -5308,7 +5308,7 @@ N32整数(2NG/3OK)  O 32整数  S string类型</value>
     <value>4, 4, 4, 4</value>
   </data>
   <data name="groupBox18.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1870, 145</value>
+    <value>1870, 139</value>
   </data>
   <data name="groupBox18.TabIndex" type="System.Int32, mscorlib">
     <value>66</value>
@@ -5338,7 +5338,7 @@ N32整数(2NG/3OK)  O 32整数  S string类型</value>
     <value>4, 4, 4, 4</value>
   </data>
   <data name="tabPage10.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1878, 749</value>
+    <value>1878, 739</value>
   </data>
   <data name="tabPage10.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -5371,7 +5371,7 @@ N32整数(2NG/3OK)  O 32整数  S string类型</value>
     <value>51</value>
   </data>
   <data name="dataGridView6.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1870, 751</value>
+    <value>1870, 741</value>
   </data>
   <data name="dataGridView6.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -5389,7 +5389,7 @@ N32整数(2NG/3OK)  O 32整数  S string类型</value>
     <value>0</value>
   </data>
   <data name="tabPage11.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 29</value>
+    <value>4, 39</value>
   </data>
   <data name="tabPage11.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 4, 4, 4</value>
@@ -5398,7 +5398,7 @@ N32整数(2NG/3OK)  O 32整数  S string类型</value>
     <value>4, 4, 4, 4</value>
   </data>
   <data name="tabPage11.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1878, 759</value>
+    <value>1878, 749</value>
   </data>
   <data name="tabPage11.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -5428,7 +5428,7 @@ N32整数(2NG/3OK)  O 32整数  S string类型</value>
     <value>4, 4, 4, 4</value>
   </data>
   <data name="tabControl2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1886, 792</value>
+    <value>1886, 782</value>
   </data>
   <data name="tabControl2.TabIndex" type="System.Int32, mscorlib">
     <value>66</value>
@@ -5503,7 +5503,7 @@ N32整数(2NG/3OK)  O 32整数  S string类型</value>
     <value>1</value>
   </data>
   <data name="tabPage13.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 29</value>
+    <value>4, 39</value>
   </data>
   <data name="tabPage13.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 4, 4, 4</value>
@@ -5512,7 +5512,7 @@ N32整数(2NG/3OK)  O 32整数  S string类型</value>
     <value>4, 4, 4, 4</value>
   </data>
   <data name="tabPage13.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1894, 914</value>
+    <value>1894, 904</value>
   </data>
   <data name="tabPage13.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -5563,7 +5563,7 @@ N32整数(2NG/3OK)  O 32整数  S string类型</value>
     <value>0</value>
   </data>
   <data name="txtViewStatus.Location" type="System.Drawing.Point, System.Drawing">
-    <value>160, 322</value>
+    <value>160, 253</value>
   </data>
   <data name="txtViewStatus.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 4, 4, 4</value>
@@ -5593,7 +5593,7 @@ N32整数(2NG/3OK)  O 32整数  S string类型</value>
     <value>NoControl</value>
   </data>
   <data name="label123.Location" type="System.Drawing.Point, System.Drawing">
-    <value>29, 325</value>
+    <value>36, 255</value>
   </data>
   <data name="label123.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 0, 4, 0</value>
@@ -5677,7 +5677,7 @@ N32整数(2NG/3OK)  O 32整数  S string类型</value>
     <value>3</value>
   </data>
   <data name="textBox34.Location" type="System.Drawing.Point, System.Drawing">
-    <value>160, 254</value>
+    <value>974, 45</value>
   </data>
   <data name="textBox34.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 4, 4, 4</value>
@@ -5687,6 +5687,9 @@ N32整数(2NG/3OK)  O 32整数  S string类型</value>
   </data>
   <data name="textBox34.TabIndex" type="System.Int32, mscorlib">
     <value>13</value>
+  </data>
+  <data name="textBox34.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
   </data>
   <data name="&gt;&gt;textBox34.Name" xml:space="preserve">
     <value>textBox34</value>
@@ -5707,7 +5710,7 @@ N32整数(2NG/3OK)  O 32整数  S string类型</value>
     <value>NoControl</value>
   </data>
   <data name="label118.Location" type="System.Drawing.Point, System.Drawing">
-    <value>7, 258</value>
+    <value>838, 47</value>
   </data>
   <data name="label118.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 0, 4, 0</value>
@@ -5720,6 +5723,9 @@ N32整数(2NG/3OK)  O 32整数  S string类型</value>
   </data>
   <data name="label118.Text" xml:space="preserve">
     <value>启动读卡器:</value>
+  </data>
+  <data name="label118.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
   </data>
   <data name="&gt;&gt;label118.Name" xml:space="preserve">
     <value>label118</value>
@@ -6436,7 +6442,7 @@ N32整数(2NG/3OK)  O 32整数  S string类型</value>
     <value>4, 4, 4, 4</value>
   </data>
   <data name="panel21.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1886, 906</value>
+    <value>1886, 896</value>
   </data>
   <data name="panel21.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -6454,7 +6460,7 @@ N32整数(2NG/3OK)  O 32整数  S string类型</value>
     <value>0</value>
   </data>
   <data name="tabPage14.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 29</value>
+    <value>4, 39</value>
   </data>
   <data name="tabPage14.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 4, 4, 4</value>
@@ -6463,7 +6469,7 @@ N32整数(2NG/3OK)  O 32整数  S string类型</value>
     <value>4, 4, 4, 4</value>
   </data>
   <data name="tabPage14.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1894, 914</value>
+    <value>1894, 904</value>
   </data>
   <data name="tabPage14.TabIndex" type="System.Int32, mscorlib">
     <value>2</value>
@@ -6574,7 +6580,7 @@ N32整数(2NG/3OK)  O 32整数  S string类型</value>
     <value>2</value>
   </data>
   <data name="tabPage18.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 29</value>
+    <value>4, 39</value>
   </data>
   <data name="tabPage18.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 4, 4, 4</value>
@@ -6583,7 +6589,7 @@ N32整数(2NG/3OK)  O 32整数  S string类型</value>
     <value>4, 4, 4, 4</value>
   </data>
   <data name="tabPage18.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1894, 914</value>
+    <value>1894, 904</value>
   </data>
   <data name="tabPage18.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
@@ -12199,13 +12205,13 @@ N32整数(2NG/3OK)  O 32整数  S string类型</value>
     <value>2, 0, 2, 0</value>
   </data>
   <data name="label72.Size" type="System.Drawing.Size, System.Drawing">
-    <value>618, 30</value>
+    <value>782, 30</value>
   </data>
   <data name="label72.TabIndex" type="System.Int32, mscorlib">
     <value>5</value>
   </data>
   <data name="label72.Text" xml:space="preserve">
-    <value>(A实际值,I除100，T除10，J除100默认2位，H是3OK其它NG)</value>
+    <value>A：实际值，I：除100，T：除10，J：除100（取两位小数），H：2-NG/3-OK</value>
   </data>
   <data name="&gt;&gt;label72.Name" xml:space="preserve">
     <value>label72</value>
@@ -13077,9 +13083,6 @@ N32整数(2NG/3OK)  O 32整数  S string类型</value>
         LjyA6MQJRGiqbI1+dSYxbyoJFT3zzWPz6E8WNFlulXkm2YUkTZ98Izbg/wfnZLnhr6BbhQAAAABJRU5E
         rkJggg==
 </value>
-  </data>
-  <data name="$this.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
   </data>
   <data name="$this.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>5, 2, 5, 2</value>
