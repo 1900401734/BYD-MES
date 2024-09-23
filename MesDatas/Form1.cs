@@ -220,31 +220,26 @@ namespace MesDatas
             this.WindowState = FormWindowState.Maximized;
 
             InitializeComponent();
+            InitializeTimer();      // 实时更新当前时间
             Control.CheckForIllegalCrossThreadCalls = false;
-
-            //this.skinEngine1.SkinFile = "Calmness.ssk";
-            //sw.Start();
-            //listViewToolsLib.RootPath = Application.StartupPath + @"\\Libs";
-            //listViewToolsLib.UpdateTools();
 
             // 开启监听键盘和鼠标操作
             Application.AddMessageFilter(new MyIMessageFilter());
+        }
 
-            // 实时更新当前时间
-            new Thread(() =>
-            {
-                while (true)
-                {
-                    try
-                    {
-                        lblCurrentTime.BeginInvoke(new MethodInvoker(() =>
-                            lblCurrentTime.Text = DateTime.Now.ToString()));
-                    }
-                    catch { }
-                    Thread.Sleep(1000);
-                }
-            })
-            { IsBackground = true }.Start();
+        private System.Windows.Forms.Timer timer1;
+
+        private void InitializeTimer()
+        {
+            timer1 = new System.Windows.Forms.Timer();
+            timer1.Interval = 1000; // Update every second
+            timer1.Tick += Timer_Tick;
+            timer1.Start();
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            lblCurrentTime.Text = DateTime.Now.ToString();
         }
 
         string[] targetStation = new string[] { };  // 目标工位序号
@@ -369,17 +364,17 @@ namespace MesDatas
                 lblOperatePrompt.Text = resources.GetString("scanning");     // 等待扫描条码
             }
 
-            ConnectDashboard(null, null);  // 连接看板
+            ConnectDashboard(null, null);       // 连接看板
 
-            BtnConnectPlc_Click(null, null);  // 连接PLC
+            BtnConnectPlc_Click(null, null);    // 连接PLC
 
-            taskProcess_MES = new Task(Process_MES);// 更新PLC状态指示灯 & 向PLC反馈看板连接状态
+            taskProcess_MES = new Task(Process_MES);     // 更新PLC状态指示灯 & 向PLC反馈看板连接状态
             taskProcess_MES.Start();
 
-            //Model_Read_Other();                   // 加载产品型号 
-            InitializeModelReadAsync();             // 读取生产指标
+            InitializeModelReadAsync();                  // 读取生产指标
+            //Model_Read_Other();
 
-            Process_Offline();                      // 根据状态写模式
+            Process_Offline();                           // 根据状态写模式
 
             workStNameList = new List<string>();
             if (targetStation.Length > 0)
@@ -549,12 +544,14 @@ namespace MesDatas
             }
             try
             {
-                Environment.Exit(0);
                 Form1_FormClosing(sender, null);
-            }
-            catch (Exception)
-            {
 
+                Environment.Exit(0);
+            }
+            catch (Exception ex)
+            {
+                // 记录异常信息
+                MessageBox.Show("An error occurred while closing the application: " + ex.Message);
             }
 
         }
@@ -655,9 +652,9 @@ namespace MesDatas
         Task taskProcess_ZPL = null;
         public bool IsRunningplc = true;
         bool IsRunning = true;
-        bool IsRunningplc_ReadCode = true;
-        bool IsRunningplc_ReadValue = true;
-        bool IsRunningplc_ReadMaxMin = true;
+        bool IsRunningplc_ReadCode = true;      // 开始读条码标志
+        bool IsRunningplc_ReadValue = true;     // 开始读取生产数据
+        bool IsRunningplc_ReadMaxMin = true;    // 读取、绑定上下限
         bool IsRunningplc_MES = true;
         bool IsRunningplc_NFC = true;
         bool IsRunningplc_tabPage = true;
@@ -721,13 +718,13 @@ namespace MesDatas
             {
 
                 lblLoginMode.Text = resources.GetString("loginMode1");  // 离线
-                lblCurrentUser.Text = $"{LoginUser} ({LoginName})";
+                lblCurrentUser.Text = $"{LoginUser}\n({LoginName})";
 
             }
             else if (isOffLine == 0)
             {
                 lblLoginMode.Text = resources.GetString("loginMode");   // 在线
-                lblCurrentUser.Text = $"{LoginUser} ({LoginName})";
+                lblCurrentUser.Text = $"{LoginUser}\n({LoginName})";
             }
         }
 
@@ -1704,7 +1701,7 @@ namespace MesDatas
             textBox47.Text = deviceInfo.FormulaNumModify;           // 配方号修改：D1206
             textBox34.Text = deviceInfo.StartNFC;                   // 开始NFC
             textBox35.Text = deviceInfo.EndNFC;                     // 结束NFC
-            txtViewStatus.Text = deviceInfo.ViewStatus;                 // 看板状态
+            txtViewStatus.Text = deviceInfo.ViewStatus;             // 看板状态
 
             // 连接数据库
             mdb = new mdbDatas(path4);
@@ -2285,26 +2282,33 @@ namespace MesDatas
             return await Task.Run(() => KeyenceMcNet.ReadString(address, length).Content, token);
         }
 
+        /// <summary>
+        /// 根据Kpi点位集合，读取相应点位的数据
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
         private async Task<List<string>> ReadKpiDataAsync(CancellationToken token)
         {
             var kpiList = new List<string>();
 
             if (kpisPointSets.Length > 0)
             {
-                foreach (var pointSet in kpisPointSets)
+                foreach (var point in kpisPointSets)
                 {
                     if (token.IsCancellationRequested) break;
 
-                    if (pointSet.Contains("-"))
+                    if (point.Contains("-"))
                     {
-                        kpiList.Add(await ProcessPointDataAsync(pointSet, token));
+                        kpiList.Add(await ProcessPointDataAsync(point, token));
                     }
                     else
                     {
-                        int index = pointSet.IndexOf(":");
-                        string dataType = pointSet.Substring(index + 1, 1);
-                        string plcAddress = pointSet.Substring(0, index);
+                        int index = point.IndexOf(":");
+                        string dataType = point.Substring(index + 1, 1);
+                        string plcAddress = point.Substring(0, index);
+                        // 读取PLC点位数据
                         string rawData = await ReadPlcValueAsync(plcAddress, token);
+                        // 读取过来的数据按照dataType进行处理
                         kpiList.Add(CodeNum.HandlePlcData(rawData, dataType));
                     }
                 }
@@ -3113,7 +3117,7 @@ namespace MesDatas
                         lblValidationStatus.ForeColor = Color.Black;  // 验证状态指示灯
                         lblUploadStatus.ForeColor = Color.Black;      // 上传状态指示灯
 
-                        lblRunningStatus.ForeColor = Color.Black;
+                        lblRunningStatus.ForeColor = Color.Black;     // 当前运行状态
                         lblProductResult.Text = resources.GetString("label_Value"); // 待机
                         lblProductResult.ForeColor = Color.Black;
                         lblProductResult.BackColor = Color.White;
@@ -3324,7 +3328,7 @@ namespace MesDatas
                             // 上传MES进行条码验证
                             VarifyBarcode_MES(null, null);
 
-                            // 验证成功：2002=1；失败：2004=1；
+                            // 更新UI并向PLC反馈数值，成功2002=1；失败2004=1；
                             if (Parameter_txt[2002] == "1")
                             {
                                 lblRunningStatus.ForeColor = Color.Green;
@@ -3899,18 +3903,18 @@ namespace MesDatas
 
             else if (plcPointInfo.Contains(":"))
             {
-                // 获取索引标志 D1090:H-3
+                // 提取索引标志，点位信息填写模板：D1090:H-3 D1080:I-5
                 int index = plcPointInfo.IndexOf(":");
                 int index1 = plcPointInfo.IndexOf("-");
 
-                // 获取类型
+                // 提取类型部分，包括：H-short，I-Int32，F-float，J-Int32，N-Int32，O-Int32，S-string
                 string dataType = plcPointInfo.Substring(index + 1, 1);
 
-                // 获取保留小数位
-                ushort length = 0;
-                ushort.TryParse(plcPointInfo.Substring(index1 + 1), out length);
+                // 提取数值部分
+                ushort number = 0;
+                ushort.TryParse(plcPointInfo.Substring(index1 + 1), out number);
 
-                // 获取PLC点位
+                // 提取PLC地址
                 string plcAddress = plcPointInfo.Substring(0, index);
 
                 if (dataType == "H")
@@ -3920,7 +3924,7 @@ namespace MesDatas
 
                     if (result.IsSuccess)
                     {
-                        aa = TypeRead.Typerdess(result.Content.ToString(), length.ToString());
+                        aa = TypeRead.NumericOperate(result.Content.ToString(), number.ToString());
                     }
                     else
                     {
@@ -3933,11 +3937,11 @@ namespace MesDatas
                 else if (dataType == "I")
                 {
                     string aa = "";
-                    OperateResult<int> readss = KeyenceMcNet.ReadInt32(plcAddress);
+                    OperateResult<int> result = KeyenceMcNet.ReadInt32(plcAddress);
 
-                    if (readss.IsSuccess)
+                    if (result.IsSuccess)
                     {
-                        aa = TypeRead.Typerdess(readss.Content.ToString(), length.ToString());
+                        aa = TypeRead.NumericOperate(result.Content.ToString(), number.ToString());
                     }
                     else
                     {
@@ -3950,11 +3954,11 @@ namespace MesDatas
                 else if (dataType == "F")
                 {
                     string aa = "";
-                    OperateResult<float> readss = KeyenceMcNet.ReadFloat(plcAddress);
+                    OperateResult<float> result = KeyenceMcNet.ReadFloat(plcAddress);
 
-                    if (readss.IsSuccess)
+                    if (result.IsSuccess)
                     {
-                        aa = TypeRead.Typerdess(readss.Content.ToString(), length.ToString());
+                        aa = TypeRead.NumericOperate(result.Content.ToString(), number.ToString());
                     }
                     else
                     {
@@ -3967,12 +3971,12 @@ namespace MesDatas
                 else if (dataType == "J")
                 {
                     string aa = "";
-                    OperateResult<int> readss = KeyenceMcNet.ReadInt32(plcAddress);
+                    OperateResult<int> result = KeyenceMcNet.ReadInt32(plcAddress);
 
-                    if (readss.IsSuccess)
+                    if (result.IsSuccess)
                     {
 
-                        aa = CodeNum.DivBy100Rounded2(readss.Content.ToString());
+                        aa = CodeNum.DivBy100Rounded2(result.Content.ToString());
                     }
                     else
                     {
@@ -3985,11 +3989,11 @@ namespace MesDatas
                 else if (dataType == "N")
                 {
                     string aa = "";
-                    OperateResult<int> readss = KeyenceMcNet.ReadInt32(plcAddress);
+                    OperateResult<int> result = KeyenceMcNet.ReadInt32(plcAddress);
 
-                    if (readss.IsSuccess)
+                    if (result.IsSuccess)
                     {
-                        aa = CodeNum.ConvertToOkNg(readss.Content.ToString());
+                        aa = CodeNum.ConvertToOkNg(result.Content.ToString());
                     }
                     else
                     {
@@ -4002,11 +4006,11 @@ namespace MesDatas
                 else if (dataType == "O")
                 {
                     string aa = "";
-                    OperateResult<int> readss = KeyenceMcNet.ReadInt32(plcAddress);
+                    OperateResult<int> result = KeyenceMcNet.ReadInt32(plcAddress);
 
-                    if (readss.IsSuccess)
+                    if (result.IsSuccess)
                     {
-                        aa = readss.Content.ToString();
+                        aa = result.Content.ToString();
                     }
                     else
                     {
@@ -4019,11 +4023,11 @@ namespace MesDatas
                 else if (dataType == "S")
                 {
                     string ss = "";
-                    OperateResult<string> readss = KeyenceMcNet.ReadString(plcAddress, length);
+                    OperateResult<string> result = KeyenceMcNet.ReadString(plcAddress, number);
 
-                    if (readss.IsSuccess)
+                    if (result.IsSuccess)
                     {
-                        ss = CodeNum.CleanString(readss.Content.ToString());
+                        ss = CodeNum.CleanString(result.Content.ToString());
                     }
                     else
                     {
@@ -4035,7 +4039,7 @@ namespace MesDatas
 
                 else
                 {
-                    var ss = KeyenceMcNet.ReadString(plcAddress, length).Content;
+                    var ss = KeyenceMcNet.ReadString(plcAddress, number).Content;
                     outputStr = ss;
                 }                        // string
             }
@@ -4063,7 +4067,7 @@ namespace MesDatas
         /// 读取
         /// </summary>
         /// <param name="KeyenceMcNet"></param>
-        public List<string> PCodenum(string[] strarr, string strtyp)
+        /*public List<string> PCodenum(string[] strarr, string strtyp)
         {
             List<string> listarr = new List<string>();
             if (strarr.Length > 0)
@@ -4099,7 +4103,7 @@ namespace MesDatas
                 }
             }
             return listarr;
-        }
+        }*/
 
         /// <summary>
         /// 导出生产数据
@@ -7096,5 +7100,6 @@ namespace MesDatas
 
             }
         }
+
     }
 }
