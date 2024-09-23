@@ -9,7 +9,7 @@ namespace MesDatas.Utiey
 {
     class Bocmdb
     {
-        public static string BoardCode(string boardBeat,string strtyp)
+        /*public static string BoardCode(string boardBeat,string strtyp)
         {
            if (boardBeat != null)
             {
@@ -31,7 +31,7 @@ namespace MesDatas.Utiey
                 boardBeat = "  ";
             }
             return boardBeat;
-        }
-        
+        }*/
+
     }
 }
