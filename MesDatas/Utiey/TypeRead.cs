@@ -8,53 +8,59 @@ namespace MesDatas.Utiey
 {
     class TypeRead
     {
-        public static string Typerdess(string plcValue, string typelen)
+        /// <summary>
+        /// 根据指定的转换类型将PLC值转换为相应的字符串表示。
+        /// </summary>
+        /// <param name="plcValue">要转换的PLC值</param>
+        /// <param name="number">转换类型（0-6）</param>
+        /// <returns>转换后的字符串结果</returns>
+        public static string NumericOperate(string plcValue, string number)
         {
-            string bb = "";
+            string outputStr = "";
 
             // ÷100
-            if (typelen.Equals("0"))
+            if (number.Equals("0"))
             {
-                bb = CodeNum.DivBy100(plcValue);
+                outputStr = CodeNum.DivBy100(plcValue);
             }
 
             // ÷10
-            else if (typelen.Equals("1"))
+            else if (number.Equals("1"))
             {
-                bb = CodeNum.DivBy10(plcValue);
+                outputStr = CodeNum.DivBy10(plcValue);
             }
 
             // ÷100（保留两位小数）
-            else if (typelen.Equals("2"))
+            else if (number.Equals("2"))
             {
-                bb = CodeNum.DivBy100Rounded2(plcValue);
+                outputStr = CodeNum.DivBy100Rounded2(plcValue);
             }
 
             // 转成OK/NG
-            else if (typelen.Equals("3"))
+            else if (number.Equals("3"))
             {
-                bb = CodeNum.ConvertToOkNg(plcValue);
+                outputStr = CodeNum.ConvertToOkNg(plcValue);
             }
 
             // 实际值
-            else if (typelen.Equals("4"))
+            else if (number.Equals("4"))
             {
-                bb = plcValue;
+                outputStr = plcValue;
             }
 
             // ÷1000
-            else if (typelen.Equals("5"))
+            else if (number.Equals("5"))
             {
-                bb = CodeNum.DivBy1000(plcValue);
+                outputStr = CodeNum.DivBy1000(plcValue);
             }
 
             // ÷1000（保留3位小数）
-            else if (typelen.Equals("6"))
+            else if (number.Equals("6"))
             {
-                bb = CodeNum.DivBy1000Rounded3(plcValue);
+                outputStr = CodeNum.DivBy1000Rounded3(plcValue);
             }
 
-            return bb;
+            return outputStr;
         }
     }
 }
