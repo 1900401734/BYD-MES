@@ -11,6 +11,8 @@ namespace MesDatas.Utiey
 {
     class CodeNum
     {
+        #region ---------- 数值转换 ----------
+
         /// <summary>
         /// 将字符串转换为 double，除以 10，再转回字符串。
         /// 如果转换失败或结果为 0，则返回原始值的字符串形式。
@@ -19,7 +21,7 @@ namespace MesDatas.Utiey
         /// <returns>处理后的字符串</returns>
         public static string DivBy10(string input)
         {
-            string aa = "0";
+            /*string aa = "0";
             double db = 0;
             if (double.TryParse(input, out db))
             {
@@ -32,7 +34,17 @@ namespace MesDatas.Utiey
                     aa = Convert.ToString((Convert.ToDouble(input)));
                 }
             }
-            return aa;
+            return aa;*/
+
+            if (double.TryParse(input, out double number))
+            {
+                if (number == 0)
+                {
+                    return "0";
+                }
+                return (number / 10).ToString();
+            }
+            return "0";
         }
 
         /// <summary>
@@ -43,7 +55,7 @@ namespace MesDatas.Utiey
         /// <returns>处理后的字符串</returns>
         public static string DivBy100(string input)
         {
-            string aa = "0";
+            /*string aa = "0";
             double db = 0;
             if (double.TryParse(input, out db))
             {
@@ -56,8 +68,17 @@ namespace MesDatas.Utiey
                     aa = Convert.ToString((Convert.ToDouble(input)));
                 }
             }
-            return aa;
+            return aa;*/
 
+            if (double.TryParse(input, out double number))
+            {
+                if (number == 0)
+                {
+                    return "0";
+                }
+                return (number / 100).ToString();
+            }
+            return "0";
         }
 
         /// <summary>
@@ -68,7 +89,7 @@ namespace MesDatas.Utiey
         /// <returns>处理后的字符串，保留两位小数</returns>
         public static string DivBy100Rounded2(string input)
         {
-            string aa = "0";
+            /*string aa = "0";
             double db = 0;
             if (double.TryParse(input, out db))
             {
@@ -82,7 +103,17 @@ namespace MesDatas.Utiey
                     aa = Convert.ToString((Convert.ToDouble(input)));
                 }
             }
-            return aa;
+            return aa;*/
+
+            if (double.TryParse(input, out double number))
+            {
+                if (number == 0)
+                {
+                    return "0.00";
+                }
+                return (number / 100).ToString("0.00");
+            }
+            return "0.00";
         }
 
         /// <summary>
@@ -93,7 +124,7 @@ namespace MesDatas.Utiey
         /// <returns>处理后的字符串</returns>
         public static string DivBy1000(string input)
         {
-            string aa = "0";
+            /*string aa = "0";
             double db = 0;
             if (double.TryParse(input, out db))
             {
@@ -106,7 +137,17 @@ namespace MesDatas.Utiey
                     aa = Convert.ToString((Convert.ToDouble(input)));
                 }
             }
-            return aa;
+            return aa;*/
+
+            if (double.TryParse(input, out double number))
+            {
+                if (number == 0)
+                {
+                    return "0";
+                }
+                return (number / 1000).ToString();
+            }
+            return "0";
 
         }
 
@@ -118,7 +159,7 @@ namespace MesDatas.Utiey
         /// <returns>处理后的字符串，保留三位小数</returns>
         public static string DivBy1000Rounded3(string input)
         {
-            string aa = "0";
+            /*string aa = "0";
             double db = 0;
             if (double.TryParse(input, out db))
             {
@@ -132,7 +173,17 @@ namespace MesDatas.Utiey
                     aa = Convert.ToString((Convert.ToDouble(input)));
                 }
             }
-            return aa;
+            return aa;*/
+
+            if (double.TryParse(input, out double number))
+            {
+                if (number == 0)
+                {
+                    return "0.000";
+                }
+                return (number / 1000).ToString("0.000");
+            }
+            return "0.000";
         }
 
         /// <summary>
@@ -143,7 +194,7 @@ namespace MesDatas.Utiey
         /// <returns>"OK", "NG", 或 "null"</returns>
         public static string ConvertToOkNg(string input)
         {
-            string aa = "null";
+            /*string aa = "null";
             int db = 0;
             if (int.TryParse(input, out db))
             {
@@ -156,8 +207,23 @@ namespace MesDatas.Utiey
                     aa = "NG";
                 }
             }
-            return aa;
+            return aa;*/
+
+            if (int.TryParse(input, out int number))
+            {
+                if (number == 2)
+                {
+                    return "NG";
+                }
+                else if (number == 3)
+                {
+                    return "OK";
+                }
+            }
+            return "null";
         }
+
+        #endregion
 
         /// <summary>
         /// 清理字符串中的特殊字符（\0, ?, \r, \n）并去除两端空白。
