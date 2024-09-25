@@ -104,7 +104,7 @@ namespace MesDatas
             this.btnShowPath_COM = new System.Windows.Forms.Button();
             this.label82 = new System.Windows.Forms.Label();
             this.comboBox5 = new System.Windows.Forms.ComboBox();
-            this.btnPrint = new System.Windows.Forms.Button();
+            this.btnPrint_COM = new System.Windows.Forms.Button();
             this.label120 = new System.Windows.Forms.Label();
             this.btnSave_COM = new System.Windows.Forms.Button();
             this.lblPrnFilePath_COM = new System.Windows.Forms.Label();
@@ -122,16 +122,16 @@ namespace MesDatas
             this.textBox54 = new System.Windows.Forms.TextBox();
             this.label129 = new System.Windows.Forms.Label();
             this.groupBox39 = new System.Windows.Forms.GroupBox();
-            this.checkBox18 = new System.Windows.Forms.CheckBox();
-            this.checkBox7 = new System.Windows.Forms.CheckBox();
+            this.chkPlus2Print = new System.Windows.Forms.CheckBox();
+            this.chkAutoAddDate = new System.Windows.Forms.CheckBox();
             this.label130 = new System.Windows.Forms.Label();
-            this.txtPrintNum = new System.Windows.Forms.TextBox();
+            this.txtPrintQuantity = new System.Windows.Forms.TextBox();
             this.label132 = new System.Windows.Forms.Label();
-            this.label133 = new System.Windows.Forms.Label();
+            this.lblCodeContent = new System.Windows.Forms.Label();
             this.label134 = new System.Windows.Forms.Label();
-            this.textBox56 = new System.Windows.Forms.TextBox();
+            this.txtSerialNumber = new System.Windows.Forms.TextBox();
             this.label135 = new System.Windows.Forms.Label();
-            this.textBox57 = new System.Windows.Forms.TextBox();
+            this.txtCodeNumber = new System.Windows.Forms.TextBox();
             this.label136 = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -968,7 +968,7 @@ namespace MesDatas
             this.groupBox36.Controls.Add(this.btnShowPath_COM);
             this.groupBox36.Controls.Add(this.label82);
             this.groupBox36.Controls.Add(this.comboBox5);
-            this.groupBox36.Controls.Add(this.btnPrint);
+            this.groupBox36.Controls.Add(this.btnPrint_COM);
             this.groupBox36.Controls.Add(this.label120);
             this.groupBox36.Controls.Add(this.btnSave_COM);
             this.groupBox36.Controls.Add(this.lblPrnFilePath_COM);
@@ -1000,12 +1000,12 @@ namespace MesDatas
             resources.ApplyResources(this.comboBox5, "comboBox5");
             this.comboBox5.Name = "comboBox5";
             // 
-            // btnPrint
+            // btnPrint_COM
             // 
-            resources.ApplyResources(this.btnPrint, "btnPrint");
-            this.btnPrint.Name = "btnPrint";
-            this.btnPrint.UseVisualStyleBackColor = true;
-            this.btnPrint.Click += new System.EventHandler(this.btnPrint_Click);
+            resources.ApplyResources(this.btnPrint_COM, "btnPrint_COM");
+            this.btnPrint_COM.Name = "btnPrint_COM";
+            this.btnPrint_COM.UseVisualStyleBackColor = true;
+            this.btnPrint_COM.Click += new System.EventHandler(this.btnPrint_Click);
             // 
             // label120
             // 
@@ -1108,32 +1108,32 @@ namespace MesDatas
             // 
             // groupBox39
             // 
-            this.groupBox39.Controls.Add(this.checkBox18);
-            this.groupBox39.Controls.Add(this.checkBox7);
+            this.groupBox39.Controls.Add(this.chkPlus2Print);
+            this.groupBox39.Controls.Add(this.chkAutoAddDate);
             this.groupBox39.Controls.Add(this.label130);
-            this.groupBox39.Controls.Add(this.txtPrintNum);
+            this.groupBox39.Controls.Add(this.txtPrintQuantity);
             this.groupBox39.Controls.Add(this.label132);
-            this.groupBox39.Controls.Add(this.label133);
+            this.groupBox39.Controls.Add(this.lblCodeContent);
             this.groupBox39.Controls.Add(this.label134);
-            this.groupBox39.Controls.Add(this.textBox56);
+            this.groupBox39.Controls.Add(this.txtSerialNumber);
             this.groupBox39.Controls.Add(this.label135);
-            this.groupBox39.Controls.Add(this.textBox57);
+            this.groupBox39.Controls.Add(this.txtCodeNumber);
             this.groupBox39.Controls.Add(this.label136);
             resources.ApplyResources(this.groupBox39, "groupBox39");
             this.groupBox39.Name = "groupBox39";
             this.groupBox39.TabStop = false;
             // 
-            // checkBox18
+            // chkPlus2Print
             // 
-            resources.ApplyResources(this.checkBox18, "checkBox18");
-            this.checkBox18.Name = "checkBox18";
-            this.checkBox18.UseVisualStyleBackColor = true;
+            resources.ApplyResources(this.chkPlus2Print, "chkPlus2Print");
+            this.chkPlus2Print.Name = "chkPlus2Print";
+            this.chkPlus2Print.UseVisualStyleBackColor = true;
             // 
-            // checkBox7
+            // chkAutoAddDate
             // 
-            resources.ApplyResources(this.checkBox7, "checkBox7");
-            this.checkBox7.Name = "checkBox7";
-            this.checkBox7.UseVisualStyleBackColor = true;
+            resources.ApplyResources(this.chkAutoAddDate, "chkAutoAddDate");
+            this.chkAutoAddDate.Name = "chkAutoAddDate";
+            this.chkAutoAddDate.UseVisualStyleBackColor = true;
             // 
             // label130
             // 
@@ -1141,40 +1141,40 @@ namespace MesDatas
             this.label130.ForeColor = System.Drawing.Color.Red;
             this.label130.Name = "label130";
             // 
-            // txtPrintNum
+            // txtPrintQuantity
             // 
-            resources.ApplyResources(this.txtPrintNum, "txtPrintNum");
-            this.txtPrintNum.Name = "txtPrintNum";
+            resources.ApplyResources(this.txtPrintQuantity, "txtPrintQuantity");
+            this.txtPrintQuantity.Name = "txtPrintQuantity";
             // 
             // label132
             // 
             resources.ApplyResources(this.label132, "label132");
             this.label132.Name = "label132";
             // 
-            // label133
+            // lblCodeContent
             // 
-            resources.ApplyResources(this.label133, "label133");
-            this.label133.Name = "label133";
+            resources.ApplyResources(this.lblCodeContent, "lblCodeContent");
+            this.lblCodeContent.Name = "lblCodeContent";
             // 
             // label134
             // 
             resources.ApplyResources(this.label134, "label134");
             this.label134.Name = "label134";
             // 
-            // textBox56
+            // txtSerialNumber
             // 
-            resources.ApplyResources(this.textBox56, "textBox56");
-            this.textBox56.Name = "textBox56";
+            resources.ApplyResources(this.txtSerialNumber, "txtSerialNumber");
+            this.txtSerialNumber.Name = "txtSerialNumber";
             // 
             // label135
             // 
             resources.ApplyResources(this.label135, "label135");
             this.label135.Name = "label135";
             // 
-            // textBox57
+            // txtCodeNumber
             // 
-            resources.ApplyResources(this.textBox57, "textBox57");
-            this.textBox57.Name = "textBox57";
+            resources.ApplyResources(this.txtCodeNumber, "txtCodeNumber");
+            this.txtCodeNumber.Name = "txtCodeNumber";
             // 
             // label136
             // 
@@ -3799,7 +3799,7 @@ namespace MesDatas
         private System.Windows.Forms.Label label122;
         private System.Windows.Forms.Button btnChangePath_COM;
         private System.Windows.Forms.Label label125;
-        private System.Windows.Forms.Button btnPrint;
+        private System.Windows.Forms.Button btnPrint_COM;
         private System.Windows.Forms.Button btnSave_COM;
         private System.Windows.Forms.GroupBox groupBox37;
         private System.Windows.Forms.GroupBox groupBox38;
@@ -3813,26 +3813,26 @@ namespace MesDatas
         private System.Windows.Forms.Label label129;
         private System.Windows.Forms.GroupBox groupBox39;
         private System.Windows.Forms.Label label130;
-        private System.Windows.Forms.TextBox txtPrintNum;
+        private System.Windows.Forms.TextBox txtPrintQuantity;
         private System.Windows.Forms.Label label132;
-        private System.Windows.Forms.Label label133;
+        private System.Windows.Forms.Label lblCodeContent;
         private System.Windows.Forms.Label label134;
-        private System.Windows.Forms.TextBox textBox56;
+        private System.Windows.Forms.TextBox txtSerialNumber;
         private System.Windows.Forms.Label label135;
-        private System.Windows.Forms.TextBox textBox57;
+        private System.Windows.Forms.TextBox txtCodeNumber;
         private System.Windows.Forms.Label label136;
         private System.Windows.Forms.ComboBox cboPrinterType;
         private System.Windows.Forms.Label label47;
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.Label label82;
         private System.Windows.Forms.ComboBox comboBox5;
-        private System.Windows.Forms.CheckBox checkBox7;
+        private System.Windows.Forms.CheckBox chkAutoAddDate;
         private System.Windows.Forms.GroupBox groupBox41;
         private System.Windows.Forms.Label lblPrintPrompt;
         private System.Windows.Forms.Button btnShowPath_COM;
         private System.Windows.Forms.ComboBox cboPrintMode;
         private System.Windows.Forms.Label label110;
-        private System.Windows.Forms.CheckBox checkBox18;
+        private System.Windows.Forms.CheckBox chkPlus2Print;
         private System.Windows.Forms.TabPage tabPage18;
         private System.Windows.Forms.Button button37;
         private System.Windows.Forms.RichTextBox richTextBox6;

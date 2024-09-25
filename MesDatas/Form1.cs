@@ -60,8 +60,7 @@ namespace MesDatas
 {
     public partial class Form1 : Form, IMesDatasBase
     {
-        public static int iOperCount = 0;
-        public static System.Timers.Timer timer;
+
 
         #region ----------------- 登录状态相关的属性与方法 -----------------
 
@@ -220,19 +219,23 @@ namespace MesDatas
             this.WindowState = FormWindowState.Maximized;
 
             InitializeComponent();
+
             InitializeTimer();      // 实时更新当前时间
+
             Control.CheckForIllegalCrossThreadCalls = false;
 
             // 开启监听键盘和鼠标操作
             Application.AddMessageFilter(new MyIMessageFilter());
         }
 
-        private System.Windows.Forms.Timer timer1;
+        public static int iOperCount = 0;
+        public static System.Timers.Timer timer;    // 用于ADM计时退出
+        private System.Windows.Forms.Timer timer1;  // 用于实时更新时间
 
         private void InitializeTimer()
         {
             timer1 = new System.Windows.Forms.Timer();
-            timer1.Interval = 1000; // Update every second
+            timer1.Interval = 1000;
             timer1.Tick += Timer_Tick;
             timer1.Start();
         }
@@ -5599,11 +5602,11 @@ namespace MesDatas
                 checkBox16.Checked = printersBtw.MethodBtw;         // 使用文字
 
                 // 动态码
-                textBox57.Text = printersBtw.TFrontBtw;             // 码号
-                textBox56.Text = printersBtw.TmonarchBtw;           // 流水号
-                txtPrintNum.Text = printersBtw.TlowBtw;             // 打印数量
-                checkBox7.Checked = printersBtw.PrintNowDateTime;   // 自动添加日期
-                checkBox18.Checked = printersBtw.PrintCodeTwoBool;  // +2打印
+                txtCodeNumber.Text = printersBtw.TFrontBtw;             // 码号
+                txtSerialNumber.Text = printersBtw.TmonarchBtw;           // 流水号
+                txtPrintQuantity.Text = printersBtw.TlowBtw;             // 打印数量
+                chkAutoAddDate.Checked = printersBtw.PrintNowDateTime;   // 自动添加日期
+                chkPlus2Print.Checked = printersBtw.PrintCodeTwoBool;  // +2打印
 
                 // 配置prn文件
                 lblPrnFilePath_COM.Text = printersBtw.PertowBtw;    // prn文件路径
@@ -5633,14 +5636,14 @@ namespace MesDatas
             printersBtw.PlcmodelBtw = checkBox15.Checked;           // 读取PLC型号
             printersBtw.MethodBtw = checkBox16.Checked;             // 使用文字
 
-            printersBtw.TFrontBtw = textBox57.Text;                 // 码号
-            printersBtw.TmonarchBtw = textBox56.Text;               // 流水号
-            printersBtw.TlowBtw = txtPrintNum.Text;                 // 打印数量
+            printersBtw.TFrontBtw = txtCodeNumber.Text;                 // 码号
+            printersBtw.TmonarchBtw = txtSerialNumber.Text;               // 流水号
+            printersBtw.TlowBtw = txtPrintQuantity.Text;                 // 打印数量
             printersBtw.PertowBtw = lblPrnFilePath_COM.Text;        // prn文件路径
             printersBtw.TxttowBtw = comboBox5.Text;                 // 打印文件格式
-            printersBtw.PrintNowDateTime = checkBox7.Checked;       // 自动添加日期
+            printersBtw.PrintNowDateTime = chkAutoAddDate.Checked;       // 自动添加日期
             printersBtw.PrintSerialNumber = false;                  // 打印机打印条码
-            printersBtw.PrintCodeTwoBool = checkBox18.Checked;      // +2打印
+            printersBtw.PrintCodeTwoBool = chkPlus2Print.Checked;      // +2打印
             var result = printersBtw.Save();
             MessageBox.Show(result);
             PfunCodeBtw();
@@ -5736,7 +5739,7 @@ namespace MesDatas
                 {
                     // 获取打印个数
                     int num = 1;
-                    int.TryParse(txtPrintNum.Text, out num);
+                    int.TryParse(txtPrintQuantity.Text, out num);
 
                     Prin_Serial_Number(num);//添加一
 
@@ -5766,14 +5769,14 @@ namespace MesDatas
 
         private string GoPrintCodes()
         {
-            string printCode = label133.Text;//条码内容
+            string printCode = lblCodeContent.Text;//条码内容
             string printAgo = textBox54.Text;//条码前端
             string printAfter = textBox53.Text;//条码后端
             string printType = textBox52.Text;//产品型号
-            string printSerial = textBox56.Text;//流水号
+            string printSerial = txtSerialNumber.Text;//流水号
 
             int printNum = 1;
-            int.TryParse(txtPrintNum.Text, out printNum);
+            int.TryParse(txtPrintQuantity.Text, out printNum);
 
             switch (comboBox5.SelectedIndex)
             {
@@ -5817,7 +5820,7 @@ namespace MesDatas
                         btFormat.SetNamedSubStringValue("3", printType);
                         goto case false;
                 }
-                if (checkBox18.Checked)
+                if (chkPlus2Print.Checked)
                 {
                     Prin_Serial_Number(1);//添加一
                     string printCode2 = PfunCodeBtw();
@@ -5878,11 +5881,11 @@ namespace MesDatas
                     string fileContent = File.ReadAllText(lblPrnFilePath_COM.Text);
 
                     // 使用文字 && +2
-                    if (checkBox16.Checked && checkBox18.Checked == false)
+                    if (checkBox16.Checked && chkPlus2Print.Checked == false)
                     {
                         instrctis = string.Format(fileContent, printCode, printAgo, printAfter, printType);
                     }
-                    else if (checkBox18.Checked)
+                    else if (chkPlus2Print.Checked)
                     {
                         Prin_Serial_Number(1);//添加一
                         string printCode2 = PfunCodeBtw();
@@ -5914,12 +5917,13 @@ namespace MesDatas
         /// <returns></returns>
         public string PfunCodeBtw()
         {
-            string prinCodetext = textBox57.Text;
-            if (checkBox7.Checked)
-            {
-                // prinCodetext;
+            // 获取码号
+            string codeNum = txtCodeNumber.Text;
 
-                string Ptime = prinCodetext;
+            // 自动添加日期
+            if (chkAutoAddDate.Checked)
+            {
+                string Ptime = codeNum;
                 DateTime times_Month = DateTime.Now;
                 string times_Month_string0 = times_Month.Year.ToString();
                 string times_Month_string1 = times_Month.Month.ToString();
@@ -5940,20 +5944,21 @@ namespace MesDatas
                 }
                 string times_Month_string2 = times_Month.ToString("dd");
                 Ptime += times_Month_string2;
-                prinCodetext = Ptime;
+                codeNum = Ptime;
             }
-            string prinCode = prinCodetext + textBox56.Text;
-            label133.Text = prinCode;
+
+            string prinCode = codeNum + txtSerialNumber.Text;
+            lblCodeContent.Text = prinCode;
             return prinCode;
         }
 
         private async void Prin_Serial_Number(int num)
         {
             int prinCount = 0;
-            int.TryParse(textBox56.Text, out prinCount);
+            int.TryParse(txtSerialNumber.Text, out prinCount);
             prinCount = prinCount + num;
             printersBtw.TmonarchBtw = prinCount.ToString("D4");
-            textBox56.Text = printersBtw.TmonarchBtw;
+            txtSerialNumber.Text = printersBtw.TmonarchBtw;
             await Task.Run(() =>
            {
                printersBtw.Save();
@@ -6173,9 +6178,11 @@ namespace MesDatas
             }
             try
             {
-                Serialnumber();//将流水号+1
+                Serialnumber();     // 将流水号+1
                 string instrctis = "";
                 string fileContent = File.ReadAllText(comboBox1.Text);
+
+                // 使用文字
                 if (checkBox3.Checked)
                 {
                     instrctis = string.Format(fileContent, label62.Text, textBox20.Text, textBox27.Text, textBox28.Text);
