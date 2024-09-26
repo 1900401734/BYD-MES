@@ -1,5 +1,6 @@
 using MesDatas.DatasServer;
 using SqlSugar;
+using System;
 using System.ComponentModel;
 namespace MesDatas.DatasModel
 {
@@ -22,13 +23,16 @@ namespace MesDatas.DatasModel
         public string PtimeBtw { get; set; }        // 条码时间格式 
 
         [SugarColumn(ColumnName = "PtailBtw", IsNullable = true)]
-        public string PtailBtw { get; set; }        // 条码尾 
+        public string PModel { get; set; }        // 条码尾 (产品型号)
 
         [SugarColumn(ColumnName = "TFrontBtw", IsNullable = true)]
         public string TFrontBtw { get; set; }       // 条码前 
 
         [SugarColumn(ColumnName = "TmonarchBtw", IsNullable = true)]
-        public string TmonarchBtw { get; set; }     // 条码后 
+        public string SerialNumber { get; set; }     // 条码后（流水号：5位，每天重置，范围 00000~99999） 
+
+        [SugarColumn(ColumnName = "LastSavedDate", IsNullable = true)]
+        public DateTime LastSavedDate { get; set; }     // 流水号最后保存日期
 
         [SugarColumn(ColumnName = "TlowBtw", IsNullable = true)]
         public string TlowBtw { get; set; }         // 条码下 
@@ -40,7 +44,7 @@ namespace MesDatas.DatasModel
         public string TxttowBtw { get; set; }       // 是否打印文字 
 
         [SugarColumn(ColumnName = "PlcmodelBtw", IsNullable = true)]
-        public bool PlcmodelBtw { get; set; }       // 是否读取PLC型号 
+        public bool IsLoadModel_PLC { get; set; }       // 是否读取PLC型号 
 
         [SugarColumn(ColumnName = "MethodBtw", IsNullable = true)]
         public bool MethodBtw { get; set; }         // prn文件位置 
@@ -63,7 +67,9 @@ namespace MesDatas.DatasModel
         [SugarColumn(ColumnName = "PrintCodeTwoBool", IsNullable = true)]
         public bool PrintCodeTwoBool { get; set; }  // 打印机打印条码 
 
-        //默认初始化值 printersBtw 
+
+
+        // 默认初始化值 printersBtw 
         public static PrintersBtw InitGetPrintersBtw()
         {
             PrintersBtw printersbtw = new PrintersBtw();
@@ -71,17 +77,20 @@ namespace MesDatas.DatasModel
             printersbtw.LanguageId = 0;
             return printersbtw;
         }
-        //保存 printersBtw 
+
+        // 保存 printersBtw 
         public string Save()
         {
             return PrintersBtwServer.GetPrintersBtwSave(this);
         }
-        //更新 printersBtw 
+
+        // 更新 printersBtw 
         public string Update()
         {
             return PrintersBtwServer.GetPrintersBtwUpdate(this);
         }
-        //删除 printersBtw 
+
+        // 删除 printersBtw 
         public string Delete()
         {
             return PrintersBtwServer.GetPrintersBtwDelete(this);

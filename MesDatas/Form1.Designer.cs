@@ -37,7 +37,7 @@ namespace MesDatas
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             this.skinEngine1 = new Sunisoft.IrisSkin.SkinEngine(((System.ComponentModel.Component)(this)));
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.tabPage4 = new System.Windows.Forms.TabPage();
@@ -58,7 +58,6 @@ namespace MesDatas
             this.button31 = new System.Windows.Forms.Button();
             this.groupBox26 = new System.Windows.Forms.GroupBox();
             this.btnShowFilePath = new System.Windows.Forms.Button();
-            this.label81 = new System.Windows.Forms.Label();
             this.button30 = new System.Windows.Forms.Button();
             this.lblPrnFilePath_TCP = new System.Windows.Forms.Label();
             this.label84 = new System.Windows.Forms.Label();
@@ -72,9 +71,10 @@ namespace MesDatas
             this.label75 = new System.Windows.Forms.Label();
             this.groupBox21 = new System.Windows.Forms.GroupBox();
             this.groupBox24 = new System.Windows.Forms.GroupBox();
-            this.checkBox4 = new System.Windows.Forms.CheckBox();
+            this.chkLoadModel_TCP = new System.Windows.Forms.CheckBox();
+            this.label81 = new System.Windows.Forms.Label();
             this.checkBox3 = new System.Windows.Forms.CheckBox();
-            this.textBox28 = new System.Windows.Forms.TextBox();
+            this.txtPModel_TCP = new System.Windows.Forms.TextBox();
             this.textBox27 = new System.Windows.Forms.TextBox();
             this.label76 = new System.Windows.Forms.Label();
             this.label68 = new System.Windows.Forms.Label();
@@ -103,9 +103,8 @@ namespace MesDatas
             this.groupBox36 = new System.Windows.Forms.GroupBox();
             this.btnShowPath_COM = new System.Windows.Forms.Button();
             this.label82 = new System.Windows.Forms.Label();
-            this.comboBox5 = new System.Windows.Forms.ComboBox();
+            this.cboPrintFormat_COM = new System.Windows.Forms.ComboBox();
             this.btnPrint_COM = new System.Windows.Forms.Button();
-            this.label120 = new System.Windows.Forms.Label();
             this.btnSave_COM = new System.Windows.Forms.Button();
             this.lblPrnFilePath_COM = new System.Windows.Forms.Label();
             this.label122 = new System.Windows.Forms.Label();
@@ -113,19 +112,21 @@ namespace MesDatas
             this.label125 = new System.Windows.Forms.Label();
             this.groupBox37 = new System.Windows.Forms.GroupBox();
             this.groupBox38 = new System.Windows.Forms.GroupBox();
-            this.checkBox15 = new System.Windows.Forms.CheckBox();
-            this.checkBox16 = new System.Windows.Forms.CheckBox();
-            this.textBox52 = new System.Windows.Forms.TextBox();
+            this.label120 = new System.Windows.Forms.Label();
+            this.chkLoadModel_COM = new System.Windows.Forms.CheckBox();
+            this.chkUseFont = new System.Windows.Forms.CheckBox();
+            this.txtPModel_COM = new System.Windows.Forms.TextBox();
             this.textBox53 = new System.Windows.Forms.TextBox();
             this.label127 = new System.Windows.Forms.Label();
             this.label128 = new System.Windows.Forms.Label();
             this.textBox54 = new System.Windows.Forms.TextBox();
             this.label129 = new System.Windows.Forms.Label();
             this.groupBox39 = new System.Windows.Forms.GroupBox();
+            this.txtPrintCount = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.chkPlus2Print = new System.Windows.Forms.CheckBox();
             this.chkAutoAddDate = new System.Windows.Forms.CheckBox();
-            this.label130 = new System.Windows.Forms.Label();
-            this.txtPrintQuantity = new System.Windows.Forms.TextBox();
+            this.txtSerialSpan = new System.Windows.Forms.TextBox();
             this.label132 = new System.Windows.Forms.Label();
             this.lblCodeContent = new System.Windows.Forms.Label();
             this.label134 = new System.Windows.Forms.Label();
@@ -441,6 +442,7 @@ namespace MesDatas
             this.dataGridView5 = new System.Windows.Forms.DataGridView();
             this.label7 = new System.Windows.Forms.Label();
             this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
+            this.label19 = new System.Windows.Forms.Label();
             this.tabPage4.SuspendLayout();
             this.tabControl4.SuspendLayout();
             this.tabPage15.SuspendLayout();
@@ -679,7 +681,6 @@ namespace MesDatas
             // groupBox26
             // 
             this.groupBox26.Controls.Add(this.btnShowFilePath);
-            this.groupBox26.Controls.Add(this.label81);
             this.groupBox26.Controls.Add(this.button30);
             this.groupBox26.Controls.Add(this.lblPrnFilePath_TCP);
             this.groupBox26.Controls.Add(this.label84);
@@ -697,12 +698,6 @@ namespace MesDatas
             this.btnShowFilePath.Name = "btnShowFilePath";
             this.btnShowFilePath.UseVisualStyleBackColor = true;
             this.btnShowFilePath.Click += new System.EventHandler(this.ShowPath_TCP_Click);
-            // 
-            // label81
-            // 
-            resources.ApplyResources(this.label81, "label81");
-            this.label81.ForeColor = System.Drawing.Color.Red;
-            this.label81.Name = "label81";
             // 
             // button30
             // 
@@ -777,9 +772,10 @@ namespace MesDatas
             // 
             // groupBox24
             // 
-            this.groupBox24.Controls.Add(this.checkBox4);
+            this.groupBox24.Controls.Add(this.chkLoadModel_TCP);
+            this.groupBox24.Controls.Add(this.label81);
             this.groupBox24.Controls.Add(this.checkBox3);
-            this.groupBox24.Controls.Add(this.textBox28);
+            this.groupBox24.Controls.Add(this.txtPModel_TCP);
             this.groupBox24.Controls.Add(this.textBox27);
             this.groupBox24.Controls.Add(this.label76);
             this.groupBox24.Controls.Add(this.label68);
@@ -789,11 +785,17 @@ namespace MesDatas
             this.groupBox24.Name = "groupBox24";
             this.groupBox24.TabStop = false;
             // 
-            // checkBox4
+            // chkLoadModel_TCP
             // 
-            resources.ApplyResources(this.checkBox4, "checkBox4");
-            this.checkBox4.Name = "checkBox4";
-            this.checkBox4.UseVisualStyleBackColor = true;
+            resources.ApplyResources(this.chkLoadModel_TCP, "chkLoadModel_TCP");
+            this.chkLoadModel_TCP.Name = "chkLoadModel_TCP";
+            this.chkLoadModel_TCP.UseVisualStyleBackColor = true;
+            // 
+            // label81
+            // 
+            resources.ApplyResources(this.label81, "label81");
+            this.label81.ForeColor = System.Drawing.Color.Red;
+            this.label81.Name = "label81";
             // 
             // checkBox3
             // 
@@ -801,10 +803,10 @@ namespace MesDatas
             this.checkBox3.Name = "checkBox3";
             this.checkBox3.UseVisualStyleBackColor = true;
             // 
-            // textBox28
+            // txtPModel_TCP
             // 
-            resources.ApplyResources(this.textBox28, "textBox28");
-            this.textBox28.Name = "textBox28";
+            resources.ApplyResources(this.txtPModel_TCP, "txtPModel_TCP");
+            this.txtPModel_TCP.Name = "txtPModel_TCP";
             // 
             // textBox27
             // 
@@ -967,9 +969,8 @@ namespace MesDatas
             // 
             this.groupBox36.Controls.Add(this.btnShowPath_COM);
             this.groupBox36.Controls.Add(this.label82);
-            this.groupBox36.Controls.Add(this.comboBox5);
+            this.groupBox36.Controls.Add(this.cboPrintFormat_COM);
             this.groupBox36.Controls.Add(this.btnPrint_COM);
-            this.groupBox36.Controls.Add(this.label120);
             this.groupBox36.Controls.Add(this.btnSave_COM);
             this.groupBox36.Controls.Add(this.lblPrnFilePath_COM);
             this.groupBox36.Controls.Add(this.label122);
@@ -990,28 +991,22 @@ namespace MesDatas
             resources.ApplyResources(this.label82, "label82");
             this.label82.Name = "label82";
             // 
-            // comboBox5
+            // cboPrintFormat_COM
             // 
-            this.comboBox5.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox5.FormattingEnabled = true;
-            this.comboBox5.Items.AddRange(new object[] {
-            resources.GetString("comboBox5.Items"),
-            resources.GetString("comboBox5.Items1")});
-            resources.ApplyResources(this.comboBox5, "comboBox5");
-            this.comboBox5.Name = "comboBox5";
+            this.cboPrintFormat_COM.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboPrintFormat_COM.FormattingEnabled = true;
+            this.cboPrintFormat_COM.Items.AddRange(new object[] {
+            resources.GetString("cboPrintFormat_COM.Items"),
+            resources.GetString("cboPrintFormat_COM.Items1")});
+            resources.ApplyResources(this.cboPrintFormat_COM, "cboPrintFormat_COM");
+            this.cboPrintFormat_COM.Name = "cboPrintFormat_COM";
             // 
             // btnPrint_COM
             // 
             resources.ApplyResources(this.btnPrint_COM, "btnPrint_COM");
             this.btnPrint_COM.Name = "btnPrint_COM";
             this.btnPrint_COM.UseVisualStyleBackColor = true;
-            this.btnPrint_COM.Click += new System.EventHandler(this.btnPrint_Click);
-            // 
-            // label120
-            // 
-            resources.ApplyResources(this.label120, "label120");
-            this.label120.ForeColor = System.Drawing.Color.Red;
-            this.label120.Name = "label120";
+            this.btnPrint_COM.Click += new System.EventHandler(this.BtnDriverPrint_Click);
             // 
             // btnSave_COM
             // 
@@ -1052,9 +1047,10 @@ namespace MesDatas
             // 
             // groupBox38
             // 
-            this.groupBox38.Controls.Add(this.checkBox15);
-            this.groupBox38.Controls.Add(this.checkBox16);
-            this.groupBox38.Controls.Add(this.textBox52);
+            this.groupBox38.Controls.Add(this.label120);
+            this.groupBox38.Controls.Add(this.chkLoadModel_COM);
+            this.groupBox38.Controls.Add(this.chkUseFont);
+            this.groupBox38.Controls.Add(this.txtPModel_COM);
             this.groupBox38.Controls.Add(this.textBox53);
             this.groupBox38.Controls.Add(this.label127);
             this.groupBox38.Controls.Add(this.label128);
@@ -1064,54 +1060,70 @@ namespace MesDatas
             this.groupBox38.Name = "groupBox38";
             this.groupBox38.TabStop = false;
             // 
-            // checkBox15
+            // label120
             // 
-            resources.ApplyResources(this.checkBox15, "checkBox15");
-            this.checkBox15.Name = "checkBox15";
-            this.checkBox15.UseVisualStyleBackColor = true;
+            resources.ApplyResources(this.label120, "label120");
+            this.label120.ForeColor = System.Drawing.Color.Red;
+            this.label120.Name = "label120";
             // 
-            // checkBox16
+            // chkLoadModel_COM
             // 
-            resources.ApplyResources(this.checkBox16, "checkBox16");
-            this.checkBox16.Name = "checkBox16";
-            this.checkBox16.UseVisualStyleBackColor = true;
+            resources.ApplyResources(this.chkLoadModel_COM, "chkLoadModel_COM");
+            this.chkLoadModel_COM.Name = "chkLoadModel_COM";
+            this.chkLoadModel_COM.UseVisualStyleBackColor = true;
+            this.chkLoadModel_COM.CheckedChanged += new System.EventHandler(this.chkLoadModel_COM_CheckedChanged);
             // 
-            // textBox52
+            // chkUseFont
             // 
-            resources.ApplyResources(this.textBox52, "textBox52");
-            this.textBox52.Name = "textBox52";
+            resources.ApplyResources(this.chkUseFont, "chkUseFont");
+            this.chkUseFont.Name = "chkUseFont";
+            this.chkUseFont.UseVisualStyleBackColor = true;
+            this.chkUseFont.CheckedChanged += new System.EventHandler(this.chkUseFont_CheckedChanged);
+            // 
+            // txtPModel_COM
+            // 
+            resources.ApplyResources(this.txtPModel_COM, "txtPModel_COM");
+            this.txtPModel_COM.Name = "txtPModel_COM";
+            this.txtPModel_COM.TextChanged += new System.EventHandler(this.txtPModel_COM_TextChanged);
             // 
             // textBox53
             // 
             resources.ApplyResources(this.textBox53, "textBox53");
             this.textBox53.Name = "textBox53";
+            this.textBox53.TextChanged += new System.EventHandler(this.textBox53_TextChanged);
             // 
             // label127
             // 
             resources.ApplyResources(this.label127, "label127");
             this.label127.Name = "label127";
+            this.label127.Click += new System.EventHandler(this.label127_Click);
             // 
             // label128
             // 
             resources.ApplyResources(this.label128, "label128");
             this.label128.Name = "label128";
+            this.label128.Click += new System.EventHandler(this.label128_Click);
             // 
             // textBox54
             // 
             resources.ApplyResources(this.textBox54, "textBox54");
             this.textBox54.Name = "textBox54";
+            this.textBox54.TextChanged += new System.EventHandler(this.textBox54_TextChanged);
             // 
             // label129
             // 
             resources.ApplyResources(this.label129, "label129");
             this.label129.Name = "label129";
+            this.label129.Click += new System.EventHandler(this.label129_Click);
             // 
             // groupBox39
             // 
+            this.groupBox39.Controls.Add(this.label19);
+            this.groupBox39.Controls.Add(this.txtPrintCount);
+            this.groupBox39.Controls.Add(this.label2);
             this.groupBox39.Controls.Add(this.chkPlus2Print);
             this.groupBox39.Controls.Add(this.chkAutoAddDate);
-            this.groupBox39.Controls.Add(this.label130);
-            this.groupBox39.Controls.Add(this.txtPrintQuantity);
+            this.groupBox39.Controls.Add(this.txtSerialSpan);
             this.groupBox39.Controls.Add(this.label132);
             this.groupBox39.Controls.Add(this.lblCodeContent);
             this.groupBox39.Controls.Add(this.label134);
@@ -1122,6 +1134,16 @@ namespace MesDatas
             resources.ApplyResources(this.groupBox39, "groupBox39");
             this.groupBox39.Name = "groupBox39";
             this.groupBox39.TabStop = false;
+            // 
+            // txtPrintCount
+            // 
+            resources.ApplyResources(this.txtPrintCount, "txtPrintCount");
+            this.txtPrintCount.Name = "txtPrintCount";
+            // 
+            // label2
+            // 
+            resources.ApplyResources(this.label2, "label2");
+            this.label2.Name = "label2";
             // 
             // chkPlus2Print
             // 
@@ -1135,16 +1157,10 @@ namespace MesDatas
             this.chkAutoAddDate.Name = "chkAutoAddDate";
             this.chkAutoAddDate.UseVisualStyleBackColor = true;
             // 
-            // label130
+            // txtSerialSpan
             // 
-            resources.ApplyResources(this.label130, "label130");
-            this.label130.ForeColor = System.Drawing.Color.Red;
-            this.label130.Name = "label130";
-            // 
-            // txtPrintQuantity
-            // 
-            resources.ApplyResources(this.txtPrintQuantity, "txtPrintQuantity");
-            this.txtPrintQuantity.Name = "txtPrintQuantity";
+            resources.ApplyResources(this.txtSerialSpan, "txtSerialSpan");
+            this.txtSerialSpan.Name = "txtSerialSpan";
             // 
             // label132
             // 
@@ -1222,10 +1238,10 @@ namespace MesDatas
             // Column2
             // 
             this.Column2.DataPropertyName = "用户密码";
-            dataGridViewCellStyle1.Format = "*****";
-            dataGridViewCellStyle1.NullValue = "#";
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.Column2.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle3.Format = "*****";
+            dataGridViewCellStyle3.NullValue = "#";
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.Column2.DefaultCellStyle = dataGridViewCellStyle3;
             resources.ApplyResources(this.Column2, "Column2");
             this.Column2.Name = "Column2";
             this.Column2.ReadOnly = true;
@@ -3291,6 +3307,12 @@ namespace MesDatas
             this.label7.ForeColor = System.Drawing.Color.Red;
             this.label7.Name = "label7";
             // 
+            // label19
+            // 
+            resources.ApplyResources(this.label19, "label19");
+            this.label19.ForeColor = System.Drawing.Color.Red;
+            this.label19.Name = "label19";
+            // 
             // Form1
             // 
             resources.ApplyResources(this, "$this");
@@ -3768,9 +3790,9 @@ namespace MesDatas
         private System.Windows.Forms.Button button19;
         private System.Windows.Forms.GroupBox groupBox21;
         private System.Windows.Forms.GroupBox groupBox24;
-        private System.Windows.Forms.CheckBox checkBox4;
+        private System.Windows.Forms.CheckBox chkLoadModel_TCP;
         private System.Windows.Forms.CheckBox checkBox3;
-        private System.Windows.Forms.TextBox textBox28;
+        private System.Windows.Forms.TextBox txtPModel_TCP;
         private System.Windows.Forms.TextBox textBox27;
         private System.Windows.Forms.Label label76;
         private System.Windows.Forms.Label label68;
@@ -3794,7 +3816,6 @@ namespace MesDatas
         private System.Windows.Forms.TabPage tabPage17;
         private System.Windows.Forms.GroupBox groupBox35;
         private System.Windows.Forms.GroupBox groupBox36;
-        private System.Windows.Forms.Label label120;
         private System.Windows.Forms.Label lblPrnFilePath_COM;
         private System.Windows.Forms.Label label122;
         private System.Windows.Forms.Button btnChangePath_COM;
@@ -3803,17 +3824,16 @@ namespace MesDatas
         private System.Windows.Forms.Button btnSave_COM;
         private System.Windows.Forms.GroupBox groupBox37;
         private System.Windows.Forms.GroupBox groupBox38;
-        private System.Windows.Forms.CheckBox checkBox15;
-        private System.Windows.Forms.CheckBox checkBox16;
-        private System.Windows.Forms.TextBox textBox52;
+        private System.Windows.Forms.CheckBox chkLoadModel_COM;
+        private System.Windows.Forms.CheckBox chkUseFont;
+        private System.Windows.Forms.TextBox txtPModel_COM;
         private System.Windows.Forms.TextBox textBox53;
         private System.Windows.Forms.Label label127;
         private System.Windows.Forms.Label label128;
         private System.Windows.Forms.TextBox textBox54;
         private System.Windows.Forms.Label label129;
         private System.Windows.Forms.GroupBox groupBox39;
-        private System.Windows.Forms.Label label130;
-        private System.Windows.Forms.TextBox txtPrintQuantity;
+        private System.Windows.Forms.TextBox txtSerialSpan;
         private System.Windows.Forms.Label label132;
         private System.Windows.Forms.Label lblCodeContent;
         private System.Windows.Forms.Label label134;
@@ -3825,7 +3845,7 @@ namespace MesDatas
         private System.Windows.Forms.Label label47;
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.Label label82;
-        private System.Windows.Forms.ComboBox comboBox5;
+        private System.Windows.Forms.ComboBox cboPrintFormat_COM;
         private System.Windows.Forms.CheckBox chkAutoAddDate;
         private System.Windows.Forms.GroupBox groupBox41;
         private System.Windows.Forms.Label lblPrintPrompt;
@@ -3856,6 +3876,10 @@ namespace MesDatas
         private System.Windows.Forms.Label label139;
         private System.Windows.Forms.Label lblCurrentSelected;
         private System.Windows.Forms.Label label141;
+        private System.Windows.Forms.Label label120;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox txtPrintCount;
+        private System.Windows.Forms.Label label19;
     }
 }
 
