@@ -309,9 +309,11 @@ namespace MesDatas
 
             btnRefreshUser_Click(null, null);  // 用户管理刷新按钮
 
-            GetPrinter();             // 加载打印机
+            GetPrinter();           // 加载打印机
 
             LoadPrinterConfig();    // 加载打印信息
+
+            //InitializeSerialNumber();   // 初始化流水号
 
             UpLoginInfo();          // 修改最后登录时间和次数
 
@@ -449,7 +451,7 @@ namespace MesDatas
 
             if (chkPlcControlPrint.Checked)
             {
-                taskProcess_ZPL = new Task(PrintZPL_Click);     // PLC控制打印
+                taskProcess_ZPL = new Task(PlcControlPrint);     // PLC控制打印
                 taskProcess_ZPL.Start();
             }
 
@@ -1813,7 +1815,8 @@ namespace MesDatas
                 maxMinValues = new List<MaxMinValue>();
                 for (int i = 0; i < boardTable.Rows.Count; i++)
                 {
-                    Console.WriteLine($"生产数据读取中{i}");
+                    //Console.WriteLine($"生产数据读取中{i}");
+
                     MaxMinValue value = new MaxMinValue();
 
                     value.BoardName = boardTable.Rows[i]["BoardName"].ToString();
@@ -1847,7 +1850,7 @@ namespace MesDatas
         {
             BeginInvoke(new Action(() =>
             {
-                Console.WriteLine("绑定上下限开始");
+                //Console.WriteLine("绑定上下限开始");
 
                 if (isPlcConnected == true)
                 {
@@ -1948,7 +1951,8 @@ namespace MesDatas
                     }
                 }
 
-                Console.WriteLine("绑定上下限结束");
+                //Console.WriteLine("绑定上下限结束");
+
             })).AsyncWaitHandle.WaitOne();
 
         }
@@ -5615,7 +5619,7 @@ namespace MesDatas
                 lblPrnFilePath_COM.Text = printersBtw.PertowBtw;    // prn文件路径
                 cboPrintFormat_COM.Text = printersBtw.TxttowBtw;    // 打印文件格式
 
-                GenerateBarcode();
+                //GenerateBarcode();
 
                 #endregion
             }
@@ -5744,14 +5748,7 @@ namespace MesDatas
                 // 判断是否选中打印机
                 if (!string.IsNullOrEmpty(cboPrinterType.Text))
                 {
-                    // 获取流水号单次自增数量
-                    if (!int.TryParse(txtSerialSpan.Text, out int incrementCount))
-                    {
-                        // 解析失败时，默认打印数量为1
-                        incrementCount = 1;
-                    }
 
-                    SerialNumberIncrement(incrementCount);  // 设定流水号自增数量  
 
                     GenerateBarcode();                      // 生成条码内容
 
@@ -5987,6 +5984,30 @@ namespace MesDatas
             // 码号 = 地区代码（5位）+ 总成代码（4位）+ 年份（1位）= 10位；如：03051 + 21VE + R (字母禁用：I，O，Q，U，Z)
             string codeNumber = txtCodeNumber.Text;
 
+            // 获取流水号单次自增数量
+            if (!int.TryParse(txtSerialSpan.Text, out int incrementCount))
+            {
+                // 解析失败时，默认打印数量为1
+                incrementCount = 1;
+            }
+
+            DateTime currentDate = DateTime.Now.Date;
+
+            // 检查日期并在需要时重置流水号
+            if (ShouldResetSerialNumber())
+            {
+                ResetSerialNumber();
+                SaveLastSavedDate(DateTime.Now.Date);
+                Console.WriteLine($"Date updated to {DateTime.Now.Date}");
+            }
+            else
+            {
+                // 无论是否重置，都更新最后保存日期
+                SaveLastSavedDate(currentDate);
+            }
+
+            SerialNumberIncrement(incrementCount);  // 设定流水号自增数量
+
             // 添加生产日期
             if (chkAutoAddDate.Checked)
             {
@@ -6019,7 +6040,7 @@ namespace MesDatas
                     }
                 }
 
-                // 码号 + 日期
+                // 生成码号
                 codeNumber = codeNumber += month + day;
             }
 
@@ -6059,11 +6080,11 @@ namespace MesDatas
 
             try
             {
-                // 检查是否需要重置流水号
-                if (ShouldResetSerialNumber())
-                {
-                    ResetSerialNumber();
-                }
+                /* // 检查是否需要重置流水号
+                 if (ShouldResetSerialNumber())
+                 {
+                     ResetSerialNumber();
+                 }*/
 
                 // 获取当前流水号
                 int currentSerialNumber = GetCurrentSerialNumber();
@@ -6073,6 +6094,7 @@ namespace MesDatas
 
                 // 更新流水号
                 UpdateSerialNumber(newSerialNumber);
+                Console.WriteLine($"Serial number incremented from {currentSerialNumber} to {newSerialNumber}");
 
                 // 异步保存
                 await SaveSerialNumberAsync();
@@ -6087,18 +6109,15 @@ namespace MesDatas
         private bool ShouldResetSerialNumber()
         {
             DateTime lastSavedDate = printersBtw.LastSavedDate;
-            DateTime currentDate = DateTime.Now;
+            DateTime currentDate = DateTime.Now.Date;
 
             // 使用日期差值来判断
             TimeSpan difference = currentDate.Date - lastSavedDate.Date;
 
-            return difference.Days >= 1;
+            //return difference.Days >= 1;
+            // 如果当前日期小于最后保存日期，说明时间被回调了，我们也应该重置
+            return currentDate > lastSavedDate || currentDate < lastSavedDate;
         }
-
-        //private DateTime GetLastSavedDate()
-        //{
-        //    return printersBtw.LastSavedDate;
-        //}
 
         private void ResetSerialNumber()
         {
@@ -6125,7 +6144,17 @@ namespace MesDatas
 
         public void SaveLastSavedDate(DateTime date)
         {
-            printersBtw.LastSavedDate = date;
+            printersBtw.LastSavedDate = date.Date;  // 只保存日期
+            Console.WriteLine($"Last saved date updated to {date.Date}");
+        }
+
+        public void InitializeSerialNumber()
+        {
+            if (ShouldResetSerialNumber())
+            {
+                ResetSerialNumber();
+                SaveLastSavedDate(DateTime.Now.Date);
+            }
         }
 
         public async Task SaveSerialNumberAsync()
@@ -6133,18 +6162,19 @@ namespace MesDatas
             await Task.Run(() =>
              {
                  printersBtw.Save();
+                 Console.WriteLine("All changes saved");
              });
         }
 
 
         #endregion
 
-        #region ----------- 网络打印 -----------
+        #region ----------- 打印机 -----------
 
         /// <summary>
         /// 打印机
         /// </summary>
-        private void PrintZPL_Click()
+        private void PlcControlPrint()
         {
             Task.Run(() =>
             {

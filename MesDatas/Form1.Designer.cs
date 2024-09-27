@@ -37,7 +37,7 @@ namespace MesDatas
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.skinEngine1 = new Sunisoft.IrisSkin.SkinEngine(((System.ComponentModel.Component)(this)));
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.tabPage4 = new System.Windows.Forms.TabPage();
@@ -122,6 +122,7 @@ namespace MesDatas
             this.textBox54 = new System.Windows.Forms.TextBox();
             this.label129 = new System.Windows.Forms.Label();
             this.groupBox39 = new System.Windows.Forms.GroupBox();
+            this.label19 = new System.Windows.Forms.Label();
             this.txtPrintCount = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.chkPlus2Print = new System.Windows.Forms.CheckBox();
@@ -442,7 +443,6 @@ namespace MesDatas
             this.dataGridView5 = new System.Windows.Forms.DataGridView();
             this.label7 = new System.Windows.Forms.Label();
             this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
-            this.label19 = new System.Windows.Forms.Label();
             this.tabPage4.SuspendLayout();
             this.tabControl4.SuspendLayout();
             this.tabPage15.SuspendLayout();
@@ -1135,6 +1135,12 @@ namespace MesDatas
             this.groupBox39.Name = "groupBox39";
             this.groupBox39.TabStop = false;
             // 
+            // label19
+            // 
+            resources.ApplyResources(this.label19, "label19");
+            this.label19.ForeColor = System.Drawing.Color.Red;
+            this.label19.Name = "label19";
+            // 
             // txtPrintCount
             // 
             resources.ApplyResources(this.txtPrintCount, "txtPrintCount");
@@ -1238,10 +1244,10 @@ namespace MesDatas
             // Column2
             // 
             this.Column2.DataPropertyName = "用户密码";
-            dataGridViewCellStyle3.Format = "*****";
-            dataGridViewCellStyle3.NullValue = "#";
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.Column2.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle1.Format = "*****";
+            dataGridViewCellStyle1.NullValue = "#";
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.Column2.DefaultCellStyle = dataGridViewCellStyle1;
             resources.ApplyResources(this.Column2, "Column2");
             this.Column2.Name = "Column2";
             this.Column2.ReadOnly = true;
@@ -3306,12 +3312,6 @@ namespace MesDatas
             resources.ApplyResources(this.label7, "label7");
             this.label7.ForeColor = System.Drawing.Color.Red;
             this.label7.Name = "label7";
-            // 
-            // label19
-            // 
-            resources.ApplyResources(this.label19, "label19");
-            this.label19.ForeColor = System.Drawing.Color.Red;
-            this.label19.Name = "label19";
             // 
             // Form1
             // 
