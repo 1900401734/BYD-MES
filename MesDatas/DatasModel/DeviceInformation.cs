@@ -34,7 +34,7 @@ namespace MesDatas.DatasModel
         public string StartNFC { get; set; } // 开始NFC
 
         [SugarColumn(ColumnName = "EndNFC", IsNullable = true)]
-        public string EndNFC { get; set; } // 结束NFC
+        public string EndNFC { get; set; } // 结束NFC 默认：D18040
 
         [SugarColumn(ColumnName = "ViewStatus", IsNullable = true)]
         public string ViewStatus { get; set; } // 开始NFC修改

@@ -112,7 +112,7 @@ public class DatabaseOperations
         values.Append($"'{CP}',");
         values.Append($"'{txtWorkOrder}',");
         values.Append($"'{txtFixtureBinding}',");
-        values.Append($"'{CodeNum.CodeStrfror(cboBarcodeRuleAndFixtures, codesTable)}',");
+        values.Append($"'{CodeNum.GetProductCodeString(cboBarcodeRuleAndFixtures, codesTable)}',");
         values.Append($"'{barcode}',");
         values.Append($"'{LoginUser}',");
         values.Append($"'{now:yyyy年MM月dd日 HH:mm:ss}',");
@@ -127,9 +127,9 @@ public class DatabaseOperations
 
                 if (maxValue[i] != "NO" && minValue[i] != "NO" && testResult[i] != "NO")
                 {
-                    values.Append($",'{CodeNum.NullECoshu(maxList[i])}'");
-                    values.Append($",'{CodeNum.NullECoshu(minList[i])}'");
-                    values.Append($",'{CodeNum.NullECoshu(resultList[i])}'");
+                    values.Append($",'{CodeNum.GetNullIfEmpty(maxList[i])}'");
+                    values.Append($",'{CodeNum.GetNullIfEmpty(minList[i])}'");
+                    values.Append($",'{CodeNum.GetNullIfEmpty(resultList[i])}'");
                 }
             }
         }
