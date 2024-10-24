@@ -1121,49 +1121,7 @@ namespace BulletinBoard
 
         }
 
-        Dictionary<string, System.Net.Sockets.Socket> clientList = new Dictionary<string, System.Net.Sockets.Socket>();
-
-
-        /// <summary>
-        /// 启动Socket服务器并监听客户端连接
-        /// </summary>
-        public void ConnSocket()
-        {
-            try
-            {
-                Socket socketWatch = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                IPAddress ip = IPAddress.Parse(this.tbx_IP.Text);
-                // 创建对象端口
-                IPEndPoint point = new IPEndPoint(ip, Convert.ToInt32(tbx_port.Text));
-                this.tbx_IP.Text = ip.ToString();
-                socketWatch.Bind(point);// 绑定端口号
-                ShowMsg("信息:监听成功!");
-                socketWatch.Listen(100);// 允许连接的客户端数量
-                IsServerStart = true;
-
-                Task.Factory.StartNew(() =>
-                {
-                    while (IsServerStart)
-                    {
-                        //接受接入的一个客户端
-                        Socket connectClient = socketWatch.Accept();
-                        if (connectClient != null)
-                        {
-                            string infor = connectClient.RemoteEndPoint.ToString();
-                            clientList.Add(infor, connectClient);
-                            //接收消息
-                            ReciveMsg(connectClient);
-                        }
-                    }
-                });
-
-                // ShowBtnState();
-            }
-            catch (Exception ex)
-            {
-                ShowMsg("错误信息:" + ex);
-            }
-        }
+        Dictionary<string, Socket> clientList = new Dictionary<string, Socket>();
 
         /// <summary>
         /// 启动Socket服务器并监听客户端连接
@@ -1206,7 +1164,7 @@ namespace BulletinBoard
                             clientList.Add(clientInfo, clientSocket);
 
                             // 开始接收该客户端的消息
-                            ReciveMsg(clientSocket);
+                            ReciveMessage(clientSocket);
                         }
                     }
                 });
@@ -1220,8 +1178,8 @@ namespace BulletinBoard
         /// <summary>
         /// 接收消息
         /// </summary>
-        /// <param name="client"></param>
-        public void ReciveMsg(Socket client)
+        /// <param name="clientSocket"></param>
+        public void ReciveMessage(Socket clientSocket)
         {
             Task.Factory.StartNew(() =>
             {
@@ -1229,31 +1187,36 @@ namespace BulletinBoard
                 {
                     try
                     {
-                        // 定义服务器接收的字节大小
-                        byte[] arrMsg = new byte[1024 * 1024 * 3];
+                        // 定义接收缓冲区（3MB）
+                        const int BUFFER_SIZE = 1024 * 1024 * 3;
+                        byte[] messageBuffer = new byte[BUFFER_SIZE];
 
                         // 接收到的信息大小(所占字节数)
-                        int length = client.Receive(arrMsg);
-                        Console.WriteLine("---" + length);
+                        int receivedBytes = clientSocket.Receive(messageBuffer);
+                        Console.WriteLine($"接收到数据大小: {receivedBytes} 字节");
 
-                        if (length > 0)
+                        if (receivedBytes > 0)
                         {
-                            string recMsg = Encoding.UTF8.GetString(arrMsg, 0, length);
-                            // 获取客户端的端口号
-                            IPEndPoint endPoint = client.RemoteEndPoint as IPEndPoint;
-                            if (recMsg == "heartbeat")
+                            // 将接收到的字节转换为字符串
+                            string receivedMsg = Encoding.UTF8.GetString(messageBuffer, 0, receivedBytes);
+                            IPEndPoint endPoint = clientSocket.RemoteEndPoint as IPEndPoint;
+
+                            // 处理心跳信息
+                            if (receivedMsg == "heartbeat")
                             {
-                                ShowMsg("收到【" + client.RemoteEndPoint.ToString() + "】心跳：" + recMsg);
-                                // 发送确认消息给客户端
-                                Send(client, "OK");
+                                ShowMsg($"收到【{endPoint}】心跳：{receivedMsg}");
+
+                                Send(clientSocket, "OK");   // 发送心跳响应
                             }
                             else
                             {
                                 // 服务器显示客户端的端口号和消息
                                 Task.Run(() =>
                                 {
+                                    // 数据库文件处理
                                     DBFilemoveBate();
-                                    ProcessReceivedData(recMsg, client.RemoteEndPoint.ToString());
+                                    // 处理接收到的数据
+                                    ProcessReceivedData(receivedMsg, clientSocket.RemoteEndPoint.ToString());
                                 });
                             }
                         }
@@ -1261,12 +1224,11 @@ namespace BulletinBoard
                     }
                     catch (Exception)
                     {
-                        ///移除添加在字典中的服务器和客户端之间的线程
-                        clientList.Remove(client.RemoteEndPoint.ToString());
-                        ///关闭客户端
-                        client.Close();
+                        // 移除添加在字典中的服务器和客户端之间的线程
+                        clientList.Remove(clientSocket.RemoteEndPoint.ToString());
+                        // 关闭客户端
+                        clientSocket.Close();
                         break;
-
                     }
                 }
             });
@@ -1850,6 +1812,9 @@ namespace BulletinBoard
             }
         }
 
+        private void label30_Click(object sender, EventArgs e)
+        {
 
+        }
     }
 }
