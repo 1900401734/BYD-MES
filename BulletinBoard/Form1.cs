@@ -28,7 +28,7 @@ namespace BulletinBoard
         private BindingList<string> ClientIPPorts;
         private Socket socketWatch;
         private Socket socketSend;//发送
-        private bool IsStart;
+        private bool IsServerStart;
         private Action<string> ShowMsgAction;
         private Action UpdateListViewDataAction;
         DataTable stationTable;//机台
@@ -136,7 +136,7 @@ namespace BulletinBoard
         /// </summary>
         private void Form1_Shown(object sender, EventArgs e)
         {
-            Thread thread = new Thread(ConnSocket);
+            Thread thread = new Thread(StartSocketServer);
             thread.IsBackground = true;
             thread.Start();
         }
@@ -1123,6 +1123,10 @@ namespace BulletinBoard
 
         Dictionary<string, System.Net.Sockets.Socket> clientList = new Dictionary<string, System.Net.Sockets.Socket>();
 
+
+        /// <summary>
+        /// 启动Socket服务器并监听客户端连接
+        /// </summary>
         public void ConnSocket()
         {
             try
@@ -1135,11 +1139,11 @@ namespace BulletinBoard
                 socketWatch.Bind(point);// 绑定端口号
                 ShowMsg("信息:监听成功!");
                 socketWatch.Listen(100);// 允许连接的客户端数量
-                IsStart = true;
+                IsServerStart = true;
 
                 Task.Factory.StartNew(() =>
                 {
-                    while (IsStart)
+                    while (IsServerStart)
                     {
                         //接受接入的一个客户端
                         Socket connectClient = socketWatch.Accept();
@@ -1159,7 +1163,58 @@ namespace BulletinBoard
             {
                 ShowMsg("错误信息:" + ex);
             }
+        }
 
+        /// <summary>
+        /// 启动Socket服务器并监听客户端连接
+        /// </summary>
+        public void StartSocketServer()
+        {
+            try
+            {
+                // 创建TCP服务器Socket
+                Socket serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
+                // 解析IP地址和端口
+                IPAddress serverIP = IPAddress.Parse(this.tbx_IP.Text);
+                int serverPort = Convert.ToInt32(tbx_port.Text);
+                IPEndPoint serverEndPoint = new IPEndPoint(serverIP, serverPort);
+
+                // 更新UI显示的IP地址
+                this.tbx_IP.Text = serverIP.ToString();
+
+                // 绑定端口并开始监听
+                serverSocket.Bind(serverEndPoint);
+                ShowMsg("信息: 服务器监听启动成功!");
+
+                // 设置监听队列长度
+                serverSocket.Listen(100);  // 最大允许100个连接请求排队
+                IsServerStart = true;
+
+                // 启动异步任务处理客户端连接
+                Task.Factory.StartNew(() =>
+                {
+                    while (IsServerStart)
+                    {
+                        // 等待并接受客户端连接
+                        Socket clientSocket = serverSocket.Accept();
+                        if (clientSocket != null)
+                        {
+                            // 获取客户端的连接信息
+                            string clientInfo = clientSocket.RemoteEndPoint.ToString();
+                            // 将客户端连接添加到连接列表
+                            clientList.Add(clientInfo, clientSocket);
+
+                            // 开始接收该客户端的消息
+                            ReciveMsg(clientSocket);
+                        }
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                ShowMsg($"错误信息: {ex.Message}");
+            }
         }
 
         /// <summary>
@@ -1170,7 +1225,7 @@ namespace BulletinBoard
         {
             Task.Factory.StartNew(() =>
             {
-                while (IsStart)
+                while (IsServerStart)
                 {
                     try
                     {
@@ -1242,7 +1297,7 @@ namespace BulletinBoard
         private void button7_Click(object sender, EventArgs e)
         {
             socketWatch?.Close();
-            IsStart = false;
+            IsServerStart = false;
             // ShowBtnState();
             ShowMsg("信息:停止监听!");
         }
@@ -1268,7 +1323,7 @@ namespace BulletinBoard
             try
             {
                 Socket socketWatch = o as Socket;
-                while (IsStart)
+                while (IsServerStart)
                 {
                     socketSend = socketWatch.Accept();//等待接收客户端连接
                     ClientSockets.Add(socketSend);
@@ -1304,7 +1359,7 @@ namespace BulletinBoard
             {
                 Socket socketSend = o as Socket;
                 if (!socketSend.Connected) return;
-                while (IsStart)
+                while (IsServerStart)
                 {
                     //客户端连接服务器成功后，服务器接收客户端发送的消息
                     byte[] buffer = new byte[1024 * 1024 * 3];
