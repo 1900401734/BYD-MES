@@ -5122,10 +5122,10 @@ namespace MesDatas
                     {
                         break;
                     }
-                    string str = Encoding.UTF8.GetString(buffer, 0, len);
-                    ReceiveData(str);
-                    this.BeginInvoke(ShowMsgAction, socket.RemoteEndPoint + ":" + str);
-                    ShowMsg(socket.RemoteEndPoint + ":" + str);
+                    string receivedMsg = Encoding.UTF8.GetString(buffer, 0, len);
+                    ReceiveData(receivedMsg);
+                    this.BeginInvoke(ShowMsgAction, socket.RemoteEndPoint + ":" + receivedMsg);
+                    ShowMsg(socket.RemoteEndPoint + ":" + receivedMsg);
                 }
                 catch (Exception ex)
                 {

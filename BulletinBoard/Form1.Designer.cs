@@ -31,15 +31,15 @@ namespace BulletinBoard
         {
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
-            this.textBox11 = new System.Windows.Forms.TextBox();
-            this.button11 = new System.Windows.Forms.Button();
+            this.txt_WorkOrder = new System.Windows.Forms.TextBox();
+            this.btnSendWorkOrder = new System.Windows.Forms.Button();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
-            this.comboBox3 = new System.Windows.Forms.ComboBox();
-            this.button9 = new System.Windows.Forms.Button();
+            this.cboProductModel = new System.Windows.Forms.ComboBox();
+            this.btnSendPModel = new System.Windows.Forms.Button();
             this.richTextBox3 = new System.Windows.Forms.RichTextBox();
-            this.button10 = new System.Windows.Forms.Button();
+            this.btnRefresh = new System.Windows.Forms.Button();
             this.groupBox28 = new System.Windows.Forms.GroupBox();
-            this.dataGridView5 = new System.Windows.Forms.DataGridView();
+            this.dgvPModelSettings = new System.Windows.Forms.DataGridView();
             this.label15 = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.txt_FinalDeviceName = new System.Windows.Forms.TextBox();
@@ -123,12 +123,12 @@ namespace BulletinBoard
             this.label23 = new System.Windows.Forms.Label();
             this.textBox_user = new System.Windows.Forms.TextBox();
             this.textBox_password = new System.Windows.Forms.TextBox();
-            this.button15 = new System.Windows.Forms.Button();
+            this.btnSaveMESConfig = new System.Windows.Forms.Button();
             this.tabPage4.SuspendLayout();
             this.groupBox7.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.groupBox28.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView5)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvPModelSettings)).BeginInit();
             this.tabPage3.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -149,7 +149,7 @@ namespace BulletinBoard
             this.tabPage4.Controls.Add(this.groupBox7);
             this.tabPage4.Controls.Add(this.groupBox6);
             this.tabPage4.Controls.Add(this.richTextBox3);
-            this.tabPage4.Controls.Add(this.button10);
+            this.tabPage4.Controls.Add(this.btnRefresh);
             this.tabPage4.Controls.Add(this.groupBox28);
             this.tabPage4.Location = new System.Drawing.Point(4, 4);
             this.tabPage4.Name = "tabPage4";
@@ -161,8 +161,8 @@ namespace BulletinBoard
             // 
             // groupBox7
             // 
-            this.groupBox7.Controls.Add(this.textBox11);
-            this.groupBox7.Controls.Add(this.button11);
+            this.groupBox7.Controls.Add(this.txt_WorkOrder);
+            this.groupBox7.Controls.Add(this.btnSendWorkOrder);
             this.groupBox7.Location = new System.Drawing.Point(322, 214);
             this.groupBox7.Name = "groupBox7";
             this.groupBox7.Size = new System.Drawing.Size(553, 154);
@@ -170,28 +170,28 @@ namespace BulletinBoard
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "生产工单";
             // 
-            // textBox11
+            // txt_WorkOrder
             // 
-            this.textBox11.Font = new System.Drawing.Font("宋体", 22.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.textBox11.Location = new System.Drawing.Point(8, 34);
-            this.textBox11.Name = "textBox11";
-            this.textBox11.Size = new System.Drawing.Size(539, 58);
-            this.textBox11.TabIndex = 72;
+            this.txt_WorkOrder.Font = new System.Drawing.Font("宋体", 22.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.txt_WorkOrder.Location = new System.Drawing.Point(8, 34);
+            this.txt_WorkOrder.Name = "txt_WorkOrder";
+            this.txt_WorkOrder.Size = new System.Drawing.Size(539, 58);
+            this.txt_WorkOrder.TabIndex = 72;
             // 
-            // button11
+            // btnSendWorkOrder
             // 
-            this.button11.Location = new System.Drawing.Point(18, 90);
-            this.button11.Name = "button11";
-            this.button11.Size = new System.Drawing.Size(118, 48);
-            this.button11.TabIndex = 73;
-            this.button11.Text = "发送";
-            this.button11.UseVisualStyleBackColor = true;
-            this.button11.Click += new System.EventHandler(this.button11_Click);
+            this.btnSendWorkOrder.Location = new System.Drawing.Point(18, 90);
+            this.btnSendWorkOrder.Name = "btnSendWorkOrder";
+            this.btnSendWorkOrder.Size = new System.Drawing.Size(118, 48);
+            this.btnSendWorkOrder.TabIndex = 73;
+            this.btnSendWorkOrder.Text = "发送";
+            this.btnSendWorkOrder.UseVisualStyleBackColor = true;
+            this.btnSendWorkOrder.Click += new System.EventHandler(this.button11_Click);
             // 
             // groupBox6
             // 
-            this.groupBox6.Controls.Add(this.comboBox3);
-            this.groupBox6.Controls.Add(this.button9);
+            this.groupBox6.Controls.Add(this.cboProductModel);
+            this.groupBox6.Controls.Add(this.btnSendPModel);
             this.groupBox6.Location = new System.Drawing.Point(316, 71);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(565, 123);
@@ -199,25 +199,25 @@ namespace BulletinBoard
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "产品型号";
             // 
-            // comboBox3
+            // cboProductModel
             // 
-            this.comboBox3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox3.Font = new System.Drawing.Font("宋体", 20F);
-            this.comboBox3.FormattingEnabled = true;
-            this.comboBox3.Location = new System.Drawing.Point(6, 24);
-            this.comboBox3.Name = "comboBox3";
-            this.comboBox3.Size = new System.Drawing.Size(553, 48);
-            this.comboBox3.TabIndex = 1;
+            this.cboProductModel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboProductModel.Font = new System.Drawing.Font("宋体", 20F);
+            this.cboProductModel.FormattingEnabled = true;
+            this.cboProductModel.Location = new System.Drawing.Point(6, 24);
+            this.cboProductModel.Name = "cboProductModel";
+            this.cboProductModel.Size = new System.Drawing.Size(553, 48);
+            this.cboProductModel.TabIndex = 1;
             // 
-            // button9
+            // btnSendPModel
             // 
-            this.button9.Location = new System.Drawing.Point(14, 71);
-            this.button9.Name = "button9";
-            this.button9.Size = new System.Drawing.Size(120, 46);
-            this.button9.TabIndex = 0;
-            this.button9.Text = "发送";
-            this.button9.UseVisualStyleBackColor = true;
-            this.button9.Click += new System.EventHandler(this.button9_Click);
+            this.btnSendPModel.Location = new System.Drawing.Point(14, 71);
+            this.btnSendPModel.Name = "btnSendPModel";
+            this.btnSendPModel.Size = new System.Drawing.Size(120, 46);
+            this.btnSendPModel.TabIndex = 0;
+            this.btnSendPModel.Text = "发送";
+            this.btnSendPModel.UseVisualStyleBackColor = true;
+            this.btnSendPModel.Click += new System.EventHandler(this.button9_Click);
             // 
             // richTextBox3
             // 
@@ -229,19 +229,19 @@ namespace BulletinBoard
             this.richTextBox3.TabIndex = 75;
             this.richTextBox3.Text = "";
             // 
-            // button10
+            // btnRefresh
             // 
-            this.button10.Location = new System.Drawing.Point(316, 6);
-            this.button10.Name = "button10";
-            this.button10.Size = new System.Drawing.Size(142, 59);
-            this.button10.TabIndex = 71;
-            this.button10.Text = "刷新";
-            this.button10.UseVisualStyleBackColor = true;
-            this.button10.Click += new System.EventHandler(this.button10_Click);
+            this.btnRefresh.Location = new System.Drawing.Point(316, 6);
+            this.btnRefresh.Name = "btnRefresh";
+            this.btnRefresh.Size = new System.Drawing.Size(142, 59);
+            this.btnRefresh.TabIndex = 71;
+            this.btnRefresh.Text = "刷新";
+            this.btnRefresh.UseVisualStyleBackColor = true;
+            this.btnRefresh.Click += new System.EventHandler(this.BtnFreshModelBoard_Click);
             // 
             // groupBox28
             // 
-            this.groupBox28.Controls.Add(this.dataGridView5);
+            this.groupBox28.Controls.Add(this.dgvPModelSettings);
             this.groupBox28.Controls.Add(this.label15);
             this.groupBox28.Dock = System.Windows.Forms.DockStyle.Left;
             this.groupBox28.ForeColor = System.Drawing.Color.Red;
@@ -252,18 +252,18 @@ namespace BulletinBoard
             this.groupBox28.TabStop = false;
             this.groupBox28.Text = "型号设置";
             // 
-            // dataGridView5
+            // dgvPModelSettings
             // 
-            this.dataGridView5.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGridView5.Location = new System.Drawing.Point(3, 31);
-            this.dataGridView5.Name = "dataGridView5";
-            this.dataGridView5.RowHeadersVisible = false;
-            this.dataGridView5.RowHeadersWidth = 51;
-            this.dataGridView5.RowTemplate.Height = 27;
-            this.dataGridView5.Size = new System.Drawing.Size(300, 469);
-            this.dataGridView5.TabIndex = 63;
-            this.dataGridView5.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView5_CellContentClick);
+            this.dgvPModelSettings.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvPModelSettings.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgvPModelSettings.Location = new System.Drawing.Point(3, 31);
+            this.dgvPModelSettings.Name = "dgvPModelSettings";
+            this.dgvPModelSettings.RowHeadersVisible = false;
+            this.dgvPModelSettings.RowHeadersWidth = 51;
+            this.dgvPModelSettings.RowTemplate.Height = 27;
+            this.dgvPModelSettings.Size = new System.Drawing.Size(300, 469);
+            this.dgvPModelSettings.TabIndex = 63;
+            this.dgvPModelSettings.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView5_CellContentClick);
             // 
             // label15
             // 
@@ -472,7 +472,7 @@ namespace BulletinBoard
             this.btnChangePath.TabIndex = 0;
             this.btnChangePath.Text = "变更存放路径";
             this.btnChangePath.UseVisualStyleBackColor = true;
-            this.btnChangePath.Click += new System.EventHandler(this.button5_Click);
+            this.btnChangePath.Click += new System.EventHandler(this.BtnChangeDatabasePath);
             // 
             // groupBox3
             // 
@@ -693,7 +693,7 @@ namespace BulletinBoard
             this.button7.TabIndex = 62;
             this.button7.Text = "停止";
             this.button7.UseVisualStyleBackColor = true;
-            this.button7.Click += new System.EventHandler(this.button7_Click);
+            this.button7.Click += new System.EventHandler(this.EndServer);
             // 
             // button3
             // 
@@ -704,7 +704,7 @@ namespace BulletinBoard
             this.button3.TabIndex = 61;
             this.button3.Text = "启动";
             this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.button3.Click += new System.EventHandler(this.LaunchServer);
             // 
             // label30
             // 
@@ -766,7 +766,7 @@ namespace BulletinBoard
             this.tabPage5.Controls.Add(this.richTextBox2);
             this.tabPage5.Controls.Add(this.groupBox8);
             this.tabPage5.Controls.Add(this.tableLayoutPanel1);
-            this.tabPage5.Controls.Add(this.button15);
+            this.tabPage5.Controls.Add(this.btnSaveMESConfig);
             this.tabPage5.Location = new System.Drawing.Point(4, 4);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
@@ -1202,17 +1202,17 @@ namespace BulletinBoard
             this.textBox_password.Size = new System.Drawing.Size(597, 35);
             this.textBox_password.TabIndex = 2;
             // 
-            // button15
+            // btnSaveMESConfig
             // 
-            this.button15.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.button15.Location = new System.Drawing.Point(268, 444);
-            this.button15.Margin = new System.Windows.Forms.Padding(2, 4, 2, 4);
-            this.button15.Name = "button15";
-            this.button15.Size = new System.Drawing.Size(163, 58);
-            this.button15.TabIndex = 114;
-            this.button15.Text = "保存";
-            this.button15.UseVisualStyleBackColor = true;
-            this.button15.Click += new System.EventHandler(this.button15_Click);
+            this.btnSaveMESConfig.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+            this.btnSaveMESConfig.Location = new System.Drawing.Point(345, 444);
+            this.btnSaveMESConfig.Margin = new System.Windows.Forms.Padding(2, 4, 2, 4);
+            this.btnSaveMESConfig.Name = "btnSaveMESConfig";
+            this.btnSaveMESConfig.Size = new System.Drawing.Size(163, 58);
+            this.btnSaveMESConfig.TabIndex = 114;
+            this.btnSaveMESConfig.Text = "保存";
+            this.btnSaveMESConfig.UseVisualStyleBackColor = true;
+            this.btnSaveMESConfig.Click += new System.EventHandler(this.BtnSaveMESConfig_Click);
             // 
             // Form1
             // 
@@ -1236,7 +1236,7 @@ namespace BulletinBoard
             this.groupBox6.ResumeLayout(false);
             this.groupBox28.ResumeLayout(false);
             this.groupBox28.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView5)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvPModelSettings)).EndInit();
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
             this.tabPage2.ResumeLayout(false);
@@ -1266,15 +1266,15 @@ namespace BulletinBoard
 
         private System.Windows.Forms.TabPage tabPage4;
         private System.Windows.Forms.GroupBox groupBox7;
-        private System.Windows.Forms.TextBox textBox11;
-        private System.Windows.Forms.Button button11;
+        private System.Windows.Forms.TextBox txt_WorkOrder;
+        private System.Windows.Forms.Button btnSendWorkOrder;
         private System.Windows.Forms.GroupBox groupBox6;
-        private System.Windows.Forms.ComboBox comboBox3;
-        private System.Windows.Forms.Button button9;
+        private System.Windows.Forms.ComboBox cboProductModel;
+        private System.Windows.Forms.Button btnSendPModel;
         private System.Windows.Forms.RichTextBox richTextBox3;
-        private System.Windows.Forms.Button button10;
+        private System.Windows.Forms.Button btnRefresh;
         private System.Windows.Forms.GroupBox groupBox28;
-        private System.Windows.Forms.DataGridView dataGridView5;
+        private System.Windows.Forms.DataGridView dgvPModelSettings;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.TextBox txt_FinalDeviceName;
@@ -1343,7 +1343,7 @@ namespace BulletinBoard
         private System.Windows.Forms.Label label23;
         private System.Windows.Forms.TextBox textBox_user;
         private System.Windows.Forms.TextBox textBox_password;
-        private System.Windows.Forms.Button button15;
+        private System.Windows.Forms.Button btnSaveMESConfig;
         private System.Windows.Forms.GroupBox groupBox8;
         private System.Windows.Forms.Label label33;
         private System.Windows.Forms.Label label32;

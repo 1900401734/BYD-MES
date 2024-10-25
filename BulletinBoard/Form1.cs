@@ -38,7 +38,7 @@ namespace BulletinBoard
             ProductUpdeteconn();
 
             ShowMsgAction += new Action<string>(ShowMsg);
-            UpdateListViewDataAction += new Action(UpdateListViewData);
+            //UpdateListViewDataAction += new Action(UpdateListViewData);
             ClientSockets = new List<Socket>();
             ClientIPPorts = new BindingList<string>();
         }
@@ -50,11 +50,11 @@ namespace BulletinBoard
         /// <param name="e"></param>
         private void Form1_Load(object sender, EventArgs e)
         {
-            MESInitConfig();//获取MES信息
-            SYS_BOARD();
-            LoadServerConfig();//获取产线基本设置
+            LoadMESConfig();                // 加载MES参数配置
+            InitializeProductModelBoard();  // 初始化产品型号面板
+            LoadServerConfig();             // 加载服务器基本配置
             button8_Click(null, null);
-            //mdb = new mdbDatas();
+
             string conn = lblDatabasePath.Text + "\\" + DateTime.Now.ToString("Y") + "产线数据.mdb";
             if (mdbABC.mdbDatesconn(conn) == false)
             {
@@ -102,6 +102,16 @@ namespace BulletinBoard
             }));
         }
 
+        /// <summary>
+        /// 窗体显示时启动Socket服务
+        /// </summary>
+        private void Form1_Shown(object sender, EventArgs e)
+        {
+            Thread thread = new Thread(StartSocketServer);
+            thread.IsBackground = true;
+            thread.Start();
+        }
+
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
             //LineModel_Write();
@@ -129,16 +139,6 @@ namespace BulletinBoard
         public bool IsRunningCheckCard = true;
         public int accesscard;
         public int access;
-
-        /// <summary>
-        /// 窗体显示时启动Socket服务
-        /// </summary>
-        private void Form1_Shown(object sender, EventArgs e)
-        {
-            Thread thread = new Thread(StartSocketServer);
-            thread.IsBackground = true;
-            thread.Start();
-        }
 
         #region------------- 服务器设置 -------------
 
@@ -301,6 +301,7 @@ namespace BulletinBoard
         #endregion
 
         #region ------------- 产线数据库 -------------
+
         /// <summary>
         /// 重新生成数据库
         /// </summary>
@@ -324,6 +325,7 @@ namespace BulletinBoard
             }
             mdb.CloseConnection();
         }
+
         /// <summary>
         /// 生成产线数据库
         /// </summary>
@@ -413,6 +415,7 @@ namespace BulletinBoard
             }
             mdb.CloseConnection();
         }
+
         #endregion
 
         #region------------- 添加生产数据 -------------
@@ -758,7 +761,6 @@ namespace BulletinBoard
         /// <param name="dateshuzu"></param>
         List<Dictionary<string, List<string>>> listDic = new List<Dictionary<string, List<string>>>();
 
-        //Dictionary<string, List<string>> dicmap = null;
         private async void NewMethod3Async(string[] dateshuzu)
         {
             if (txt_FinalDeviceName.Text.Trim().Length == 0)
@@ -1091,50 +1093,114 @@ namespace BulletinBoard
 
         #endregion
 
+        #region------------- 型号设置 -------------
+
+        private void InitializeProductModelBoard()
+        {
+            BtnFreshModelBoard_Click(null, null);
+
+            DataGridViewButtonColumn btnColumnSave = new DataGridViewButtonColumn();
+            btnColumnSave.HeaderText = "操作";
+            btnColumnSave.Text = "保存";
+            btnColumnSave.Name = "SaveOperation";
+            btnColumnSave.DefaultCellStyle.NullValue = "保存";
+            dgvPModelSettings.Columns.Add(btnColumnSave);
+
+            DataGridViewButtonColumn btnColumnDel = new DataGridViewButtonColumn();
+            btnColumnDel.HeaderText = "操作";
+            btnColumnDel.Name = "DeleteOperation";
+            btnColumnDel.DefaultCellStyle.NullValue = "删除";
+            dgvPModelSettings.Columns.Add(btnColumnDel);
+        }
+
+        /// <summary>
+        /// 刷新产品型号面板
+        /// </summary>
+        private void BtnFreshModelBoard_Click(object sender, EventArgs e)
+        {
+            mdb = new mdbDatas(databasePath);
+
+            // Codes  ID CName
+            DataTable PModelTable = mdb.Find("select ID as 编号 , Name as 型号 from Codes");
+            dgvPModelSettings.DataSource = PModelTable;
+            cboProductModel.DataSource = PModelTable;
+            cboProductModel.DisplayMember = "型号";
+            cboProductModel.ValueMember = "编号";
+
+            mdb.CloseConnection();
+        }
+
+        private void dataGridView5_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            // Codes  ID CName
+            if (e.RowIndex == -1) return;
+
+            // 删除
+            if (dgvPModelSettings.Columns[e.ColumnIndex].Name == "DeleteOperation")
+            {
+                mdb = new mdbDatas(databasePath);
+
+                string currentID = this.dgvPModelSettings.Rows[e.RowIndex].Cells[2].Value.ToString();
+                bool result = mdb.Del($" DELETE FROM [Codes] WHERE [ID] = '{currentID}' ");
+                if (result == true)
+                {
+                    MessageBox.Show("删除成功");
+                }
+
+                mdb.CloseConnection();
+                BtnFreshModelBoard_Click(null, null);
+            }
+            // 保存
+            if (dgvPModelSettings.Columns[e.ColumnIndex].Name == "SaveOperation")
+            {
+                string ID = this.dgvPModelSettings.Rows[e.RowIndex].Cells[2].Value.ToString();
+                string productModel = this.dgvPModelSettings.Rows[e.RowIndex].Cells[3].Value.ToString();
+
+                if (string.IsNullOrWhiteSpace(ID))
+                {
+                    MessageBox.Show("编号不能为空！");
+                    return;
+                }
+
+                mdb = new mdbDatas(databasePath);
+
+                DataTable table1 = mdb.Find($"select * from Codes where [ID] = '{ID}'");
+                if (table1.Rows.Count > 0)
+                {
+                    string updateSql = $" UPDATE [Codes] SET [Name]='{productModel}' where [ID] = '{ID}' ";
+                    var result = mdb.Change(updateSql);
+                    if (result == true)
+                    {
+                        MessageBox.Show("修改成功");
+                    }
+                }
+                else
+                {
+                    string insertSql = $"INSERT INTO Codes ([ID],[Name]) VALUES ('{ID}', '{productModel}')";
+                    bool result = mdb.Add(insertSql.ToString());
+                    if (result == true)
+                    {
+                        MessageBox.Show("新增成功");
+                    }
+                }
+
+                mdb.CloseConnection();
+                BtnFreshModelBoard_Click(null, null);
+            }
+        }
+
+        #endregion
+
         /// <summary>
         /// 选择本地文件存放路径
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void button5_Click(object sender, EventArgs e)
+        private void BtnChangeDatabasePath(object sender, EventArgs e)
         {
             FolderBrowserDialog path = new FolderBrowserDialog();
             path.ShowDialog();
             this.lblDatabasePath.Text = path.SelectedPath;
-        }
-
-        /// <summary>
-        /// 启动服务器
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void button3_Click(object sender, EventArgs e)
-        {
-            //// this.tbx_IP.Text = "127.0.0.2";
-            //try
-            //{
-            //    Socket socketWatch = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            //    IPAddress ip = IPAddress.Parse(this.tbx_IP.Text);
-            //    //创建对象端口
-            //    IPEndPoint point = new IPEndPoint(ip, Convert.ToInt32(tbx_port.Text));
-            //    this.tbx_IP.Text = ip.ToString();
-            //    socketWatch.Bind(point);//绑定端口号
-            //    ShowMsg("信息:监听成功!");
-            //    socketWatch.Listen(100);//允许连接的客户端数量
-            //                            //创建监听线程
-            //    Thread thread = new Thread(Listen);
-            //    thread.IsBackground = true;
-            //    thread.Start(socketWatch);
-            //    IsStart = true;
-
-
-            //    // ShowBtnState();
-            //}
-            //catch (Exception ex)
-            //{
-            //    ShowMsg("错误信息:"+ex);
-            //}
-
         }
 
         Dictionary<string, Socket> clientList = new Dictionary<string, Socket>();
@@ -1189,6 +1255,51 @@ namespace BulletinBoard
             {
                 ShowMsg($"错误信息: {ex.Message}");
             }
+        }
+
+        /// <summary>
+        /// 启动服务器
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void LaunchServer(object sender, EventArgs e)
+        {
+            //// this.tbx_IP.Text = "127.0.0.2";
+            //try
+            //{
+            //    Socket socketWatch = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            //    IPAddress ip = IPAddress.Parse(this.tbx_IP.Text);
+            //    //创建对象端口
+            //    IPEndPoint point = new IPEndPoint(ip, Convert.ToInt32(tbx_port.Text));
+            //    this.tbx_IP.Text = ip.ToString();
+            //    socketWatch.Bind(point);//绑定端口号
+            //    ShowMsg("信息:监听成功!");
+            //    socketWatch.Listen(100);//允许连接的客户端数量
+            //                            //创建监听线程
+            //    Thread thread = new Thread(Listen);
+            //    thread.IsBackground = true;
+            //    thread.Start(socketWatch);
+            //    IsStart = true;
+
+
+            //    // ShowBtnState();
+            //}
+            //catch (Exception ex)
+            //{
+            //    ShowMsg("错误信息:"+ex);
+            //}
+
+        }
+
+        /// <summary>
+        /// 停止服务器
+        /// </summary>
+        private void EndServer(object sender, EventArgs e)
+        {
+            socketWatch?.Close();
+            IsServerStart = false;
+            // ShowBtnState();
+            ShowMsg("信息:停止监听!");
         }
 
         /// <summary>
@@ -1251,33 +1362,60 @@ namespace BulletinBoard
         }
 
         /// <summary>
-        /// 发送消息
+        /// 专门用于发送心跳响应
         /// </summary>
-        /// <param name="str"></param>
-        void Send(Socket client, string str)
+        /// <param name="message"></param>
+        void Send(Socket clientSocket, string message)
         {
             try
             {
-
-                byte[] buffer = Encoding.UTF8.GetBytes(str);
-                client.Send(buffer);
+                byte[] buffer = Encoding.UTF8.GetBytes(message);
+                clientSocket.Send(buffer);
             }
             catch (Exception ex)
             {
-                clientList.Remove(client.RemoteEndPoint.ToString());
-                client.Close();
+                clientList.Remove(clientSocket.RemoteEndPoint.ToString());
+                clientSocket.Close();
                 ShowMsg(ex.Message);
-                // MessageBox.Show("发送失败");
             }
 
         }
 
-        private void button7_Click(object sender, EventArgs e)
+        /// <summary>
+        /// 发送消息
+        /// </summary>
+        /// <param name="message"></param>
+        void Send(string message)
         {
-            socketWatch?.Close();
-            IsServerStart = false;
-            // ShowBtnState();
-            ShowMsg("信息:停止监听!");
+            try
+            {
+                foreach (var client in clientList)
+                {
+                    byte[] buffer = Encoding.UTF8.GetBytes(message);
+                    client.Value.Send(buffer);
+                }
+
+                MessageBox.Show("发送成功");
+            }
+            catch (Exception ex)
+            {
+                ShowMsg(ex.Message);
+                MessageBox.Show("发送失败");
+            }
+
+        }
+
+        private void ShowMsg(string msg)
+        {
+            Invoke(new Action(() =>
+            {
+                if (richTextBox1.TextLength > 50000)
+                {
+                    richTextBox1.Clear();
+                }
+                string info = string.Format("{0}:{1}\r\n", DateTime.Now.ToString("G"), msg);
+                richTextBox1.AppendText(info);
+            }));
         }
 
         /* private void btn_send_Click(object sender, EventArgs e)
@@ -1384,36 +1522,6 @@ namespace BulletinBoard
             }
         }*/
 
-        /// <summary>
-        /// 发送消息
-        /// </summary>
-        /// <param name="str"></param>
-        void Send(string str)
-        {
-            try
-            {
-                foreach (var client in clientList)
-                {
-                    // Socket socket1=Ci
-                    byte[] buffer = Encoding.UTF8.GetBytes(str);
-                    client.Value.Send(buffer);
-                }
-
-                /*foreach(string key int new List<string>(ClientIPPorts)){ 
-                }*/
-                //if()
-                //byte[] buffer = Encoding.UTF8.GetBytes(str);
-                // socketSend.Send(buffer);
-                MessageBox.Show("发送成功");
-            }
-            catch (Exception ex)
-            {
-                ShowMsg(ex.Message);
-                MessageBox.Show("发送失败");
-            }
-
-        }
-
         /*void SendFid(string str)
         {
 
@@ -1478,19 +1586,6 @@ namespace BulletinBoard
 
         }*/
 
-        private void ShowMsg(string msg)
-        {
-            Invoke(new Action(() =>
-            {
-                if (richTextBox1.TextLength > 50000)
-                {
-                    richTextBox1.Clear();
-                }
-                string info = string.Format("{0}:{1}\r\n", DateTime.Now.ToString("G"), msg);
-                richTextBox1.AppendText(info);
-            }));
-        }
-
         /*private void ShowBtnState()
         {
             //btn_start.Enabled = !IsStart;
@@ -1515,7 +1610,7 @@ namespace BulletinBoard
             }
         }*/
 
-        private void UpdateListViewData()
+        /*private void UpdateListViewData()
         {
             // listBox1.DataSource = null;
             //listBox1.DataSource = ClientIPPorts;
@@ -1524,7 +1619,7 @@ namespace BulletinBoard
             //{
 
             //}
-        }
+        }*/
 
         /*public void SaveCSVlog(string log)
         {
@@ -1599,125 +1694,15 @@ namespace BulletinBoard
 
         private void button9_Click(object sender, EventArgs e)
         {
-            Send("0+" + comboBox3.SelectedValue);
+            Send("0+" + cboProductModel.SelectedValue);
 
 
         }
-
-        #region------------- 型号设置 -------------
-
-        //DataTable codesData;
-        //Board  
-        //ID WorkID BoardName BoardCode MaxBoardCode MinBoardCode BeatBoardCode ResultBoardCode
-        private void SYS_BOARD()
-        {
-            button10_Click(null, null);
-            DataGridViewButtonColumn butnCo = new DataGridViewButtonColumn();
-            butnCo.HeaderText = "操作";
-            butnCo.Text = "保存";
-            butnCo.Name = "btnCol";
-            butnCo.DefaultCellStyle.NullValue = "保存";
-            //dataGridView2.Columns.Insert(0, buttonColumn);// dataGridView2.I
-            dataGridView5.Columns.Add(butnCo);
-            //table1.Columns.Add("操作");
-            //buttonColumn.C += new DataGridViewCellEventHandler(buttonColumn_CellClick)
-            //  Models();//查询名称
-            //  button16_Click(null, null);//初始品名表、刷新
-            // mdb.CloseConnection();
-            // 再次创建一个新的列对象并设置其属删除
-            DataGridViewButtonColumn anotrButCo = new DataGridViewButtonColumn();
-            anotrButCo.HeaderText = "操作"; // 第二个按钮的标题文本
-            anotrButCo.Name = "btnCol2"; // 第二个按钮的名称
-            anotrButCo.DefaultCellStyle.NullValue = "删除";
-            // buttonColumn.DefaultCellStyle.NullValue = "删除";
-            // 将该列对象也添加到DataGridView控件中
-            dataGridView5.Columns.Add(anotrButCo);
-        }
-
-        private void button10_Click(object sender, EventArgs e)
-        {
-            mdb = new mdbDatas(databasePath);
-
-            DataTable codesData = mdb.Find("select ID as 编号 , Name as 型号 from Codes");
-            dataGridView5.DataSource = codesData;
-            comboBox3.DataSource = codesData;
-            comboBox3.DisplayMember = "型号";
-            comboBox3.ValueMember = "编号";
-            // Codes  ID CName
-            mdb.CloseConnection();
-        }
-
-        private void dataGridView5_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-            // Codes  ID CName
-            if (e.RowIndex == -1)
-            { return; }
-            //删除
-            if (dataGridView5.Columns[e.ColumnIndex].Name == "btnCol2")
-            {
-                //说明点击的列是DataGridViewButtonColumn列
-
-                DataGridViewColumn column = dataGridView5.Columns[e.ColumnIndex];
-                string pid = this.dataGridView5.Rows[e.RowIndex].Cells[2].Value.ToString();
-                mdb = new mdbDatas(databasePath);
-                bool bl = mdb.Del(" DELETE FROM  [Codes] WHERE [ID] = '" + pid + "'");
-                if (bl == true)
-                {
-                    MessageBox.Show("删除成功");
-                }
-                mdb.CloseConnection();
-                button10_Click(null, null);
-                // MessageBox.Show("删除功"+column);
-                // string username = Convert.ToString(dataGridView1.CurrentRow.Cells[0].Value);
-            }
-            //保存
-            if (dataGridView5.Columns[e.ColumnIndex].Name == "btnCol")
-            {
-                //说明点击的列是DataGridViewButtonColumn列
-                DataGridViewColumn column = dataGridView5.Columns[e.ColumnIndex];
-                string pid = this.dataGridView5.Rows[e.RowIndex].Cells[2].Value.ToString();
-                string funmae = this.dataGridView5.Rows[e.RowIndex].Cells[3].Value.ToString();
-                //int i = dateM.Rows.Count;
-                if (string.IsNullOrWhiteSpace(pid))
-                {
-                    MessageBox.Show("编号不能为空！");
-                    return;
-                }
-                mdb = new mdbDatas(databasePath);
-                DataTable table1 = mdb.Find("select * from Codes where [ID] = '" + pid + "'");
-                if (table1.Rows.Count > 0)
-                {
-                    string sql = "update [Codes] set [Name]='" + funmae + "'" + " where [ID] = '" + pid + "'";
-                    var result = mdb.Change(sql);
-                    if (result == true)
-                    {
-                        MessageBox.Show("修改成功");
-                    }
-                }
-                else
-                {
-                    string sql = "insert into Codes ([ID],[Name]) values ('"
-                        + pid + "','" + funmae + "')";
-                    bool result = mdb.Add(sql.ToString());
-                    if (result == true)
-                    {
-                        MessageBox.Show("新增成功");
-                    }
-                }
-
-                mdb.CloseConnection();
-                button10_Click(null, null);
-                //MessageBox.Show("新增功" + pid);
-                // string username = Convert.ToString(dataGridView1.CurrentRow.Cells[0].Value);
-            }
-        }
-
-        #endregion
 
         private void button11_Click(object sender, EventArgs e)
         {
             // textBox11.Focus();
-            Send("1+" + textBox11.Text);
+            Send("1+" + txt_WorkOrder.Text);
         }
 
         private void LogMsg(string msg)
@@ -1730,8 +1715,6 @@ namespace BulletinBoard
                 }
                 richTextBox3.AppendText(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + ":" + msg + "\r\n");
                 richTextBox3.ScrollToCaret();
-                //SaveCSVlog(msg);
-
             }));
         }
 
@@ -1745,6 +1728,41 @@ namespace BulletinBoard
         private string url => textBox_url.Text;
         private string site => textBox_site.Text;
         private string resource => textBox_resource.Text;
+
+        MesDatas.DatasModel.SytemInfoEntity MESInfo = null;
+
+        private void BtnSaveMESConfig_Click(object sender, EventArgs e)
+        {
+            MESInfo.IP = textBox_ip.Text;
+            MESInfo.Port = textBox_port.Text;
+            MESInfo.Timeout = textBox_timeout.Text;
+            MESInfo.NcCode = textBox_nccode.Text;
+            MESInfo.Opration = textBox_opration.Text;
+            MESInfo.Password = textBox_password.Text;
+            MESInfo.Resource = textBox_resource.Text;
+            MESInfo.Site = textBox_site.Text;
+            MESInfo.Url = textBox_url.Text;
+            MESInfo.User = textBox_user.Text;
+            SytemInfoEntityServer.GetSytemInfoEntityUpdate(MESInfo);
+            LoadMESConfig();
+        }
+
+        private void LoadMESConfig()
+        {
+            SytemInfoEntityServer.InitSytemInfoEntity();
+            MESInfo = SytemInfoEntityServer.GetSytemInfoEntity(1);
+            textBox_ip.Text = MESInfo.IP;
+            textBox_port.Text = MESInfo.Port;
+            textBox_timeout.Text = MESInfo.Timeout;
+            textBox_nccode.Text = MESInfo.NcCode;
+            textBox_opration.Text = MESInfo.Opration;
+            textBox_password.Text = MESInfo.Password;
+            textBox_resource.Text = MESInfo.Resource;
+            textBox_site.Text = MESInfo.Site;
+            textBox_url.Text = MESInfo.Url;
+            textBox_user.Text = MESInfo.User;
+            Config_Mes(ip, port, timeout, url, site, user, password, resource, operation, nccode);
+        }
 
         public void Config_Mes(string ip, string port, string timeout,
           string url, string site, string user, string password, string resource, string operation, string ncCode)
@@ -1761,42 +1779,6 @@ namespace BulletinBoard
             工艺部信息化组.CONFIG.Resource = resource;
             工艺部信息化组.CONFIG.Operation = operation;
             工艺部信息化组.CONFIG.NcCode = ncCode;
-        }
-
-        MesDatas.DatasModel.SytemInfoEntity infoEntity = null;
-
-        private void MESInitConfig()
-        {
-            SytemInfoEntityServer.InitSytemInfoEntity();
-            infoEntity = SytemInfoEntityServer.GetSytemInfoEntity(1);
-            textBox_ip.Text = infoEntity.IP;
-            textBox_port.Text = infoEntity.Port;
-            textBox_timeout.Text = infoEntity.Timeout;
-            textBox_nccode.Text = infoEntity.NcCode;
-            textBox_opration.Text = infoEntity.Opration;
-            textBox_password.Text = infoEntity.Password;
-            textBox_resource.Text = infoEntity.Resource;
-            textBox_site.Text = infoEntity.Site;
-            textBox_url.Text = infoEntity.Url;
-            textBox_user.Text = infoEntity.User;
-            Config_Mes(ip, port, timeout, url, site, user, password, resource, operation, nccode);
-        }
-
-        private void button15_Click(object sender, EventArgs e)
-        {
-            //MesDatas.DatasModel.SytemInfoEntity infoEntity = new MesDatas.DatasModel.SytemInfoEntity();
-            infoEntity.IP = textBox_ip.Text;
-            infoEntity.Port = textBox_port.Text;
-            infoEntity.Timeout = textBox_timeout.Text;
-            infoEntity.NcCode = textBox_nccode.Text;
-            infoEntity.Opration = textBox_opration.Text;
-            infoEntity.Password = textBox_password.Text;
-            infoEntity.Resource = textBox_resource.Text;
-            infoEntity.Site = textBox_site.Text;
-            infoEntity.Url = textBox_url.Text;
-            infoEntity.User = textBox_user.Text;
-            SytemInfoEntityServer.GetSytemInfoEntityUpdate(infoEntity);
-            MESInitConfig();
         }
 
         private async void button8_Click_1(object sender, EventArgs e)
