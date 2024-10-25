@@ -1,14 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data;
 using System.Data.OleDb;
-using System.Data.SqlClient;
 using System.IO;
-using System.Windows.Forms;
-using System.Collections;
 
 namespace MesDatas
 {
@@ -17,7 +12,6 @@ namespace MesDatas
         System.Reflection.Missing vtMissing = System.Reflection.Missing.Value;
         private OleDbConnection myConn;
         private OleDbConnection myConn1;
-
 
         /// <summary>
         /// 初始化连接数据库
@@ -28,7 +22,7 @@ namespace MesDatas
             try
             {
                 //创建一个 OleDbConnection对象
-                string strCon = " Provider = Microsoft.Jet.OLEDB.4.0 ; Data Source =" + address+";Persist Security Info=True";
+                string strCon = " Provider = Microsoft.Jet.OLEDB.4.0 ; Data Source =" + address + ";Persist Security Info=True";
                 myConn = new OleDbConnection(strCon);
                 myConn.Open();
             }
@@ -37,8 +31,10 @@ namespace MesDatas
                 ex.ToString();
             }
         }
+
         public mdbDatas()
         { }
+
         /// <summary>
         /// 是否连接成功
         /// </summary>
@@ -60,6 +56,7 @@ namespace MesDatas
                 return false;
             }
         }
+
         /// <summary>
         /// 是否连接成功
         /// </summary>
@@ -81,6 +78,7 @@ namespace MesDatas
                 return false;
             }
         }
+
         public bool OpenConnction()
         {
             if (myConn.State == ConnectionState.Closed)
@@ -93,6 +91,7 @@ namespace MesDatas
                 return false;
             }
         }
+
         /// <summary>
         /// 关闭数据连接
         /// </summary>
@@ -100,6 +99,7 @@ namespace MesDatas
         {
             myConn.Close();
         }
+
         /// <summary>
         /// 创建一个类型和datatable一致的空表
         /// </summary>
@@ -132,6 +132,7 @@ namespace MesDatas
                 throw (ex);
             }
         }
+
         /// <summary>
         /// 将datatable导入对应名字的表中
         /// </summary>
@@ -165,6 +166,7 @@ namespace MesDatas
                 throw (ex);
             }
         }
+
         /// <summary>
         /// 更新一行数据到mdb数据库
         /// </summary>
@@ -192,23 +194,31 @@ namespace MesDatas
                 throw (ex);
             }
         }
-        public bool Add(string sql) //往表中添加一条记录
+
+        /// <summary>
+        /// 往表中添加一条记录
+        /// </summary>
+        /// <param name="sql"></param>
+        /// <returns></returns>
+        public bool Add(string sql)
         {
             OleDbCommand oleDbCommand = new OleDbCommand(sql, myConn);
             int i = oleDbCommand.ExecuteNonQuery(); //返回被修改的数目
             return i > 0;
         }
+
         /// <summary>
         /// 删除记录
         /// </summary>
         /// <param name="sql"></param>
         /// <returns></returns>
-        public bool Del(string sql) 
+        public bool Del(string sql)
         {
             OleDbCommand oleDbCommand = new OleDbCommand(sql, myConn);
             int i = oleDbCommand.ExecuteNonQuery();
             return i > 0;
         }
+
         /// <summary>
         /// 修改记录
         /// </summary>
@@ -228,6 +238,7 @@ namespace MesDatas
                 throw (ex);
             }
         }
+
         /// <summary>
         /// 获取数据
         /// </summary>
@@ -244,13 +255,13 @@ namespace MesDatas
             //}
             return dt;
         }
-  
+
         /// <summary>
         /// 获取创建mdb表格的属性字段类型
         /// </summary>
         /// <param name="datatype"></param>
         /// <returns></returns>
-        private  string GetType(string datatype)
+        private string GetType(string datatype)
         {
             switch (datatype)//匹配类型选择
             {
@@ -268,6 +279,7 @@ namespace MesDatas
                     return "TEXT(50)";
             }
         }
+
         /// <summary>
         /// 创建Access数据库
         /// </summary>
@@ -327,10 +339,10 @@ namespace MesDatas
             {
                 ADOX.CatalogClass cat = new ADOX.CatalogClass();
                 string sAccessConnection
-                 = @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + mdbPath+ ";Persist Security Info=True";
+                 = @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + mdbPath + ";Persist Security Info=True";
                 ADODB.Connection cn = new ADODB.Connection();
                 cn.Open(sAccessConnection, null, null, -1);
-                 cat.ActiveConnection = cn;
+                cat.ActiveConnection = cn;
 
                 //新建一个表 
                 ADOX.TableClass tbl = new ADOX.TableClass();
@@ -346,7 +358,7 @@ namespace MesDatas
                 autoIncCol.Properties["AutoIncrement"].Value = true; // 设置自增属性为true  
                 //autoIncCol.Properties["Jet OLEDB:AutoIncrement Seed"].Value = 1; // 设置自增起始值为1，根据需要更改  
                 //autoIncCol.Properties["Jet OLEDB:AutoIncrement Step"].Value = 1; // 设置自增步长为1，根据需要更改  
-                tbl.Columns.Append(autoIncCol, ADOX.DataTypeEnum.adInteger,1); // 将自增字段添加到表中
+                tbl.Columns.Append(autoIncCol, ADOX.DataTypeEnum.adInteger, 1); // 将自增字段添加到表中
 
                 int size = mdbHead.Count;
                 for (int i = 0; i < size; i++)
@@ -364,9 +376,11 @@ namespace MesDatas
                 cn.Close();
                 return true;
             }
-            catch(Exception ex) {
-                string str=ex.Message;
-                return false; }
+            catch (Exception ex)
+            {
+                string str = ex.Message;
+                return false;
+            }
         }
 
         // 读取mdb数据 
@@ -417,6 +431,7 @@ namespace MesDatas
                 return dt;
             }
         }
+
         //static string mdbPath;
         // 读取mdb数据 
         public static DataTable ReadDataByColumns_beifen(string mdbPath, string tableName, string[] columns, ref bool success)
@@ -473,6 +488,7 @@ namespace MesDatas
                 return dt;
             }
         }
+
         public static DataTable ReadDataByColumns(string mdbPath, string tableName, string columns, ref bool success)
         {
             DataTable dt = new DataTable();

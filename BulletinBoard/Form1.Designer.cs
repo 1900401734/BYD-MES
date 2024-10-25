@@ -42,34 +42,34 @@ namespace BulletinBoard
             this.dataGridView5 = new System.Windows.Forms.DataGridView();
             this.label15 = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.textBox8 = new System.Windows.Forms.TextBox();
-            this.textBox9 = new System.Windows.Forms.TextBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.txt_FinalDeviceName = new System.Windows.Forms.TextBox();
+            this.txt_GenarateSpeed = new System.Windows.Forms.TextBox();
+            this.chkStationID = new System.Windows.Forms.CheckBox();
             this.label13 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
-            this.button6 = new System.Windows.Forms.Button();
+            this.btnSaveAtStatisticsSettings = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.button4 = new System.Windows.Forms.Button();
+            this.btnInitDatabase = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.button2 = new System.Windows.Forms.Button();
-            this.label7 = new System.Windows.Forms.Label();
-            this.textBox5 = new System.Windows.Forms.TextBox();
+            this.btnClean = new System.Windows.Forms.Button();
+            this.lblTotalCount = new System.Windows.Forms.Label();
+            this.txtStationList = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.label10 = new System.Windows.Forms.Label();
+            this.lblDatabasePath = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
-            this.button5 = new System.Windows.Forms.Button();
+            this.btnChangePath = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
-            this.textBox6 = new System.Windows.Forms.TextBox();
-            this.textBox7 = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.textBox4 = new System.Windows.Forms.TextBox();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.txt_ServerPort = new System.Windows.Forms.TextBox();
+            this.txt_ServerIP = new System.Windows.Forms.TextBox();
+            this.btnSaveServerConfig = new System.Windows.Forms.Button();
+            this.cboPLineAttribute = new System.Windows.Forms.ComboBox();
+            this.txt_PLineDescription = new System.Windows.Forms.TextBox();
+            this.txt_PLineName = new System.Windows.Forms.TextBox();
+            this.txt_WorkshopName = new System.Windows.Forms.TextBox();
+            this.txt_BaseName = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -276,12 +276,12 @@ namespace BulletinBoard
             // 
             // tabPage3
             // 
-            this.tabPage3.Controls.Add(this.textBox8);
-            this.tabPage3.Controls.Add(this.textBox9);
-            this.tabPage3.Controls.Add(this.checkBox1);
+            this.tabPage3.Controls.Add(this.txt_FinalDeviceName);
+            this.tabPage3.Controls.Add(this.txt_GenarateSpeed);
+            this.tabPage3.Controls.Add(this.chkStationID);
             this.tabPage3.Controls.Add(this.label13);
             this.tabPage3.Controls.Add(this.label12);
-            this.tabPage3.Controls.Add(this.button6);
+            this.tabPage3.Controls.Add(this.btnSaveAtStatisticsSettings);
             this.tabPage3.Location = new System.Drawing.Point(4, 4);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
@@ -290,30 +290,30 @@ namespace BulletinBoard
             this.tabPage3.Text = "统计设置";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
-            // textBox8
+            // txt_FinalDeviceName
             // 
-            this.textBox8.Location = new System.Drawing.Point(193, 8);
-            this.textBox8.Name = "textBox8";
-            this.textBox8.Size = new System.Drawing.Size(473, 35);
-            this.textBox8.TabIndex = 7;
+            this.txt_FinalDeviceName.Location = new System.Drawing.Point(193, 20);
+            this.txt_FinalDeviceName.Name = "txt_FinalDeviceName";
+            this.txt_FinalDeviceName.Size = new System.Drawing.Size(473, 35);
+            this.txt_FinalDeviceName.TabIndex = 7;
             // 
-            // textBox9
+            // txt_GenarateSpeed
             // 
-            this.textBox9.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.textBox9.Location = new System.Drawing.Point(153, 113);
-            this.textBox9.Name = "textBox9";
-            this.textBox9.Size = new System.Drawing.Size(513, 39);
-            this.textBox9.TabIndex = 4;
+            this.txt_GenarateSpeed.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.txt_GenarateSpeed.Location = new System.Drawing.Point(193, 113);
+            this.txt_GenarateSpeed.Name = "txt_GenarateSpeed";
+            this.txt_GenarateSpeed.Size = new System.Drawing.Size(473, 39);
+            this.txt_GenarateSpeed.TabIndex = 4;
             // 
-            // checkBox1
+            // chkStationID
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(843, 73);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(108, 28);
-            this.checkBox1.TabIndex = 6;
-            this.checkBox1.Text = "工位号";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.chkStationID.AutoSize = true;
+            this.chkStationID.Location = new System.Drawing.Point(737, 68);
+            this.chkStationID.Name = "chkStationID";
+            this.chkStationID.Size = new System.Drawing.Size(108, 28);
+            this.chkStationID.TabIndex = 6;
+            this.chkStationID.Text = "工位号";
+            this.chkStationID.UseVisualStyleBackColor = true;
             // 
             // label13
             // 
@@ -333,19 +333,19 @@ namespace BulletinBoard
             this.label12.TabIndex = 3;
             this.label12.Text = "设计生成速度:";
             // 
-            // button6
+            // btnSaveAtStatisticsSettings
             // 
-            this.button6.Location = new System.Drawing.Point(85, 186);
-            this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(146, 48);
-            this.button6.TabIndex = 1;
-            this.button6.Text = "保存";
-            this.button6.UseVisualStyleBackColor = true;
-            this.button6.Click += new System.EventHandler(this.button6_Click);
+            this.btnSaveAtStatisticsSettings.Location = new System.Drawing.Point(193, 185);
+            this.btnSaveAtStatisticsSettings.Name = "btnSaveAtStatisticsSettings";
+            this.btnSaveAtStatisticsSettings.Size = new System.Drawing.Size(146, 48);
+            this.btnSaveAtStatisticsSettings.TabIndex = 1;
+            this.btnSaveAtStatisticsSettings.Text = "保存";
+            this.btnSaveAtStatisticsSettings.UseVisualStyleBackColor = true;
+            this.btnSaveAtStatisticsSettings.Click += new System.EventHandler(this.BtnModifyFinalStation_Click);
             // 
             // tabPage2
             // 
-            this.tabPage2.Controls.Add(this.button4);
+            this.tabPage2.Controls.Add(this.btnInitDatabase);
             this.tabPage2.Controls.Add(this.groupBox2);
             this.tabPage2.Controls.Add(this.groupBox1);
             this.tabPage2.Location = new System.Drawing.Point(4, 4);
@@ -356,21 +356,21 @@ namespace BulletinBoard
             this.tabPage2.Text = "服务器设置";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
-            // button4
+            // btnInitDatabase
             // 
-            this.button4.Location = new System.Drawing.Point(672, 411);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(170, 95);
-            this.button4.TabIndex = 7;
-            this.button4.Text = "初始化数据库";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
+            this.btnInitDatabase.Location = new System.Drawing.Point(672, 411);
+            this.btnInitDatabase.Name = "btnInitDatabase";
+            this.btnInitDatabase.Size = new System.Drawing.Size(170, 95);
+            this.btnInitDatabase.TabIndex = 7;
+            this.btnInitDatabase.Text = "初始化数据库";
+            this.btnInitDatabase.UseVisualStyleBackColor = true;
+            this.btnInitDatabase.Click += new System.EventHandler(this.button4_Click);
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.button2);
-            this.groupBox2.Controls.Add(this.label7);
-            this.groupBox2.Controls.Add(this.textBox5);
+            this.groupBox2.Controls.Add(this.btnClean);
+            this.groupBox2.Controls.Add(this.lblTotalCount);
+            this.groupBox2.Controls.Add(this.txtStationList);
             this.groupBox2.Location = new System.Drawing.Point(10, 345);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(656, 164);
@@ -378,44 +378,44 @@ namespace BulletinBoard
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "工位信息";
             // 
-            // button2
+            // btnClean
             // 
-            this.button2.Location = new System.Drawing.Point(525, 17);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(125, 38);
-            this.button2.TabIndex = 2;
-            this.button2.Text = "清空";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.btnClean.Location = new System.Drawing.Point(525, 17);
+            this.btnClean.Name = "btnClean";
+            this.btnClean.Size = new System.Drawing.Size(125, 38);
+            this.btnClean.TabIndex = 2;
+            this.btnClean.Text = "清空";
+            this.btnClean.UseVisualStyleBackColor = true;
+            this.btnClean.Click += new System.EventHandler(this.BtnCleanStationList_Click);
             // 
-            // label7
+            // lblTotalCount
             // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(215, 23);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(94, 24);
-            this.label7.TabIndex = 1;
-            this.label7.Text = "总共：0";
+            this.lblTotalCount.AutoSize = true;
+            this.lblTotalCount.Location = new System.Drawing.Point(215, 23);
+            this.lblTotalCount.Name = "lblTotalCount";
+            this.lblTotalCount.Size = new System.Drawing.Size(94, 24);
+            this.lblTotalCount.TabIndex = 1;
+            this.lblTotalCount.Text = "总共：0";
             // 
-            // textBox5
+            // txtStationList
             // 
-            this.textBox5.Location = new System.Drawing.Point(0, 61);
-            this.textBox5.Multiline = true;
-            this.textBox5.Name = "textBox5";
-            this.textBox5.ReadOnly = true;
-            this.textBox5.Size = new System.Drawing.Size(656, 103);
-            this.textBox5.TabIndex = 0;
+            this.txtStationList.Location = new System.Drawing.Point(0, 61);
+            this.txtStationList.Multiline = true;
+            this.txtStationList.Name = "txtStationList";
+            this.txtStationList.ReadOnly = true;
+            this.txtStationList.Size = new System.Drawing.Size(656, 103);
+            this.txtStationList.TabIndex = 0;
             // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.groupBox4);
             this.groupBox1.Controls.Add(this.groupBox3);
-            this.groupBox1.Controls.Add(this.button1);
-            this.groupBox1.Controls.Add(this.comboBox1);
-            this.groupBox1.Controls.Add(this.textBox4);
-            this.groupBox1.Controls.Add(this.textBox3);
-            this.groupBox1.Controls.Add(this.textBox2);
-            this.groupBox1.Controls.Add(this.textBox1);
+            this.groupBox1.Controls.Add(this.btnSaveServerConfig);
+            this.groupBox1.Controls.Add(this.cboPLineAttribute);
+            this.groupBox1.Controls.Add(this.txt_PLineDescription);
+            this.groupBox1.Controls.Add(this.txt_PLineName);
+            this.groupBox1.Controls.Add(this.txt_WorkshopName);
+            this.groupBox1.Controls.Add(this.txt_BaseName);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.label6);
             this.groupBox1.Controls.Add(this.label2);
@@ -434,57 +434,57 @@ namespace BulletinBoard
             // 
             // groupBox4
             // 
-            this.groupBox4.Controls.Add(this.label10);
+            this.groupBox4.Controls.Add(this.lblDatabasePath);
             this.groupBox4.Controls.Add(this.label11);
-            this.groupBox4.Controls.Add(this.button5);
+            this.groupBox4.Controls.Add(this.btnChangePath);
             this.groupBox4.Location = new System.Drawing.Point(7, 189);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(407, 131);
+            this.groupBox4.Size = new System.Drawing.Size(477, 131);
             this.groupBox4.TabIndex = 63;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "本地数据存放路径";
             // 
-            // label10
+            // lblDatabasePath
             // 
-            this.label10.AutoSize = true;
-            this.label10.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label10.Location = new System.Drawing.Point(114, 46);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(310, 31);
-            this.label10.TabIndex = 2;
-            this.label10.Text = "D:\\DataBase\\DAB折叠设备";
+            this.lblDatabasePath.AutoSize = true;
+            this.lblDatabasePath.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.lblDatabasePath.Location = new System.Drawing.Point(114, 50);
+            this.lblDatabasePath.Name = "lblDatabasePath";
+            this.lblDatabasePath.Size = new System.Drawing.Size(310, 31);
+            this.lblDatabasePath.TabIndex = 2;
+            this.lblDatabasePath.Text = "D:\\DataBase\\DAB折叠设备";
             // 
             // label11
             // 
             this.label11.AutoSize = true;
             this.label11.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label11.Location = new System.Drawing.Point(18, 46);
+            this.label11.Location = new System.Drawing.Point(-5, 47);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(134, 31);
             this.label11.TabIndex = 1;
             this.label11.Text = "当前路径：";
             // 
-            // button5
+            // btnChangePath
             // 
-            this.button5.Location = new System.Drawing.Point(226, 80);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(167, 41);
-            this.button5.TabIndex = 0;
-            this.button5.Text = "变更存放路径";
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
+            this.btnChangePath.Location = new System.Drawing.Point(169, 84);
+            this.btnChangePath.Name = "btnChangePath";
+            this.btnChangePath.Size = new System.Drawing.Size(167, 41);
+            this.btnChangePath.TabIndex = 0;
+            this.btnChangePath.Text = "变更存放路径";
+            this.btnChangePath.UseVisualStyleBackColor = true;
+            this.btnChangePath.Click += new System.EventHandler(this.button5_Click);
             // 
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.label8);
             this.groupBox3.Controls.Add(this.label9);
-            this.groupBox3.Controls.Add(this.textBox6);
-            this.groupBox3.Controls.Add(this.textBox7);
+            this.groupBox3.Controls.Add(this.txt_ServerPort);
+            this.groupBox3.Controls.Add(this.txt_ServerIP);
             this.groupBox3.Location = new System.Drawing.Point(8, 31);
             this.groupBox3.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Padding = new System.Windows.Forms.Padding(4);
-            this.groupBox3.Size = new System.Drawing.Size(406, 150);
+            this.groupBox3.Size = new System.Drawing.Size(476, 150);
             this.groupBox3.TabIndex = 62;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "服务端参数";
@@ -509,84 +509,84 @@ namespace BulletinBoard
             this.label9.TabIndex = 0;
             this.label9.Text = "IP:";
             // 
-            // textBox6
+            // txt_ServerPort
             // 
-            this.textBox6.Location = new System.Drawing.Point(72, 108);
-            this.textBox6.Margin = new System.Windows.Forms.Padding(4);
-            this.textBox6.Name = "textBox6";
-            this.textBox6.Size = new System.Drawing.Size(320, 35);
-            this.textBox6.TabIndex = 2;
+            this.txt_ServerPort.Location = new System.Drawing.Point(72, 108);
+            this.txt_ServerPort.Margin = new System.Windows.Forms.Padding(4);
+            this.txt_ServerPort.Name = "txt_ServerPort";
+            this.txt_ServerPort.Size = new System.Drawing.Size(396, 35);
+            this.txt_ServerPort.TabIndex = 2;
             // 
-            // textBox7
+            // txt_ServerIP
             // 
-            this.textBox7.Location = new System.Drawing.Point(72, 51);
-            this.textBox7.Margin = new System.Windows.Forms.Padding(4);
-            this.textBox7.Name = "textBox7";
-            this.textBox7.Size = new System.Drawing.Size(320, 35);
-            this.textBox7.TabIndex = 1;
+            this.txt_ServerIP.Location = new System.Drawing.Point(72, 51);
+            this.txt_ServerIP.Margin = new System.Windows.Forms.Padding(4);
+            this.txt_ServerIP.Name = "txt_ServerIP";
+            this.txt_ServerIP.Size = new System.Drawing.Size(396, 35);
+            this.txt_ServerIP.TabIndex = 1;
             // 
-            // button1
+            // btnSaveServerConfig
             // 
-            this.button1.Location = new System.Drawing.Point(592, 268);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(128, 42);
-            this.button1.TabIndex = 10;
-            this.button1.Text = "保存";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click_2);
+            this.btnSaveServerConfig.Location = new System.Drawing.Point(768, 278);
+            this.btnSaveServerConfig.Name = "btnSaveServerConfig";
+            this.btnSaveServerConfig.Size = new System.Drawing.Size(128, 42);
+            this.btnSaveServerConfig.TabIndex = 10;
+            this.btnSaveServerConfig.Text = "保存";
+            this.btnSaveServerConfig.UseVisualStyleBackColor = true;
+            this.btnSaveServerConfig.Click += new System.EventHandler(this.BtnSaveServerConfig_Click);
             // 
-            // comboBox1
+            // cboPLineAttribute
             // 
-            this.comboBox1.AutoCompleteCustomSource.AddRange(new string[] {
+            this.cboPLineAttribute.AutoCompleteCustomSource.AddRange(new string[] {
             "手动",
             "自动"});
-            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Items.AddRange(new object[] {
+            this.cboPLineAttribute.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboPLineAttribute.FormattingEnabled = true;
+            this.cboPLineAttribute.Items.AddRange(new object[] {
             "手动",
             "自动"});
-            this.comboBox1.Location = new System.Drawing.Point(525, 233);
-            this.comboBox1.Margin = new System.Windows.Forms.Padding(4);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(508, 32);
-            this.comboBox1.TabIndex = 9;
+            this.cboPLineAttribute.Location = new System.Drawing.Point(595, 237);
+            this.cboPLineAttribute.Margin = new System.Windows.Forms.Padding(4);
+            this.cboPLineAttribute.Name = "cboPLineAttribute";
+            this.cboPLineAttribute.Size = new System.Drawing.Size(508, 32);
+            this.cboPLineAttribute.TabIndex = 9;
             // 
-            // textBox4
+            // txt_PLineDescription
             // 
-            this.textBox4.Location = new System.Drawing.Point(525, 186);
-            this.textBox4.Margin = new System.Windows.Forms.Padding(4);
-            this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(508, 35);
-            this.textBox4.TabIndex = 8;
+            this.txt_PLineDescription.Location = new System.Drawing.Point(595, 190);
+            this.txt_PLineDescription.Margin = new System.Windows.Forms.Padding(4);
+            this.txt_PLineDescription.Name = "txt_PLineDescription";
+            this.txt_PLineDescription.Size = new System.Drawing.Size(508, 35);
+            this.txt_PLineDescription.TabIndex = 8;
             // 
-            // textBox3
+            // txt_PLineName
             // 
-            this.textBox3.Location = new System.Drawing.Point(525, 135);
-            this.textBox3.Margin = new System.Windows.Forms.Padding(4);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(508, 35);
-            this.textBox3.TabIndex = 7;
+            this.txt_PLineName.Location = new System.Drawing.Point(595, 139);
+            this.txt_PLineName.Margin = new System.Windows.Forms.Padding(4);
+            this.txt_PLineName.Name = "txt_PLineName";
+            this.txt_PLineName.Size = new System.Drawing.Size(508, 35);
+            this.txt_PLineName.TabIndex = 7;
             // 
-            // textBox2
+            // txt_WorkshopName
             // 
-            this.textBox2.Location = new System.Drawing.Point(525, 87);
-            this.textBox2.Margin = new System.Windows.Forms.Padding(4);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(508, 35);
-            this.textBox2.TabIndex = 6;
+            this.txt_WorkshopName.Location = new System.Drawing.Point(595, 91);
+            this.txt_WorkshopName.Margin = new System.Windows.Forms.Padding(4);
+            this.txt_WorkshopName.Name = "txt_WorkshopName";
+            this.txt_WorkshopName.Size = new System.Drawing.Size(508, 35);
+            this.txt_WorkshopName.TabIndex = 6;
             // 
-            // textBox1
+            // txt_BaseName
             // 
-            this.textBox1.Location = new System.Drawing.Point(525, 41);
-            this.textBox1.Margin = new System.Windows.Forms.Padding(4);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(508, 35);
-            this.textBox1.TabIndex = 5;
+            this.txt_BaseName.Location = new System.Drawing.Point(595, 45);
+            this.txt_BaseName.Margin = new System.Windows.Forms.Padding(4);
+            this.txt_BaseName.Name = "txt_BaseName";
+            this.txt_BaseName.Size = new System.Drawing.Size(508, 35);
+            this.txt_BaseName.TabIndex = 5;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(422, 44);
+            this.label1.Location = new System.Drawing.Point(492, 48);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(118, 24);
@@ -596,7 +596,7 @@ namespace BulletinBoard
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(422, 236);
+            this.label6.Location = new System.Drawing.Point(492, 240);
             this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(118, 24);
@@ -606,7 +606,7 @@ namespace BulletinBoard
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(422, 90);
+            this.label2.Location = new System.Drawing.Point(492, 94);
             this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(118, 24);
@@ -616,7 +616,7 @@ namespace BulletinBoard
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(422, 189);
+            this.label4.Location = new System.Drawing.Point(492, 193);
             this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(118, 24);
@@ -626,7 +626,7 @@ namespace BulletinBoard
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(422, 138);
+            this.label3.Location = new System.Drawing.Point(492, 142);
             this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(118, 24);
@@ -715,7 +715,6 @@ namespace BulletinBoard
             this.label30.Size = new System.Drawing.Size(70, 24);
             this.label30.TabIndex = 60;
             this.label30.Text = "端口:";
-            this.label30.Click += new System.EventHandler(this.label30_Click);
             // 
             // label5
             // 
@@ -1278,34 +1277,34 @@ namespace BulletinBoard
         private System.Windows.Forms.DataGridView dataGridView5;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.TabPage tabPage3;
-        private System.Windows.Forms.TextBox textBox8;
-        private System.Windows.Forms.TextBox textBox9;
-        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.TextBox txt_FinalDeviceName;
+        private System.Windows.Forms.TextBox txt_GenarateSpeed;
+        private System.Windows.Forms.CheckBox chkStationID;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.Button btnSaveAtStatisticsSettings;
         private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button btnInitDatabase;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.TextBox textBox5;
+        private System.Windows.Forms.Button btnClean;
+        private System.Windows.Forms.Label lblTotalCount;
+        private System.Windows.Forms.TextBox txtStationList;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label lblDatabasePath;
         private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.Button btnChangePath;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.TextBox textBox6;
-        private System.Windows.Forms.TextBox textBox7;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.ComboBox comboBox1;
-        private System.Windows.Forms.TextBox textBox4;
-        private System.Windows.Forms.TextBox textBox3;
-        private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox txt_ServerPort;
+        private System.Windows.Forms.TextBox txt_ServerIP;
+        private System.Windows.Forms.Button btnSaveServerConfig;
+        private System.Windows.Forms.ComboBox cboPLineAttribute;
+        private System.Windows.Forms.TextBox txt_PLineDescription;
+        private System.Windows.Forms.TextBox txt_PLineName;
+        private System.Windows.Forms.TextBox txt_WorkshopName;
+        private System.Windows.Forms.TextBox txt_BaseName;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label2;
