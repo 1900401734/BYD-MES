@@ -76,7 +76,7 @@ namespace BulletinBoard
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.dgvClientInfo = new System.Windows.Forms.DataGridView();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.button7 = new System.Windows.Forms.Button();
@@ -136,7 +136,7 @@ namespace BulletinBoard
             this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.tabPage1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvClientInfo)).BeginInit();
             this.groupBox5.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage5.SuspendLayout();
@@ -163,9 +163,9 @@ namespace BulletinBoard
             // 
             this.groupBox7.Controls.Add(this.txt_WorkOrder);
             this.groupBox7.Controls.Add(this.btnSendWorkOrder);
-            this.groupBox7.Location = new System.Drawing.Point(322, 214);
+            this.groupBox7.Location = new System.Drawing.Point(407, 241);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(553, 154);
+            this.groupBox7.Size = new System.Drawing.Size(476, 154);
             this.groupBox7.TabIndex = 77;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "生产工单";
@@ -175,12 +175,12 @@ namespace BulletinBoard
             this.txt_WorkOrder.Font = new System.Drawing.Font("宋体", 22.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.txt_WorkOrder.Location = new System.Drawing.Point(8, 34);
             this.txt_WorkOrder.Name = "txt_WorkOrder";
-            this.txt_WorkOrder.Size = new System.Drawing.Size(539, 58);
+            this.txt_WorkOrder.Size = new System.Drawing.Size(462, 58);
             this.txt_WorkOrder.TabIndex = 72;
             // 
             // btnSendWorkOrder
             // 
-            this.btnSendWorkOrder.Location = new System.Drawing.Point(18, 90);
+            this.btnSendWorkOrder.Location = new System.Drawing.Point(6, 98);
             this.btnSendWorkOrder.Name = "btnSendWorkOrder";
             this.btnSendWorkOrder.Size = new System.Drawing.Size(118, 48);
             this.btnSendWorkOrder.TabIndex = 73;
@@ -192,9 +192,9 @@ namespace BulletinBoard
             // 
             this.groupBox6.Controls.Add(this.cboProductModel);
             this.groupBox6.Controls.Add(this.btnSendPModel);
-            this.groupBox6.Location = new System.Drawing.Point(316, 71);
+            this.groupBox6.Location = new System.Drawing.Point(407, 98);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(565, 123);
+            this.groupBox6.Size = new System.Drawing.Size(476, 140);
             this.groupBox6.TabIndex = 76;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "产品型号";
@@ -206,12 +206,12 @@ namespace BulletinBoard
             this.cboProductModel.FormattingEnabled = true;
             this.cboProductModel.Location = new System.Drawing.Point(6, 24);
             this.cboProductModel.Name = "cboProductModel";
-            this.cboProductModel.Size = new System.Drawing.Size(553, 48);
+            this.cboProductModel.Size = new System.Drawing.Size(464, 48);
             this.cboProductModel.TabIndex = 1;
             // 
             // btnSendPModel
             // 
-            this.btnSendPModel.Location = new System.Drawing.Point(14, 71);
+            this.btnSendPModel.Location = new System.Drawing.Point(8, 78);
             this.btnSendPModel.Name = "btnSendPModel";
             this.btnSendPModel.Size = new System.Drawing.Size(120, 46);
             this.btnSendPModel.TabIndex = 0;
@@ -221,21 +221,20 @@ namespace BulletinBoard
             // 
             // richTextBox3
             // 
-            this.richTextBox3.Dock = System.Windows.Forms.DockStyle.Right;
-            this.richTextBox3.Location = new System.Drawing.Point(888, 3);
+            this.richTextBox3.Location = new System.Drawing.Point(890, 9);
             this.richTextBox3.Margin = new System.Windows.Forms.Padding(4);
             this.richTextBox3.Name = "richTextBox3";
-            this.richTextBox3.Size = new System.Drawing.Size(439, 503);
+            this.richTextBox3.Size = new System.Drawing.Size(431, 493);
             this.richTextBox3.TabIndex = 75;
             this.richTextBox3.Text = "";
             // 
             // btnRefresh
             // 
-            this.btnRefresh.Location = new System.Drawing.Point(316, 6);
+            this.btnRefresh.Location = new System.Drawing.Point(415, 23);
             this.btnRefresh.Name = "btnRefresh";
-            this.btnRefresh.Size = new System.Drawing.Size(142, 59);
+            this.btnRefresh.Size = new System.Drawing.Size(173, 59);
             this.btnRefresh.TabIndex = 71;
-            this.btnRefresh.Text = "刷新";
+            this.btnRefresh.Text = "刷新产品型号";
             this.btnRefresh.UseVisualStyleBackColor = true;
             this.btnRefresh.Click += new System.EventHandler(this.BtnFreshModelBoard_Click);
             // 
@@ -247,7 +246,7 @@ namespace BulletinBoard
             this.groupBox28.ForeColor = System.Drawing.Color.Red;
             this.groupBox28.Location = new System.Drawing.Point(3, 3);
             this.groupBox28.Name = "groupBox28";
-            this.groupBox28.Size = new System.Drawing.Size(306, 503);
+            this.groupBox28.Size = new System.Drawing.Size(401, 503);
             this.groupBox28.TabIndex = 70;
             this.groupBox28.TabStop = false;
             this.groupBox28.Text = "型号设置";
@@ -261,7 +260,7 @@ namespace BulletinBoard
             this.dgvPModelSettings.RowHeadersVisible = false;
             this.dgvPModelSettings.RowHeadersWidth = 51;
             this.dgvPModelSettings.RowTemplate.Height = 27;
-            this.dgvPModelSettings.Size = new System.Drawing.Size(300, 469);
+            this.dgvPModelSettings.Size = new System.Drawing.Size(395, 469);
             this.dgvPModelSettings.TabIndex = 63;
             this.dgvPModelSettings.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView5_CellContentClick);
             // 
@@ -364,7 +363,7 @@ namespace BulletinBoard
             this.btnInitDatabase.TabIndex = 7;
             this.btnInitDatabase.Text = "初始化数据库";
             this.btnInitDatabase.UseVisualStyleBackColor = true;
-            this.btnInitDatabase.Click += new System.EventHandler(this.button4_Click);
+            this.btnInitDatabase.Click += new System.EventHandler(this.RebuildDatabase_Click);
             // 
             // groupBox2
             // 
@@ -635,7 +634,7 @@ namespace BulletinBoard
             // 
             // tabPage1
             // 
-            this.tabPage1.Controls.Add(this.dataGridView1);
+            this.tabPage1.Controls.Add(this.dgvClientInfo);
             this.tabPage1.Controls.Add(this.richTextBox1);
             this.tabPage1.Controls.Add(this.groupBox5);
             this.tabPage1.Location = new System.Drawing.Point(4, 4);
@@ -646,18 +645,18 @@ namespace BulletinBoard
             this.tabPage1.Text = "运行状态";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // dataGridView1
+            // dgvClientInfo
             // 
-            this.dataGridView1.AllowUserToAddRows = false;
-            this.dataGridView1.AllowUserToDeleteRows = false;
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(10, 154);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.ReadOnly = true;
-            this.dataGridView1.RowHeadersWidth = 51;
-            this.dataGridView1.RowTemplate.Height = 27;
-            this.dataGridView1.Size = new System.Drawing.Size(708, 351);
-            this.dataGridView1.TabIndex = 65;
+            this.dgvClientInfo.AllowUserToAddRows = false;
+            this.dgvClientInfo.AllowUserToDeleteRows = false;
+            this.dgvClientInfo.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvClientInfo.Location = new System.Drawing.Point(10, 154);
+            this.dgvClientInfo.Name = "dgvClientInfo";
+            this.dgvClientInfo.ReadOnly = true;
+            this.dgvClientInfo.RowHeadersWidth = 51;
+            this.dgvClientInfo.RowTemplate.Height = 27;
+            this.dgvClientInfo.Size = new System.Drawing.Size(708, 351);
+            this.dgvClientInfo.TabIndex = 65;
             // 
             // richTextBox1
             // 
@@ -1249,7 +1248,7 @@ namespace BulletinBoard
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.tabPage1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvClientInfo)).EndInit();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
             this.tabControl1.ResumeLayout(false);
@@ -1311,7 +1310,7 @@ namespace BulletinBoard
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.DataGridView dgvClientInfo;
         private System.Windows.Forms.RichTextBox richTextBox1;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.Button button7;
