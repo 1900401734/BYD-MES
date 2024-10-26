@@ -41,3 +41,5 @@
 **/*.nupkg
 **/[Pp]ackages/*
 !**/[pp]ackages/build/
+/.cr/personal/Editor
+/BulletinBoard/NLog.xsd
