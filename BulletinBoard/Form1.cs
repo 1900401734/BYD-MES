@@ -29,6 +29,9 @@ namespace BulletinBoard
         DataTable stationTable;     // 机台
         DataTable clientInfoTable;  // 运行状态界面 > 已连接的客户端的信息
 
+        Logger rawMsgLogger = LogManager.GetLogger("ReceivedMsg");
+        Logger parsedMsg = LogManager.GetLogger("parsedMsg");
+
         public Form1()
         {
             InitializeComponent();
@@ -127,7 +130,7 @@ namespace BulletinBoard
         /// </summary>
         private void LoadServerConfig()
         {
-            LoadStation();  // 加载工位信息
+            LoadStationList();  // 加载工位信息
 
             mdb = new mdbDatas(databasePath);
             DataTable dashboardCongfig = mdb.Find("select * from Bulletins where ID = '1'");
@@ -148,7 +151,7 @@ namespace BulletinBoard
                     string isStationIDChecked = dashboardCongfig.Rows[i]["FinishedName"].ToString();
                     if (isStationIDChecked == "True")
                     {
-                        chkStationID.Checked = true;
+                        chkNameToID.Checked = true;
                     }
                     txt_GenarateSpeed.Text = dashboardCongfig.Rows[i]["DegreesSev"].ToString();
                 }
@@ -157,9 +160,9 @@ namespace BulletinBoard
         }
 
         /// <summary>
-        /// 加载工位
+        /// 加载工位信息
         /// </summary>
-        private void LoadStation()
+        private void LoadStationList()
         {
             mdb = new mdbDatas(databasePath);
             stationTable = mdb.Find("select * from Model");
@@ -167,7 +170,8 @@ namespace BulletinBoard
             string stationInfo = "";
             foreach (DataRow row in stationTable.Rows)
             {
-                stationInfo += "{" + row[0] + "}\t";
+                //stationInfo += "{" + row[0] + "}\n";
+                stationInfo += $"[{row[0]}]{Environment.NewLine}";
             }
 
             lblTotalCount.Text = $"总共：{stationTable.Rows.Count}";
@@ -263,7 +267,7 @@ namespace BulletinBoard
 
                 string updateSql = $@" UPDATE [Bulletins]
                                        SET [WorkName] = '{txt_FinalDeviceName.Text}'
-                                       [FinishedName] = '{chkStationID.Checked}'
+                                       [FinishedName] = '{chkNameToID.Checked}'
                                        [DegreesSev] = '{txt_GenarateSpeed.Text}'
                                        WHERE [ID] = '1' ";
 
@@ -397,7 +401,56 @@ namespace BulletinBoard
 
         #endregion
 
-        #region------------- 添加生产数据 -------------
+        #region------------- 消息处理 -------------
+
+        private string FormatParsedData(List<string[]> parsedDataList)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("处理数据内容:");
+
+            for (int i = 0; i < parsedDataList.Count; i++)
+            {
+                sb.AppendLine($"数据组 {i + 1}:");
+                string[] dataGroup = parsedDataList[i];
+
+                string groupTitle;
+                switch (dataGroup[0])
+                {
+                    case "0":
+                        groupTitle = "工位配置信息";
+                        break;
+                    case "1":
+                        groupTitle = "故障信息";
+                        break;
+                    case "2":
+                        groupTitle = "生产信息";
+                        break;
+                    case "3":
+                        groupTitle = "统计信息";
+                        break;
+                    case "4":
+                        groupTitle = "易损件信息";
+                        break;
+                    case "5":
+                        groupTitle = "工位状态";
+                        break;
+                    case "6":
+                        groupTitle = "日志信息";
+                        break;
+                    default:
+                        groupTitle = "未知类型";
+                        break;
+                }
+
+                sb.AppendLine($"消息类型: {groupTitle}");
+
+                // 添加具体数据内容
+                sb.AppendLine("数据内容: " + string.Join(" | ", dataGroup));
+                //sb.AppendLine("----------------------------------------");
+            }
+
+            return sb.ToString();
+        }
 
         /// <summary>
         /// 处理来自客户端的数据并存入数据库
@@ -476,6 +529,9 @@ namespace BulletinBoard
                     }
                 }
 
+                string formattedMsg = FormatParsedData(parsedDataList);
+                parsedMsg.Trace($"客户端[{sourceIP}]\n{formattedMsg}");
+
                 // 处理解析后的每组数据
                 foreach (var dataGroup in parsedDataList)
                 {
@@ -496,29 +552,29 @@ namespace BulletinBoard
                         {
                             processedData[i] = "";
                         }*/
+
                         if (string.IsNullOrWhiteSpace(processedData[i]) ||
                             processedData[i].Equals("null"))
                         {
                             processedData[i] = string.Empty;
                         }
                     }
-
                     mdbABC.OpenConnction();
-
-                    // 1+故障所在工位+机台名称+ 故障状态+故障的描述+触发故障的开始时间 
-                    // 1+故障所在工位+机台名称+ 故障状态+故障的描述+触发故障的结束时间
-                    // 2+工位名称+当前工单号+产品条码+操作人员+测试时间+测试结果+测试节拍+测试项名称+测试项上限+测试项下限+测式项实际值
-                    // 3+工位+工单数量+完成数量+完成率+合格率+整体节拍+生产产品数量（总数）+ 工序时间+利用时间+负荷时间
-                    // 4+易损件所在工位+机台名称+ 易损件所在位置+易损件名称+易损件理论使用次数易损件已使用次数
 
                     // 根据数据类型进行相应处理
                     // 0: 新工位配置
                     // 1: 故障信息
+                    // 1+故障所在工位+机台名称+故障状态+故障的描述+触发故障的开始时间 
+                    // 1+故障所在工位+机台名称+故障状态+故障的描述+触发故障的结束时间
                     // 2: 生产信息
+                    // 2+工位名称+当前工单号+产品条码+操作人员+测试时间+测试结果+测试节拍+测试项名称+测试项上限+测试项下限+测式项实际值
                     // 3: 统计信息
+                    // 3+工位+工单数量+完成数量+完成率+合格率+整体节拍+生产产品数量（总数）+ 工序时间+利用时间+负荷时间
                     // 4: 易损件信息
+                    // 4+易损件所在工位+机台名称+ 易损件所在位置+易损件名称+易损件理论使用次数易损件已使用次数
                     // 5: 工位状态
                     // 6: 日志信息
+
                     switch (processedData[0])
                     {
                         case "0":   // 工位配置信息处理
@@ -560,18 +616,18 @@ namespace BulletinBoard
                             ProcessStationConfig(processedData);
                             break;
                         case "1":   // 故障信息处理
-                            GweiNameID(processedData);
+                            MapStationNameWithStationID(processedData);
                             NewMethod1(processedData);
                             break;
                         case "2":   // 生产信息处理
-                            GweiNameID(processedData);
+                            MapStationNameWithStationID(processedData);
                             NewMethod2(processedData);
                             break;
-                        case "3":   // 统计信息ModPros
+                        case "3":   // 统计信息
                             NewMethod3Async(processedData);
                             break;
                         case "4":   // 易损件信息
-                            GweiNameID(processedData);
+                            MapStationNameWithStationID(processedData);
                             NewMethod4(processedData);
                             break;
                         case "5":   // 工位状态处理
@@ -582,7 +638,6 @@ namespace BulletinBoard
                             break;
                     }
                 }
-                //mdb.CloseConnection();
             }));
         }
 
@@ -630,23 +685,24 @@ namespace BulletinBoard
         }
 
         /// <summary>
-        /// 将名称修改工位ID
+        /// 处理工位名称与工位ID的映射，将工位名称转换为对应的工位ID；
         /// </summary>
-        /// <param name="dateshuzu"></param>
-        private void GweiNameID(string[] dateshuzu)
+        /// <param name="processedData"></param>
+        private void MapStationNameWithStationID(string[] processedData)
         {
-            if (chkStationID.Checked)
-            {//[Model] ([Model],[Mname]
-                DataRow[] rows = stationTable.Select("Model = '" + dateshuzu[1] + "'");
+            // [Model] ([Model],[Mname]
+            if (chkNameToID.Checked)
+            {
+                DataRow[] rows = stationTable.Select($" Model = '{processedData[1]}' ");
                 if (rows.Length > 0)
                 {
-                    dateshuzu[1] = rows[0]["Mname"].ToString();
+                    processedData[1] = rows[0]["Mname"].ToString();
                 }
             }
         }
 
         /// <summary>
-        /// 添加机台名称
+        /// 根据客户端IP添加对应的机台名称
         /// </summary>
         /// <param name="sourceIP"></param>
         /// <param name="dataArray"></param>
@@ -1263,8 +1319,6 @@ namespace BulletinBoard
             // ShowBtnState();
             ShowMsg("信息:停止监听!");
         }
-
-        Logger rawMsgLogger = LogManager.GetLogger("ReceivedMsg");
 
         /// <summary>
         /// 接收消息

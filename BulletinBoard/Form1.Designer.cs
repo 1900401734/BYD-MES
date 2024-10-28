@@ -44,7 +44,7 @@ namespace BulletinBoard
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.txt_FinalDeviceName = new System.Windows.Forms.TextBox();
             this.txt_GenarateSpeed = new System.Windows.Forms.TextBox();
-            this.chkStationID = new System.Windows.Forms.CheckBox();
+            this.chkNameToID = new System.Windows.Forms.CheckBox();
             this.label13 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
             this.btnSaveAtStatisticsSettings = new System.Windows.Forms.Button();
@@ -172,7 +172,7 @@ namespace BulletinBoard
             // 
             // txt_WorkOrder
             // 
-            this.txt_WorkOrder.Font = new System.Drawing.Font("宋体", 22.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.txt_WorkOrder.Font = new System.Drawing.Font("SimSun", 22.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.txt_WorkOrder.Location = new System.Drawing.Point(8, 34);
             this.txt_WorkOrder.Name = "txt_WorkOrder";
             this.txt_WorkOrder.Size = new System.Drawing.Size(462, 58);
@@ -202,7 +202,7 @@ namespace BulletinBoard
             // cboProductModel
             // 
             this.cboProductModel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboProductModel.Font = new System.Drawing.Font("宋体", 20F);
+            this.cboProductModel.Font = new System.Drawing.Font("SimSun", 20F);
             this.cboProductModel.FormattingEnabled = true;
             this.cboProductModel.Location = new System.Drawing.Point(6, 24);
             this.cboProductModel.Name = "cboProductModel";
@@ -277,7 +277,7 @@ namespace BulletinBoard
             // 
             this.tabPage3.Controls.Add(this.txt_FinalDeviceName);
             this.tabPage3.Controls.Add(this.txt_GenarateSpeed);
-            this.tabPage3.Controls.Add(this.chkStationID);
+            this.tabPage3.Controls.Add(this.chkNameToID);
             this.tabPage3.Controls.Add(this.label13);
             this.tabPage3.Controls.Add(this.label12);
             this.tabPage3.Controls.Add(this.btnSaveAtStatisticsSettings);
@@ -298,21 +298,22 @@ namespace BulletinBoard
             // 
             // txt_GenarateSpeed
             // 
-            this.txt_GenarateSpeed.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.txt_GenarateSpeed.Location = new System.Drawing.Point(193, 113);
+            this.txt_GenarateSpeed.Font = new System.Drawing.Font("Microsoft YaHei", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.txt_GenarateSpeed.Location = new System.Drawing.Point(193, 79);
             this.txt_GenarateSpeed.Name = "txt_GenarateSpeed";
             this.txt_GenarateSpeed.Size = new System.Drawing.Size(473, 39);
             this.txt_GenarateSpeed.TabIndex = 4;
             // 
-            // chkStationID
+            // chkNameToID
             // 
-            this.chkStationID.AutoSize = true;
-            this.chkStationID.Location = new System.Drawing.Point(737, 68);
-            this.chkStationID.Name = "chkStationID";
-            this.chkStationID.Size = new System.Drawing.Size(108, 28);
-            this.chkStationID.TabIndex = 6;
-            this.chkStationID.Text = "工位号";
-            this.chkStationID.UseVisualStyleBackColor = true;
+            this.chkNameToID.AutoSize = true;
+            this.chkNameToID.Location = new System.Drawing.Point(12, 166);
+            this.chkNameToID.Name = "chkNameToID";
+            this.chkNameToID.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.chkNameToID.Size = new System.Drawing.Size(276, 28);
+            this.chkNameToID.TabIndex = 6;
+            this.chkNameToID.Text = "更改工位名称为工位ID";
+            this.chkNameToID.UseVisualStyleBackColor = true;
             // 
             // label13
             // 
@@ -326,7 +327,7 @@ namespace BulletinBoard
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(8, 113);
+            this.label12.Location = new System.Drawing.Point(8, 86);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(166, 24);
             this.label12.TabIndex = 3;
@@ -334,7 +335,7 @@ namespace BulletinBoard
             // 
             // btnSaveAtStatisticsSettings
             // 
-            this.btnSaveAtStatisticsSettings.Location = new System.Drawing.Point(193, 185);
+            this.btnSaveAtStatisticsSettings.Location = new System.Drawing.Point(419, 146);
             this.btnSaveAtStatisticsSettings.Name = "btnSaveAtStatisticsSettings";
             this.btnSaveAtStatisticsSettings.Size = new System.Drawing.Size(146, 48);
             this.btnSaveAtStatisticsSettings.TabIndex = 1;
@@ -344,7 +345,6 @@ namespace BulletinBoard
             // 
             // tabPage2
             // 
-            this.tabPage2.Controls.Add(this.btnInitDatabase);
             this.tabPage2.Controls.Add(this.groupBox2);
             this.tabPage2.Controls.Add(this.groupBox1);
             this.tabPage2.Location = new System.Drawing.Point(4, 4);
@@ -357,9 +357,9 @@ namespace BulletinBoard
             // 
             // btnInitDatabase
             // 
-            this.btnInitDatabase.Location = new System.Drawing.Point(672, 411);
+            this.btnInitDatabase.Location = new System.Drawing.Point(244, 80);
             this.btnInitDatabase.Name = "btnInitDatabase";
-            this.btnInitDatabase.Size = new System.Drawing.Size(170, 95);
+            this.btnInitDatabase.Size = new System.Drawing.Size(167, 40);
             this.btnInitDatabase.TabIndex = 7;
             this.btnInitDatabase.Text = "初始化数据库";
             this.btnInitDatabase.UseVisualStyleBackColor = true;
@@ -370,16 +370,16 @@ namespace BulletinBoard
             this.groupBox2.Controls.Add(this.btnClean);
             this.groupBox2.Controls.Add(this.lblTotalCount);
             this.groupBox2.Controls.Add(this.txtStationList);
-            this.groupBox2.Location = new System.Drawing.Point(10, 345);
+            this.groupBox2.Location = new System.Drawing.Point(701, 11);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(656, 164);
+            this.groupBox2.Size = new System.Drawing.Size(621, 494);
             this.groupBox2.TabIndex = 6;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "工位信息";
             // 
             // btnClean
             // 
-            this.btnClean.Location = new System.Drawing.Point(525, 17);
+            this.btnClean.Location = new System.Drawing.Point(177, 16);
             this.btnClean.Name = "btnClean";
             this.btnClean.Size = new System.Drawing.Size(125, 38);
             this.btnClean.TabIndex = 2;
@@ -390,9 +390,10 @@ namespace BulletinBoard
             // lblTotalCount
             // 
             this.lblTotalCount.AutoSize = true;
-            this.lblTotalCount.Location = new System.Drawing.Point(215, 23);
+            this.lblTotalCount.Font = new System.Drawing.Font("SimSun", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.lblTotalCount.Location = new System.Drawing.Point(7, 34);
             this.lblTotalCount.Name = "lblTotalCount";
-            this.lblTotalCount.Size = new System.Drawing.Size(94, 24);
+            this.lblTotalCount.Size = new System.Drawing.Size(79, 20);
             this.lblTotalCount.TabIndex = 1;
             this.lblTotalCount.Text = "总共：0";
             // 
@@ -402,14 +403,13 @@ namespace BulletinBoard
             this.txtStationList.Multiline = true;
             this.txtStationList.Name = "txtStationList";
             this.txtStationList.ReadOnly = true;
-            this.txtStationList.Size = new System.Drawing.Size(656, 103);
+            this.txtStationList.Size = new System.Drawing.Size(615, 433);
             this.txtStationList.TabIndex = 0;
             // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.groupBox4);
             this.groupBox1.Controls.Add(this.groupBox3);
-            this.groupBox1.Controls.Add(this.btnSaveServerConfig);
             this.groupBox1.Controls.Add(this.cboPLineAttribute);
             this.groupBox1.Controls.Add(this.txt_PLineDescription);
             this.groupBox1.Controls.Add(this.txt_PLineName);
@@ -421,43 +421,44 @@ namespace BulletinBoard
             this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.groupBox1.Font = new System.Drawing.Font("宋体", 12F);
+            this.groupBox1.Font = new System.Drawing.Font("SimSun", 12F);
             this.groupBox1.Location = new System.Drawing.Point(10, 11);
             this.groupBox1.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(4);
-            this.groupBox1.Size = new System.Drawing.Size(1141, 327);
+            this.groupBox1.Size = new System.Drawing.Size(691, 494);
             this.groupBox1.TabIndex = 5;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "产线基本信息设置";
             // 
             // groupBox4
             // 
+            this.groupBox4.Controls.Add(this.btnInitDatabase);
             this.groupBox4.Controls.Add(this.lblDatabasePath);
             this.groupBox4.Controls.Add(this.label11);
+            this.groupBox4.Controls.Add(this.btnSaveServerConfig);
             this.groupBox4.Controls.Add(this.btnChangePath);
-            this.groupBox4.Location = new System.Drawing.Point(7, 189);
+            this.groupBox4.Location = new System.Drawing.Point(8, 340);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(477, 131);
+            this.groupBox4.Size = new System.Drawing.Size(663, 131);
             this.groupBox4.TabIndex = 63;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "本地数据存放路径";
             // 
             // lblDatabasePath
             // 
-            this.lblDatabasePath.AutoSize = true;
-            this.lblDatabasePath.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.lblDatabasePath.Location = new System.Drawing.Point(114, 50);
+            this.lblDatabasePath.Font = new System.Drawing.Font("Microsoft YaHei", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.lblDatabasePath.Location = new System.Drawing.Point(123, 34);
             this.lblDatabasePath.Name = "lblDatabasePath";
-            this.lblDatabasePath.Size = new System.Drawing.Size(310, 31);
+            this.lblDatabasePath.Size = new System.Drawing.Size(534, 31);
             this.lblDatabasePath.TabIndex = 2;
             this.lblDatabasePath.Text = "D:\\DataBase\\DAB折叠设备";
             // 
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label11.Location = new System.Drawing.Point(-5, 47);
+            this.label11.Font = new System.Drawing.Font("Microsoft YaHei", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label11.Location = new System.Drawing.Point(4, 33);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(134, 31);
             this.label11.TabIndex = 1;
@@ -465,9 +466,9 @@ namespace BulletinBoard
             // 
             // btnChangePath
             // 
-            this.btnChangePath.Location = new System.Drawing.Point(169, 84);
+            this.btnChangePath.Location = new System.Drawing.Point(12, 80);
             this.btnChangePath.Name = "btnChangePath";
-            this.btnChangePath.Size = new System.Drawing.Size(167, 41);
+            this.btnChangePath.Size = new System.Drawing.Size(167, 40);
             this.btnChangePath.TabIndex = 0;
             this.btnChangePath.Text = "变更存放路径";
             this.btnChangePath.UseVisualStyleBackColor = true;
@@ -475,15 +476,15 @@ namespace BulletinBoard
             // 
             // groupBox3
             // 
-            this.groupBox3.Controls.Add(this.label8);
-            this.groupBox3.Controls.Add(this.label9);
             this.groupBox3.Controls.Add(this.txt_ServerPort);
             this.groupBox3.Controls.Add(this.txt_ServerIP);
+            this.groupBox3.Controls.Add(this.label9);
+            this.groupBox3.Controls.Add(this.label8);
             this.groupBox3.Location = new System.Drawing.Point(8, 31);
             this.groupBox3.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Padding = new System.Windows.Forms.Padding(4);
-            this.groupBox3.Size = new System.Drawing.Size(476, 150);
+            this.groupBox3.Size = new System.Drawing.Size(683, 77);
             this.groupBox3.TabIndex = 62;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "服务端参数";
@@ -491,44 +492,44 @@ namespace BulletinBoard
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(8, 111);
+            this.label8.Location = new System.Drawing.Point(317, 35);
             this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(70, 24);
+            this.label8.Size = new System.Drawing.Size(58, 24);
             this.label8.TabIndex = 60;
-            this.label8.Text = "端口:";
+            this.label8.Text = "端口";
             // 
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(25, 54);
+            this.label9.Location = new System.Drawing.Point(8, 35);
             this.label9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(46, 24);
+            this.label9.Size = new System.Drawing.Size(34, 24);
             this.label9.TabIndex = 0;
-            this.label9.Text = "IP:";
+            this.label9.Text = "IP";
             // 
             // txt_ServerPort
             // 
-            this.txt_ServerPort.Location = new System.Drawing.Point(72, 108);
+            this.txt_ServerPort.Location = new System.Drawing.Point(369, 29);
             this.txt_ServerPort.Margin = new System.Windows.Forms.Padding(4);
             this.txt_ServerPort.Name = "txt_ServerPort";
-            this.txt_ServerPort.Size = new System.Drawing.Size(396, 35);
+            this.txt_ServerPort.Size = new System.Drawing.Size(294, 35);
             this.txt_ServerPort.TabIndex = 2;
             // 
             // txt_ServerIP
             // 
-            this.txt_ServerIP.Location = new System.Drawing.Point(72, 51);
+            this.txt_ServerIP.Location = new System.Drawing.Point(37, 29);
             this.txt_ServerIP.Margin = new System.Windows.Forms.Padding(4);
             this.txt_ServerIP.Name = "txt_ServerIP";
-            this.txt_ServerIP.Size = new System.Drawing.Size(396, 35);
+            this.txt_ServerIP.Size = new System.Drawing.Size(272, 35);
             this.txt_ServerIP.TabIndex = 1;
             // 
             // btnSaveServerConfig
             // 
-            this.btnSaveServerConfig.Location = new System.Drawing.Point(768, 278);
+            this.btnSaveServerConfig.Location = new System.Drawing.Point(490, 80);
             this.btnSaveServerConfig.Name = "btnSaveServerConfig";
-            this.btnSaveServerConfig.Size = new System.Drawing.Size(128, 42);
+            this.btnSaveServerConfig.Size = new System.Drawing.Size(167, 40);
             this.btnSaveServerConfig.TabIndex = 10;
             this.btnSaveServerConfig.Text = "保存";
             this.btnSaveServerConfig.UseVisualStyleBackColor = true;
@@ -544,93 +545,93 @@ namespace BulletinBoard
             this.cboPLineAttribute.Items.AddRange(new object[] {
             "手动",
             "自动"});
-            this.cboPLineAttribute.Location = new System.Drawing.Point(595, 237);
+            this.cboPLineAttribute.Location = new System.Drawing.Point(107, 301);
             this.cboPLineAttribute.Margin = new System.Windows.Forms.Padding(4);
             this.cboPLineAttribute.Name = "cboPLineAttribute";
-            this.cboPLineAttribute.Size = new System.Drawing.Size(508, 32);
+            this.cboPLineAttribute.Size = new System.Drawing.Size(564, 32);
             this.cboPLineAttribute.TabIndex = 9;
             // 
             // txt_PLineDescription
             // 
-            this.txt_PLineDescription.Location = new System.Drawing.Point(595, 190);
+            this.txt_PLineDescription.Location = new System.Drawing.Point(107, 254);
             this.txt_PLineDescription.Margin = new System.Windows.Forms.Padding(4);
             this.txt_PLineDescription.Name = "txt_PLineDescription";
-            this.txt_PLineDescription.Size = new System.Drawing.Size(508, 35);
+            this.txt_PLineDescription.Size = new System.Drawing.Size(564, 35);
             this.txt_PLineDescription.TabIndex = 8;
             // 
             // txt_PLineName
             // 
-            this.txt_PLineName.Location = new System.Drawing.Point(595, 139);
+            this.txt_PLineName.Location = new System.Drawing.Point(107, 203);
             this.txt_PLineName.Margin = new System.Windows.Forms.Padding(4);
             this.txt_PLineName.Name = "txt_PLineName";
-            this.txt_PLineName.Size = new System.Drawing.Size(508, 35);
+            this.txt_PLineName.Size = new System.Drawing.Size(564, 35);
             this.txt_PLineName.TabIndex = 7;
             // 
             // txt_WorkshopName
             // 
-            this.txt_WorkshopName.Location = new System.Drawing.Point(595, 91);
+            this.txt_WorkshopName.Location = new System.Drawing.Point(107, 155);
             this.txt_WorkshopName.Margin = new System.Windows.Forms.Padding(4);
             this.txt_WorkshopName.Name = "txt_WorkshopName";
-            this.txt_WorkshopName.Size = new System.Drawing.Size(508, 35);
+            this.txt_WorkshopName.Size = new System.Drawing.Size(564, 35);
             this.txt_WorkshopName.TabIndex = 6;
             // 
             // txt_BaseName
             // 
-            this.txt_BaseName.Location = new System.Drawing.Point(595, 45);
+            this.txt_BaseName.Location = new System.Drawing.Point(107, 109);
             this.txt_BaseName.Margin = new System.Windows.Forms.Padding(4);
             this.txt_BaseName.Name = "txt_BaseName";
-            this.txt_BaseName.Size = new System.Drawing.Size(508, 35);
+            this.txt_BaseName.Size = new System.Drawing.Size(564, 35);
             this.txt_BaseName.TabIndex = 5;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(492, 48);
+            this.label1.Location = new System.Drawing.Point(4, 112);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(118, 24);
+            this.label1.Size = new System.Drawing.Size(106, 24);
             this.label1.TabIndex = 0;
-            this.label1.Text = "基地名称:";
+            this.label1.Text = "基地名称";
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(492, 240);
+            this.label6.Location = new System.Drawing.Point(4, 304);
             this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(118, 24);
+            this.label6.Size = new System.Drawing.Size(106, 24);
             this.label6.TabIndex = 4;
-            this.label6.Text = "产线属性:";
+            this.label6.Text = "产线属性";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(492, 94);
+            this.label2.Location = new System.Drawing.Point(4, 158);
             this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(118, 24);
+            this.label2.Size = new System.Drawing.Size(106, 24);
             this.label2.TabIndex = 1;
-            this.label2.Text = "车间名称:";
+            this.label2.Text = "车间名称";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(492, 193);
+            this.label4.Location = new System.Drawing.Point(4, 257);
             this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(118, 24);
+            this.label4.Size = new System.Drawing.Size(106, 24);
             this.label4.TabIndex = 3;
-            this.label4.Text = "产线描述:";
+            this.label4.Text = "产线描述";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(492, 142);
+            this.label3.Location = new System.Drawing.Point(4, 206);
             this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(118, 24);
+            this.label3.Size = new System.Drawing.Size(106, 24);
             this.label3.TabIndex = 2;
-            this.label3.Text = "产线名称:";
+            this.label3.Text = "产线名称";
             // 
             // tabPage1
             // 
@@ -1019,7 +1020,7 @@ namespace BulletinBoard
             // textBox_nccode
             // 
             this.textBox_nccode.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBox_nccode.Font = new System.Drawing.Font("微软雅黑", 12F);
+            this.textBox_nccode.Font = new System.Drawing.Font("Microsoft YaHei", 12F);
             this.textBox_nccode.Location = new System.Drawing.Point(177, 303);
             this.textBox_nccode.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_nccode.Name = "textBox_nccode";
@@ -1029,7 +1030,7 @@ namespace BulletinBoard
             // textBox_url
             // 
             this.textBox_url.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBox_url.Font = new System.Drawing.Font("微软雅黑", 12F);
+            this.textBox_url.Font = new System.Drawing.Font("Microsoft YaHei", 12F);
             this.textBox_url.Location = new System.Drawing.Point(177, 131);
             this.textBox_url.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_url.Name = "textBox_url";
@@ -1039,7 +1040,7 @@ namespace BulletinBoard
             // textBox_opration
             // 
             this.textBox_opration.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBox_opration.Font = new System.Drawing.Font("微软雅黑", 12F);
+            this.textBox_opration.Font = new System.Drawing.Font("Microsoft YaHei", 12F);
             this.textBox_opration.Location = new System.Drawing.Point(177, 260);
             this.textBox_opration.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_opration.Name = "textBox_opration";
@@ -1049,7 +1050,7 @@ namespace BulletinBoard
             // textBox_site
             // 
             this.textBox_site.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBox_site.Font = new System.Drawing.Font("微软雅黑", 12F);
+            this.textBox_site.Font = new System.Drawing.Font("Microsoft YaHei", 12F);
             this.textBox_site.Location = new System.Drawing.Point(177, 174);
             this.textBox_site.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_site.Name = "textBox_site";
@@ -1059,7 +1060,7 @@ namespace BulletinBoard
             // textBox_resource
             // 
             this.textBox_resource.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBox_resource.Font = new System.Drawing.Font("微软雅黑", 12F);
+            this.textBox_resource.Font = new System.Drawing.Font("Microsoft YaHei", 12F);
             this.textBox_resource.Location = new System.Drawing.Point(177, 217);
             this.textBox_resource.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_resource.Name = "textBox_resource";
@@ -1069,7 +1070,7 @@ namespace BulletinBoard
             // textBox_timeout
             // 
             this.textBox_timeout.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBox_timeout.Font = new System.Drawing.Font("微软雅黑", 12F);
+            this.textBox_timeout.Font = new System.Drawing.Font("Microsoft YaHei", 12F);
             this.textBox_timeout.Location = new System.Drawing.Point(177, 88);
             this.textBox_timeout.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_timeout.Name = "textBox_timeout";
@@ -1079,7 +1080,7 @@ namespace BulletinBoard
             // textBox_port
             // 
             this.textBox_port.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBox_port.Font = new System.Drawing.Font("微软雅黑", 12F);
+            this.textBox_port.Font = new System.Drawing.Font("Microsoft YaHei", 12F);
             this.textBox_port.Location = new System.Drawing.Point(177, 45);
             this.textBox_port.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_port.Name = "textBox_port";
@@ -1089,7 +1090,7 @@ namespace BulletinBoard
             // textBox_ip
             // 
             this.textBox_ip.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBox_ip.Font = new System.Drawing.Font("微软雅黑", 12F);
+            this.textBox_ip.Font = new System.Drawing.Font("Microsoft YaHei", 12F);
             this.textBox_ip.Location = new System.Drawing.Point(177, 2);
             this.textBox_ip.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_ip.Name = "textBox_ip";
@@ -1220,7 +1221,7 @@ namespace BulletinBoard
             this.ClientSize = new System.Drawing.Size(1338, 557);
             this.Controls.Add(this.tabControl1);
             this.DoubleBuffered = true;
-            this.Font = new System.Drawing.Font("宋体", 12F);
+            this.Font = new System.Drawing.Font("SimSun", 12F);
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
@@ -1278,7 +1279,7 @@ namespace BulletinBoard
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.TextBox txt_FinalDeviceName;
         private System.Windows.Forms.TextBox txt_GenarateSpeed;
-        private System.Windows.Forms.CheckBox chkStationID;
+        private System.Windows.Forms.CheckBox chkNameToID;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Button btnSaveAtStatisticsSettings;
