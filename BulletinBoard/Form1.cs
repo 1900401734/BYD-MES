@@ -21,8 +21,8 @@ namespace BulletinBoard
     public partial class Form1 : Form
     {
         public static string databasePath = AppDomain.CurrentDomain.BaseDirectory + "ProdModel.mdb";
-        mdbDatas mdb = null;
-        mdbDatas mdbABC = new mdbDatas();
+        MDBHelper dbHelper = null;
+        MDBHelper mdbABC = new MDBHelper();
         private Socket socketWatch;
         private bool IsServerStart;
         private Action<string> ShowMsgAction;
@@ -48,19 +48,17 @@ namespace BulletinBoard
             LoadMESConfig();                // 加载MES参数配置
             InitializeProductModelBoard();  // 初始化产品型号面板
             LoadServerConfig();             // 加载服务器基本配置
-            button8_Click();
+            RefreshStatus();                // 加载已连接的客户端信息
 
-            string conn = lblDatabasePath.Text + "\\" + DateTime.Now.ToString("Y") + "产线数据.mdb";
-            if (mdbABC.mdbDatesconn(conn) == false)
+            string dbPath = $"{lblDatabasePath.Text}\\{DateTime.Now:Y}产线数据.mdb";
+            if (mdbABC.TryConnectDatabase(dbPath) == false)
             {
-                InitProductLineDatabase();//初始化数据库
-                // mdb.OpenConnction();
-                mdbABC.OpenConnction();
-                /// ShowMsg("打开数据库");
+                GenerateProductLineDatabase();  // 生成产线数据库
+                mdbABC.EnsureConnectionOpened();
             }
-            mdbABC.OpenConnction();
+            mdbABC.EnsureConnectionOpened();
 
-            DBFilemoveBate();
+            ManageMonthlyDatabaseSwitch();
         }
 
         /// <summary>
@@ -84,31 +82,38 @@ namespace BulletinBoard
             Environment.Exit(0);
         }
 
-        private void DBFilemoveBate()
+        /// <summary>
+        /// 管理数据库文件的月度切换
+        /// </summary>
+        /// <remarks>
+        /// 1. 确保当月数据库文件存在
+        /// 2. 将上月数据库文件移动到存档目录
+        /// </remarks>
+        private void ManageMonthlyDatabaseSwitch()
         {
             Invoke(new Action(() =>
             {
-                string newDbPath = lblDatabasePath.Text + "\\" + DateTime.Now.ToString("Y") + "产线数据.mdb";
-                string oldDbPath = lblDatabasePath.Text + "\\" + DateTime.Now.AddMonths(-1).ToString("Y") + "产线数据.mdb";
-                string destinationDbPath = lblDatabasePath.Text + "\\" + "path" + "\\" + DateTime.Now.AddMonths(-1).ToString("Y") + "产线数据.mdb";
+                string currentMonth = $"{lblDatabasePath.Text}\\{DateTime.Now:Y}产线数据.mdb";
+                string lastMonth = $"{lblDatabasePath.Text}\\{DateTime.Now.AddMonths(-1):Y}产线数据.mdb";
+                string Archive = $"{lblDatabasePath.Text}\\path\\{DateTime.Now.AddMonths(-1):Y}产线数据.mdb";
                 try
                 {
-                    if (!File.Exists(newDbPath))
+                    if (!File.Exists(currentMonth))
                     {
-                        InitProductLineDatabase();//初始化数据库
-                        mdbABC.mdbDatesconn(newDbPath);
+                        GenerateProductLineDatabase();  // 生成产线数据库
+                        mdbABC.TryConnectDatabase(currentMonth);
                     }
-                    if (File.Exists(oldDbPath))
+                    if (File.Exists(lastMonth))
                     {
                         // 确保目标路径存在
-                        string destinationDirectory = Path.GetDirectoryName(destinationDbPath);
+                        string destinationDirectory = Path.GetDirectoryName(Archive);
                         if (!Directory.Exists(destinationDirectory))
                         {
                             Directory.CreateDirectory(destinationDirectory);
                         }
                         mdbABC.CloseConnection();
                         // 移动文件
-                        File.Move(oldDbPath, destinationDbPath);
+                        File.Move(lastMonth, Archive);
                         Console.WriteLine("数据库文件移动成功。");
                     }
                 }
@@ -132,8 +137,8 @@ namespace BulletinBoard
         {
             LoadStationList();  // 加载工位信息
 
-            mdb = new mdbDatas(databasePath);
-            DataTable dashboardCongfig = mdb.Find("select * from Bulletins where ID = '1'");
+            dbHelper = new MDBHelper(databasePath);
+            DataTable dashboardCongfig = dbHelper.Find(" SELECT * FROM Bulletins WHERE ID = '1' ");
 
             for (int i = 0; i < dashboardCongfig.Rows.Count; i++)
             {
@@ -156,7 +161,7 @@ namespace BulletinBoard
                     txt_GenarateSpeed.Text = dashboardCongfig.Rows[i]["DegreesSev"].ToString();
                 }
             }
-            mdb.CloseConnection();
+            dbHelper.CloseConnection();
         }
 
         /// <summary>
@@ -164,8 +169,8 @@ namespace BulletinBoard
         /// </summary>
         private void LoadStationList()
         {
-            mdb = new mdbDatas(databasePath);
-            stationTable = mdb.Find("select * from Model");
+            dbHelper = new MDBHelper(databasePath);
+            stationTable = dbHelper.Find("select * from Model");
 
             string stationInfo = "";
             foreach (DataRow row in stationTable.Rows)
@@ -176,7 +181,7 @@ namespace BulletinBoard
 
             lblTotalCount.Text = $"总共：{stationTable.Rows.Count}";
             txtStationList.Text = stationInfo;
-            mdb.CloseConnection();
+            dbHelper.CloseConnection();
         }
 
         /// <summary>
@@ -195,8 +200,8 @@ namespace BulletinBoard
                 return;
             }
 
-            mdb = new mdbDatas(databasePath);
-            DataTable BulletinsTable = mdb.Find("select * from Bulletins where ID = '1'");
+            dbHelper = new MDBHelper(databasePath);
+            DataTable BulletinsTable = dbHelper.Find("select * from Bulletins where ID = '1'");
             if (BulletinsTable.Rows.Count > 0)
             {
                 string updateSql = $@" UPDATE [Bulletins] 
@@ -209,7 +214,7 @@ namespace BulletinBoard
                                             [Port] = '{txt_ServerPort.Text}',
                                             [Posits] = '{lblDatabasePath.Text}'
                                         WHERE [ID] = '1' ";
-                var result = mdb.Change(updateSql);
+                var result = dbHelper.Change(updateSql);
 
                 if (result)
                 {
@@ -218,7 +223,7 @@ namespace BulletinBoard
                     MessageBox.Show("保存成功");
                 }
             }
-            mdb.CloseConnection();
+            dbHelper.CloseConnection();
         }
 
         /// <summary>
@@ -228,10 +233,10 @@ namespace BulletinBoard
         /// <param name="e"></param>
         private void BtnCleanStationList_Click(object sender, EventArgs e)
         {
-            mdb = new mdbDatas(databasePath);
-            bool bl = mdb.Del(" DELETE FROM [product] ");
-            bool b2 = mdb.Del(" DELETE FROM [Model]   ");
-            bool b3 = mdb.Del(" DELETE FROM [ModPros] ");
+            dbHelper = new MDBHelper(databasePath);
+            bool bl = dbHelper.Del(" DELETE FROM [product] ");
+            bool b2 = dbHelper.Del(" DELETE FROM [Model]   ");
+            bool b3 = dbHelper.Del(" DELETE FROM [ModPros] ");
 
             if (bl == true)
             {
@@ -239,7 +244,7 @@ namespace BulletinBoard
                 MessageBox.Show("清空成功");
             }
             lblTotalCount.Text = "总共：0";
-            mdb.CloseConnection();
+            dbHelper.CloseConnection();
         }
 
         /// <summary>
@@ -258,8 +263,8 @@ namespace BulletinBoard
                 return;
             }
 
-            mdb = new mdbDatas(databasePath);
-            DataTable BulletinsTable = mdb.Find("select * from Bulletins where ID = '1'");
+            dbHelper = new MDBHelper(databasePath);
+            DataTable BulletinsTable = dbHelper.Find("select * from Bulletins where ID = '1'");
             if (BulletinsTable.Rows.Count > 0)
             {
                 /*string sql = "update [Bulletins] set [WorkName]='" + txt_FinalDeviceName.Text + "'" + ",[FinishedName]='" + checkBox1.Checked + "'" +
@@ -271,7 +276,7 @@ namespace BulletinBoard
                                        [DegreesSev] = '{txt_GenarateSpeed.Text}'
                                        WHERE [ID] = '1' ";
 
-                var result = mdb.Change(updateSql);
+                var result = dbHelper.Change(updateSql);
                 if (result)
                 {
                     tbx_IP.Text = txt_ServerIP.Text;
@@ -279,7 +284,7 @@ namespace BulletinBoard
                     MessageBox.Show("保存成功");
                 }
             }
-            mdb.CloseConnection();
+            dbHelper.CloseConnection();
         }
 
         #endregion
@@ -294,27 +299,27 @@ namespace BulletinBoard
         private void RebuildDatabase_Click(object sender, EventArgs e)
         {
             string dbPath = $@"{lblDatabasePath.Text}\{DateTime.Now:Y}产线数据.mdb";
-            mdb = new mdbDatas();
+            dbHelper = new MDBHelper();
 
-            if (mdb.mdbDatescomm(dbPath) == false)
+            if (dbHelper.TryConnectDatabase(dbPath) == false)
             {
-                InitProductLineDatabase();
+                GenerateProductLineDatabase();
                 MessageBox.Show("数据库初始成功！");
             }
             else
             {
                 MessageBox.Show("该数据库已经存在，请删除数据库在初始化！");
             }
-            mdb.CloseConnection();
+            dbHelper.CloseConnection();
         }
 
         /// <summary>
         /// 生成产线数据库
         /// </summary>
-        private void InitProductLineDatabase()
+        private void GenerateProductLineDatabase()
         {
             string dbPath = $@"{lblDatabasePath.Text}\{DateTime.Now:Y}产线数据.mdb";
-            mdbDatas.CreateAccessDatabase(dbPath);
+            MDBHelper.CreateAccessDatabase(dbPath);
 
             // 创建产线信息表
             StringBuilder sb = new StringBuilder(" 基地名称,车间名称,产线名称,产线工位数量,产线描述,产线属性");
@@ -334,38 +339,38 @@ namespace BulletinBoard
                 }
                 arrayList.AddRange(obj1);
             }
-            mdbDatas.CreateMDBTable(dbPath, "产线信息", arrayList);
+            MDBHelper.CreateMDBTable(dbPath, "产线信息", arrayList);
 
             // 创建故障信息表
             ArrayList arrayList1 = new ArrayList();
             object[] o1 = new object[] { "故障发生工位", "机台名称", "故障类型", "故障描述", "发生时间", "结束时间", "更新标识" };
             arrayList1.AddRange(o1);
-            mdbDatas.CreateMDBTable(dbPath, "故障信息", arrayList1);
+            MDBHelper.CreateMDBTable(dbPath, "故障信息", arrayList1);
 
             // 创建生产信息表
             ArrayList arrayList2 = new ArrayList();
             object[] obj2 = new object[] {  "工位名称", "当前工单号", "产品条码", "操作人员", "测试时间",
                 "测试结果","测试节拍","测试项名称","测试项上限","测试项下限","测试项实际值", "更新标识" };
             arrayList2.AddRange(obj2);
-            mdbDatas.CreateMDBTable(dbPath, "生产信息", arrayList2);//new System.Collections.ArrayList(new object[] { "产品", "条码", "测试人", "测试时间","测试结果", "PLC配方", "文件版本","软件版本"}));
+            MDBHelper.CreateMDBTable(dbPath, "生产信息", arrayList2);//new System.Collections.ArrayList(new object[] { "产品", "条码", "测试人", "测试时间","测试结果", "PLC配方", "文件版本","软件版本"}));
 
             //创建统计信息表
             ArrayList arrayList3 = new ArrayList();
             object[] obj3 = new object[] { "工单号", "成品名称", "工单数量", "完成数量", "完成率", "合格率",
                 "整线节拍","线平衡","OEE","直通率","更新时间","更新标识" };
             arrayList3.AddRange(obj3);
-            mdbDatas.CreateMDBTable(dbPath, "统计信息", arrayList3);
+            MDBHelper.CreateMDBTable(dbPath, "统计信息", arrayList3);
 
             // 创建易损件信息表
             ArrayList arrayList4 = new ArrayList();
             object[] obj4 = new object[] { "易损件所在工位", "机台名称", "易损件所在位置", "易损件名称", "易损件理论使用次数",
                 "易损件已使用次数","易损件剩余使用次数" };
             arrayList4.AddRange(obj4);
-            mdbDatas.CreateMDBTable(dbPath, "易损件信息", arrayList4);
+            MDBHelper.CreateMDBTable(dbPath, "易损件信息", arrayList4);
 
             // 初始化产线信息数据
-            mdb = new mdbDatas(dbPath);
-            DataTable table1 = mdb.Find("select * from 产线信息 where ID = 1");
+            dbHelper = new MDBHelper(dbPath);
+            DataTable table1 = dbHelper.Find("select * from 产线信息 where ID = 1");
             if (table1.Rows.Count == 0)
             {
                 // DateTime now = DateTime.Now;
@@ -390,13 +395,13 @@ namespace BulletinBoard
                 }
 
                 string sql = "insert into 产线信息 (" + sb + ") values (" + str1 + ")";
-                bool result = mdb.Add(sql.ToString());
+                bool result = dbHelper.Add(sql.ToString());
                 if (result)
                 {
                     ShowMsg("数据库生成成功!");
                 }
             }
-            mdb.CloseConnection();
+            dbHelper.CloseConnection();
         }
 
         #endregion
@@ -559,7 +564,7 @@ namespace BulletinBoard
                             processedData[i] = string.Empty;
                         }
                     }
-                    mdbABC.OpenConnction();
+                    mdbABC.EnsureConnectionOpened();
 
                     // 根据数据类型进行相应处理
                     // 0: 新工位配置
@@ -657,7 +662,7 @@ namespace BulletinBoard
                 {
                     int stationCount = stationTable.Rows.Count + 1;
                     // 创建数据库帮助类实例
-                    mdbDatas dbHelper = new mdbDatas(databasePath);
+                    MDBHelper dbHelper = new MDBHelper(databasePath);
 
                     // 插入新工位记录
                     string insertSql = $"insert into [Model] ([Model],[Mname]) values ('{configData[1]}', '工位{stationCount}')";
@@ -1111,8 +1116,11 @@ namespace BulletinBoard
 
         #endregion
 
-        #region------------- 型号设置 -------------
+        #region------------- 产品型号 -------------
 
+        /// <summary>
+        /// 创建产品型号表格
+        /// </summary>
         private void InitializeProductModelBoard()
         {
             BtnFreshModelBoard_Click(null, null);
@@ -1136,16 +1144,16 @@ namespace BulletinBoard
         /// </summary>
         private void BtnFreshModelBoard_Click(object sender, EventArgs e)
         {
-            mdb = new mdbDatas(databasePath);
+            dbHelper = new MDBHelper(databasePath);
 
             // Codes  ID CName
-            DataTable PModelTable = mdb.Find("select ID as 编号 , Name as 型号 from Codes");
+            DataTable PModelTable = dbHelper.Find("select ID as 编号 , Name as 型号 from Codes");
             dgvPModelSettings.DataSource = PModelTable;
             cboProductModel.DataSource = PModelTable;
             cboProductModel.DisplayMember = "型号";
             cboProductModel.ValueMember = "编号";
 
-            mdb.CloseConnection();
+            dbHelper.CloseConnection();
         }
 
         private void dataGridView5_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -1156,16 +1164,16 @@ namespace BulletinBoard
             // 删除
             if (dgvPModelSettings.Columns[e.ColumnIndex].Name == "DeleteOperation")
             {
-                mdb = new mdbDatas(databasePath);
+                dbHelper = new MDBHelper(databasePath);
 
                 string currentID = this.dgvPModelSettings.Rows[e.RowIndex].Cells[2].Value.ToString();
-                bool result = mdb.Del($" DELETE FROM [Codes] WHERE [ID] = '{currentID}' ");
+                bool result = dbHelper.Del($" DELETE FROM [Codes] WHERE [ID] = '{currentID}' ");
                 if (result == true)
                 {
                     MessageBox.Show("删除成功");
                 }
 
-                mdb.CloseConnection();
+                dbHelper.CloseConnection();
                 BtnFreshModelBoard_Click(null, null);
             }
             // 保存
@@ -1180,13 +1188,13 @@ namespace BulletinBoard
                     return;
                 }
 
-                mdb = new mdbDatas(databasePath);
+                dbHelper = new MDBHelper(databasePath);
 
-                DataTable table1 = mdb.Find($"select * from Codes where [ID] = '{ID}'");
+                DataTable table1 = dbHelper.Find($"select * from Codes where [ID] = '{ID}'");
                 if (table1.Rows.Count > 0)
                 {
                     string updateSql = $" UPDATE [Codes] SET [Name]='{productModel}' where [ID] = '{ID}' ";
-                    var result = mdb.Change(updateSql);
+                    var result = dbHelper.Change(updateSql);
                     if (result == true)
                     {
                         MessageBox.Show("修改成功");
@@ -1195,14 +1203,14 @@ namespace BulletinBoard
                 else
                 {
                     string insertSql = $"INSERT INTO Codes ([ID],[Name]) VALUES ('{ID}', '{productModel}')";
-                    bool result = mdb.Add(insertSql.ToString());
+                    bool result = dbHelper.Add(insertSql.ToString());
                     if (result == true)
                     {
                         MessageBox.Show("新增成功");
                     }
                 }
 
-                mdb.CloseConnection();
+                dbHelper.CloseConnection();
                 BtnFreshModelBoard_Click(null, null);
             }
         }
@@ -1362,7 +1370,7 @@ namespace BulletinBoard
                                 Task.Run(() =>
                                 {
                                     // 数据库文件处理
-                                    DBFilemoveBate();
+                                    ManageMonthlyDatabaseSwitch();
                                     // 处理接收到的数据
                                     ProcessReceivedData(receivedMsg, clientSocket.RemoteEndPoint.ToString());
                                 });
@@ -1690,34 +1698,33 @@ namespace BulletinBoard
 
         }*/
 
+        #region ---------- 设备状态页面 ----------
+
         /// <summary>
-        /// 刷新状态
+        /// 刷新客户端连接状态
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void button8_Click()
+        private void RefreshStatus()
         {
             Invoke(new Action(() =>
             {
-                mdb = new mdbDatas(databasePath);
+                dbHelper = new MDBHelper(databasePath);
 
-                clientInfoTable = mdb.Find("select Mname as 名称, IP as IP,conndnew as 时间 ,connt as 状态 from product");
+                clientInfoTable = dbHelper.Find("SELECT Mname AS 名称, IP AS IP,conndnew AS 时间 ,connt AS 状态 FROM product");
                 dgvClientInfo.DataSource = clientInfoTable;
 
-                mdb.CloseConnection();
+                dbHelper.CloseConnection();
             }));
         }
 
-        private void button9_Click(object sender, EventArgs e)
+        private void btnSendPModel_Click(object sender, EventArgs e)
         {
             Send("0+" + cboProductModel.SelectedValue);
-
-
         }
 
-        private void button11_Click(object sender, EventArgs e)
+        private void btnSendWorkOrder_Click(object sender, EventArgs e)
         {
-            // textBox11.Focus();
             Send("1+" + txt_WorkOrder.Text);
         }
 
@@ -1729,10 +1736,12 @@ namespace BulletinBoard
                 {
                     richTextBox3.Clear();
                 }
-                richTextBox3.AppendText(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + ":" + msg + "\r\n");
+                richTextBox3.AppendText($"{DateTime.Now:G}:{msg}\r\n");
                 richTextBox3.ScrollToCaret();
             }));
         }
+
+        #endregion
 
         private string ip => textBox_ip.Text;
         private string port => textBox_port.Text;
@@ -1797,7 +1806,10 @@ namespace BulletinBoard
             工艺部信息化组.CONFIG.NcCode = ncCode;
         }
 
-        private async void button8_Click_1(object sender, EventArgs e)
+        /// <summary>
+        /// 查询工单
+        /// </summary>
+        private async void btnFind_Click(object sender, EventArgs e)
         {
             richTextBox2.Clear();
             StatInformaAS statInformaAS = await BydWorkCom.BydWorkStatisticsAsync(textBox10.Text, "");

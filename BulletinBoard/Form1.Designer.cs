@@ -49,22 +49,22 @@ namespace BulletinBoard
             this.label12 = new System.Windows.Forms.Label();
             this.btnSaveAtStatisticsSettings = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.btnInitDatabase = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.btnClean = new System.Windows.Forms.Button();
             this.lblTotalCount = new System.Windows.Forms.Label();
             this.txtStationList = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.btnInitDatabase = new System.Windows.Forms.Button();
             this.lblDatabasePath = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
+            this.btnSaveServerConfig = new System.Windows.Forms.Button();
             this.btnChangePath = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.label8 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
             this.txt_ServerPort = new System.Windows.Forms.TextBox();
             this.txt_ServerIP = new System.Windows.Forms.TextBox();
-            this.btnSaveServerConfig = new System.Windows.Forms.Button();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
             this.cboPLineAttribute = new System.Windows.Forms.ComboBox();
             this.txt_PLineDescription = new System.Windows.Forms.TextBox();
             this.txt_PLineName = new System.Windows.Forms.TextBox();
@@ -101,7 +101,7 @@ namespace BulletinBoard
             this.label20 = new System.Windows.Forms.Label();
             this.label19 = new System.Windows.Forms.Label();
             this.textBox10 = new System.Windows.Forms.TextBox();
-            this.button8 = new System.Windows.Forms.Button();
+            this.btnFindWorkOrder = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.label14 = new System.Windows.Forms.Label();
             this.label74 = new System.Windows.Forms.Label();
@@ -186,7 +186,7 @@ namespace BulletinBoard
             this.btnSendWorkOrder.TabIndex = 73;
             this.btnSendWorkOrder.Text = "发送";
             this.btnSendWorkOrder.UseVisualStyleBackColor = true;
-            this.btnSendWorkOrder.Click += new System.EventHandler(this.button11_Click);
+            this.btnSendWorkOrder.Click += new System.EventHandler(this.btnSendWorkOrder_Click);
             // 
             // groupBox6
             // 
@@ -217,7 +217,7 @@ namespace BulletinBoard
             this.btnSendPModel.TabIndex = 0;
             this.btnSendPModel.Text = "发送";
             this.btnSendPModel.UseVisualStyleBackColor = true;
-            this.btnSendPModel.Click += new System.EventHandler(this.button9_Click);
+            this.btnSendPModel.Click += new System.EventHandler(this.btnSendPModel_Click);
             // 
             // richTextBox3
             // 
@@ -249,7 +249,7 @@ namespace BulletinBoard
             this.groupBox28.Size = new System.Drawing.Size(401, 503);
             this.groupBox28.TabIndex = 70;
             this.groupBox28.TabStop = false;
-            this.groupBox28.Text = "型号设置";
+            this.groupBox28.Text = "产品型号";
             // 
             // dgvPModelSettings
             // 
@@ -355,16 +355,6 @@ namespace BulletinBoard
             this.tabPage2.Text = "服务器设置";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
-            // btnInitDatabase
-            // 
-            this.btnInitDatabase.Location = new System.Drawing.Point(244, 80);
-            this.btnInitDatabase.Name = "btnInitDatabase";
-            this.btnInitDatabase.Size = new System.Drawing.Size(167, 40);
-            this.btnInitDatabase.TabIndex = 7;
-            this.btnInitDatabase.Text = "初始化数据库";
-            this.btnInitDatabase.UseVisualStyleBackColor = true;
-            this.btnInitDatabase.Click += new System.EventHandler(this.RebuildDatabase_Click);
-            // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.btnClean);
@@ -445,6 +435,16 @@ namespace BulletinBoard
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "本地数据存放路径";
             // 
+            // btnInitDatabase
+            // 
+            this.btnInitDatabase.Location = new System.Drawing.Point(244, 80);
+            this.btnInitDatabase.Name = "btnInitDatabase";
+            this.btnInitDatabase.Size = new System.Drawing.Size(167, 40);
+            this.btnInitDatabase.TabIndex = 7;
+            this.btnInitDatabase.Text = "初始化数据库";
+            this.btnInitDatabase.UseVisualStyleBackColor = true;
+            this.btnInitDatabase.Click += new System.EventHandler(this.RebuildDatabase_Click);
+            // 
             // lblDatabasePath
             // 
             this.lblDatabasePath.Font = new System.Drawing.Font("Microsoft YaHei", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
@@ -463,6 +463,16 @@ namespace BulletinBoard
             this.label11.Size = new System.Drawing.Size(134, 31);
             this.label11.TabIndex = 1;
             this.label11.Text = "当前路径：";
+            // 
+            // btnSaveServerConfig
+            // 
+            this.btnSaveServerConfig.Location = new System.Drawing.Point(490, 80);
+            this.btnSaveServerConfig.Name = "btnSaveServerConfig";
+            this.btnSaveServerConfig.Size = new System.Drawing.Size(167, 40);
+            this.btnSaveServerConfig.TabIndex = 10;
+            this.btnSaveServerConfig.Text = "保存";
+            this.btnSaveServerConfig.UseVisualStyleBackColor = true;
+            this.btnSaveServerConfig.Click += new System.EventHandler(this.BtnSaveServerConfig_Click);
             // 
             // btnChangePath
             // 
@@ -489,26 +499,6 @@ namespace BulletinBoard
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "服务端参数";
             // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(317, 35);
-            this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(58, 24);
-            this.label8.TabIndex = 60;
-            this.label8.Text = "端口";
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(8, 35);
-            this.label9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(34, 24);
-            this.label9.TabIndex = 0;
-            this.label9.Text = "IP";
-            // 
             // txt_ServerPort
             // 
             this.txt_ServerPort.Location = new System.Drawing.Point(369, 29);
@@ -525,15 +515,25 @@ namespace BulletinBoard
             this.txt_ServerIP.Size = new System.Drawing.Size(272, 35);
             this.txt_ServerIP.TabIndex = 1;
             // 
-            // btnSaveServerConfig
+            // label9
             // 
-            this.btnSaveServerConfig.Location = new System.Drawing.Point(490, 80);
-            this.btnSaveServerConfig.Name = "btnSaveServerConfig";
-            this.btnSaveServerConfig.Size = new System.Drawing.Size(167, 40);
-            this.btnSaveServerConfig.TabIndex = 10;
-            this.btnSaveServerConfig.Text = "保存";
-            this.btnSaveServerConfig.UseVisualStyleBackColor = true;
-            this.btnSaveServerConfig.Click += new System.EventHandler(this.BtnSaveServerConfig_Click);
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(8, 35);
+            this.label9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(34, 24);
+            this.label9.TabIndex = 0;
+            this.label9.Text = "IP";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(317, 35);
+            this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(58, 24);
+            this.label8.TabIndex = 60;
+            this.label8.Text = "端口";
             // 
             // cboPLineAttribute
             // 
@@ -797,7 +797,7 @@ namespace BulletinBoard
             this.groupBox8.Controls.Add(this.label20);
             this.groupBox8.Controls.Add(this.label19);
             this.groupBox8.Controls.Add(this.textBox10);
-            this.groupBox8.Controls.Add(this.button8);
+            this.groupBox8.Controls.Add(this.btnFindWorkOrder);
             this.groupBox8.Location = new System.Drawing.Point(800, 21);
             this.groupBox8.Name = "groupBox8";
             this.groupBox8.Size = new System.Drawing.Size(428, 330);
@@ -911,15 +911,15 @@ namespace BulletinBoard
             this.textBox10.Size = new System.Drawing.Size(195, 35);
             this.textBox10.TabIndex = 1;
             // 
-            // button8
+            // btnFindWorkOrder
             // 
-            this.button8.Location = new System.Drawing.Point(332, 41);
-            this.button8.Name = "button8";
-            this.button8.Size = new System.Drawing.Size(75, 30);
-            this.button8.TabIndex = 0;
-            this.button8.Text = "查询";
-            this.button8.UseVisualStyleBackColor = true;
-            this.button8.Click += new System.EventHandler(this.button8_Click_1);
+            this.btnFindWorkOrder.Location = new System.Drawing.Point(332, 41);
+            this.btnFindWorkOrder.Name = "btnFindWorkOrder";
+            this.btnFindWorkOrder.Size = new System.Drawing.Size(75, 30);
+            this.btnFindWorkOrder.TabIndex = 0;
+            this.btnFindWorkOrder.Text = "查询";
+            this.btnFindWorkOrder.UseVisualStyleBackColor = true;
+            this.btnFindWorkOrder.Click += new System.EventHandler(this.btnFind_Click);
             // 
             // tableLayoutPanel1
             // 
@@ -1355,7 +1355,7 @@ namespace BulletinBoard
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.Label label19;
         private System.Windows.Forms.TextBox textBox10;
-        private System.Windows.Forms.Button button8;
+        private System.Windows.Forms.Button btnFindWorkOrder;
         private System.Windows.Forms.RichTextBox richTextBox2;
         private System.Windows.Forms.Label label35;
         private System.Windows.Forms.Label label34;

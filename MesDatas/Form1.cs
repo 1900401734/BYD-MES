@@ -369,9 +369,8 @@ namespace MesDatas
                 lblOperatePrompt.Text = resources.GetString("scanning");     // 等待扫描条码
             }
 
-            ConnectDashboard(null, null);       // 连接看板
-
-            BtnConnectPlc_Click(null, null);    // 连接PLC
+            ConnectDashboard(); // 连接看板
+            ConnectPLC();       // 连接PLC
 
             taskProcess_MES = new Task(Process_MES);     // 更新PLC状态指示灯 & 向PLC反馈看板连接状态
             taskProcess_MES.Start();
@@ -1532,7 +1531,12 @@ namespace MesDatas
 
         private bool isPlcConnected = false;
 
-        private void BtnConnectPlc_Click(object sender, EventArgs e)
+        private void ConnectPLC()
+        {
+            BtnConnectPlc_Click(null, null);
+        }
+
+        private async void BtnConnectPlc_Click(object sender, EventArgs e)
         {
             try
             {
@@ -1551,28 +1555,44 @@ namespace MesDatas
                         KeyenceMcNet = new KeyenceMcNet(txt_IP.Text, Convert.ToInt16(txt_port.Text));
                         break;
                 }
-                //KeyenceMcNet = new ModbusTcpNet(tbx_IP.Text, Convert.ToInt16(tbx_port.Text));
                 KeyenceMcNet.ConnectClose();
                 KeyenceMcNet.SetPersistentConnection();
 
-                OperateResult connect = KeyenceMcNet.ConnectServer();
-                if (connect.IsSuccess)
+                // Task.Run将耗时操作放在后台线程执行
+                //OperateResult connect = KeyenceMcNet.ConnectServer();
+                OperateResult result = await Task.Run(() => KeyenceMcNet.ConnectServer());
+                if (result.IsSuccess)
                 {
                     isPlcConnected = true;
-                    loggerConfig.Trace($"【PLC连接】\n状态：PLC连接成功\n" +
-                        $"当前IP：{txt_IP.Text}\n当前端口：{txt_port.Text}\n连接类型：{cboConnectType.Text}");
                 }
                 else
                 {
                     isPlcConnected = false;
-                    loggerConfig.Trace($"【PLC连接】\n状态：PLC连接失败，请重启软件或重启机台！");
-                    MessageBox.Show(resources.GetString("plcConn"));
+                    //MessageBox.Show(resources.GetString("plcConn"));
+                    // 使用 Invoke 确保在 UI 线程上显示消息框
+                    await ShowMessageBoxAsync(resources.GetString("plcConn"));
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                //MessageBox.Show(ex.Message);
+                await ShowMessageBoxAsync(ex.Message);
             }
+        }
+
+        private Task ShowMessageBoxAsync(string message)
+        {
+            return Task.Run(() =>
+            {
+                if (InvokeRequired)
+                {
+                    Invoke(new Action(() => MessageBox.Show(message)));
+                }
+                else
+                {
+                    MessageBox.Show(message);
+                }
+            });
         }
 
         #region ---------- 保存 & 加载系统参数设置 ----------
@@ -5026,6 +5046,28 @@ namespace MesDatas
 
         private System.Net.Sockets.Socket socket;
 
+        private void ConnectDashboard()
+        {
+            ConnectDashboard_Click(null, null);
+        }
+
+        /// <summary>
+        /// 连接看板
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ConnectDashboard_Click(object sender, EventArgs e)
+        {
+
+            if (chkEnableDashboard.Checked == false)
+            {
+                isDashboardConnected = false;
+                lblDashboardStatus.ForeColor = Color.Black;
+                return;
+            }
+            Connect();
+        }
+
         /// <summary>
         /// Socket连接
         /// </summary>
@@ -5087,23 +5129,6 @@ namespace MesDatas
                 }
             });
 
-        }
-
-        /// <summary>
-        /// 连接看板
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ConnectDashboard(object sender, EventArgs e)
-        {
-
-            if (chkEnableDashboard.Checked == false)
-            {
-                isDashboardConnected = false;
-                lblDashboardStatus.ForeColor = Color.Black;
-                return;
-            }
-            Connect();
         }
 
         /// <summary>
@@ -7308,46 +7333,6 @@ namespace MesDatas
             {
 
             }
-        }
-
-        private void textBox54_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox53_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label128_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label129_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void txtPModel_COM_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label127_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void chkUseFont_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void chkLoadModel_COM_CheckedChanged(object sender, EventArgs e)
-        {
-
         }
     }
 }

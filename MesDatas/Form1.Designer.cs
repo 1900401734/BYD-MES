@@ -1070,50 +1070,42 @@ namespace MesDatas
             resources.ApplyResources(this.chkLoadModel_COM, "chkLoadModel_COM");
             this.chkLoadModel_COM.Name = "chkLoadModel_COM";
             this.chkLoadModel_COM.UseVisualStyleBackColor = true;
-            this.chkLoadModel_COM.CheckedChanged += new System.EventHandler(this.chkLoadModel_COM_CheckedChanged);
             // 
             // chkUseFont
             // 
             resources.ApplyResources(this.chkUseFont, "chkUseFont");
             this.chkUseFont.Name = "chkUseFont";
             this.chkUseFont.UseVisualStyleBackColor = true;
-            this.chkUseFont.CheckedChanged += new System.EventHandler(this.chkUseFont_CheckedChanged);
             // 
             // txtPModel_COM
             // 
             resources.ApplyResources(this.txtPModel_COM, "txtPModel_COM");
             this.txtPModel_COM.Name = "txtPModel_COM";
-            this.txtPModel_COM.TextChanged += new System.EventHandler(this.txtPModel_COM_TextChanged);
             // 
             // textBox53
             // 
             resources.ApplyResources(this.textBox53, "textBox53");
             this.textBox53.Name = "textBox53";
-            this.textBox53.TextChanged += new System.EventHandler(this.textBox53_TextChanged);
             // 
             // label127
             // 
             resources.ApplyResources(this.label127, "label127");
             this.label127.Name = "label127";
-            this.label127.Click += new System.EventHandler(this.label127_Click);
             // 
             // label128
             // 
             resources.ApplyResources(this.label128, "label128");
             this.label128.Name = "label128";
-            this.label128.Click += new System.EventHandler(this.label128_Click);
             // 
             // textBox54
             // 
             resources.ApplyResources(this.textBox54, "textBox54");
             this.textBox54.Name = "textBox54";
-            this.textBox54.TextChanged += new System.EventHandler(this.textBox54_TextChanged);
             // 
             // label129
             // 
             resources.ApplyResources(this.label129, "label129");
             this.label129.Name = "label129";
-            this.label129.Click += new System.EventHandler(this.label129_Click);
             // 
             // groupBox39
             // 
@@ -3198,7 +3190,7 @@ namespace MesDatas
             resources.ApplyResources(this.btnConnectDashboard, "btnConnectDashboard");
             this.btnConnectDashboard.Name = "btnConnectDashboard";
             this.btnConnectDashboard.UseVisualStyleBackColor = true;
-            this.btnConnectDashboard.Click += new System.EventHandler(this.ConnectDashboard);
+            this.btnConnectDashboard.Click += new System.EventHandler(this.ConnectDashboard_Click);
             // 
             // label40
             // 

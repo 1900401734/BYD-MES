@@ -7,24 +7,21 @@ using System.IO;
 
 namespace MesDatas
 {
-    class mdbDatas
+    class MDBHelper
     {
-        System.Reflection.Missing vtMissing = System.Reflection.Missing.Value;
-        private OleDbConnection myConn;
-        private OleDbConnection myConn1;
+        private OleDbConnection connection;
 
         /// <summary>
         /// 初始化连接数据库
         /// </summary>
-        /// <param name="address"></param>
-        public mdbDatas(string address)
+        /// <param name="path"></param>
+        public MDBHelper(string path)
         {
             try
             {
-                //创建一个 OleDbConnection对象
-                string strCon = " Provider = Microsoft.Jet.OLEDB.4.0 ; Data Source =" + address + ";Persist Security Info=True";
-                myConn = new OleDbConnection(strCon);
-                myConn.Open();
+                string strCon = $" Provider = Microsoft.Jet.OLEDB.4.0 ; Data Source ={path};Persist Security Info=True";
+                connection = new OleDbConnection(strCon);
+                connection.Open();
             }
             catch (Exception ex)
             {
@@ -32,22 +29,32 @@ namespace MesDatas
             }
         }
 
-        public mdbDatas()
+        public MDBHelper()
         { }
 
         /// <summary>
-        /// 是否连接成功
+        /// 测试数据库连接是否成功
         /// </summary>
-        /// <param name="address"></param>
-        /// <returns></returns>
-        public bool mdbDatescomm(string address)
+        /// <param name="dbPath">数据库文件的完整路径</param>
+        /// <returns>连接成功返回 true，否则返回 false</returns>
+        public bool TryConnectDatabase(string dbPath)
         {
+            if (string.IsNullOrEmpty(dbPath))
+            {
+                throw new ArgumentNullException(nameof(dbPath), "数据库路径不能为空");
+            }
+
+            if (!File.Exists(dbPath))
+            {
+                throw new FileNotFoundException("数据库文件不存在", dbPath);
+            }
+
             try
             {
-                //创建一个 OleDbConnection对象
-                string strCon = " Provider = Microsoft.Jet.OLEDB.4.0 ; Data Source =" + address + ";Persist Security Info=True";
-                myConn = new OleDbConnection(strCon);
-                myConn.Open();
+                // 创建一个 OleDbConnection对象
+                string connectionString = $" Provider = Microsoft.Jet.OLEDB.4.0 ;Data Source ={dbPath};Persist Security Info=True";
+                connection = new OleDbConnection(connectionString);
+                connection.Open();
                 return true;
             }
             catch (Exception ex)
@@ -58,32 +65,17 @@ namespace MesDatas
         }
 
         /// <summary>
-        /// 是否连接成功
+        /// 确保数据库连接处于打开状态
         /// </summary>
-        /// <param name="address"></param>
-        /// <returns></returns>
-        public bool mdbDatesconn(string address)
+        /// <returns>
+        /// true: 连接已打开（包括之前已经打开的情况）
+        /// false: 无法打开连接
+        /// </returns>
+        public bool EnsureConnectionOpened()
         {
-            try
+            if (connection.State == ConnectionState.Closed)
             {
-                //创建一个 OleDbConnection对象
-                string strCon = " Provider = Microsoft.Jet.OLEDB.4.0 ; Data Source =" + address + ";Persist Security Info=True";
-                myConn = new OleDbConnection(strCon);
-                myConn.Open();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                ex.ToString();
-                return false;
-            }
-        }
-
-        public bool OpenConnction()
-        {
-            if (myConn.State == ConnectionState.Closed)
-            {
-                myConn.Open();
+                connection.Open();
                 return true;
             }
             else
@@ -97,7 +89,7 @@ namespace MesDatas
         /// </summary>
         public void CloseConnection()
         {
-            myConn.Close();
+            connection.Close();
         }
 
         /// <summary>
@@ -124,7 +116,7 @@ namespace MesDatas
                     }
                 }
                 sql = sql + "(" + tableAttribute + ");";
-                OleDbCommand cmd = new OleDbCommand(sql, myConn);
+                OleDbCommand cmd = new OleDbCommand(sql, connection);
                 cmd.ExecuteNonQuery();
             }
             catch (Exception ex)
@@ -145,7 +137,7 @@ namespace MesDatas
             {
 
                 string strCom = string.Format("select * from {0}", name);
-                OleDbDataAdapter da = new OleDbDataAdapter(strCom, myConn);
+                OleDbDataAdapter da = new OleDbDataAdapter(strCom, connection);
                 //****
                 OleDbCommandBuilder cb = new OleDbCommandBuilder(da);//这里的CommandBuilder对象一定不要忘了,一般就是写在DataAdapter定义的后面
                 cb.QuotePrefix = "[";
@@ -177,7 +169,7 @@ namespace MesDatas
             try
             {
                 string strCom = string.Format("select * from {0}", name);
-                OleDbDataAdapter da = new OleDbDataAdapter(strCom, myConn);
+                OleDbDataAdapter da = new OleDbDataAdapter(strCom, connection);
                 //****
                 OleDbCommandBuilder cb = new OleDbCommandBuilder(da);//这里的CommandBuilder对象一定不要忘了,一般就是写在DataAdapter定义的后面
                 cb.QuotePrefix = "[";
@@ -202,7 +194,7 @@ namespace MesDatas
         /// <returns></returns>
         public bool Add(string sql)
         {
-            OleDbCommand oleDbCommand = new OleDbCommand(sql, myConn);
+            OleDbCommand oleDbCommand = new OleDbCommand(sql, connection);
             int i = oleDbCommand.ExecuteNonQuery(); //返回被修改的数目
             return i > 0;
         }
@@ -214,7 +206,7 @@ namespace MesDatas
         /// <returns></returns>
         public bool Del(string sql)
         {
-            OleDbCommand oleDbCommand = new OleDbCommand(sql, myConn);
+            OleDbCommand oleDbCommand = new OleDbCommand(sql, connection);
             int i = oleDbCommand.ExecuteNonQuery();
             return i > 0;
         }
@@ -228,7 +220,7 @@ namespace MesDatas
         {
             try
             {
-                OleDbCommand oleDbCommand = new OleDbCommand(sql, myConn);
+                OleDbCommand oleDbCommand = new OleDbCommand(sql, connection);
                 int i = oleDbCommand.ExecuteNonQuery();
                 return i > 0;
             }
@@ -246,7 +238,7 @@ namespace MesDatas
         /// <returns></returns>
         public DataTable Find(string sql)
         {
-            OleDbDataAdapter dbDataAdapter = new OleDbDataAdapter(sql, myConn);
+            OleDbDataAdapter dbDataAdapter = new OleDbDataAdapter(sql, connection);
             DataTable dt = new DataTable();
             dbDataAdapter.Fill(dt);
             //foreach (DataRow item in dt.Rows)
