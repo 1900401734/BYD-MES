@@ -42,7 +42,7 @@ namespace BulletinBoard
             this.dgvPModelSettings = new System.Windows.Forms.DataGridView();
             this.label15 = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.txt_FinalDeviceName = new System.Windows.Forms.TextBox();
+            this.txtFinalStation = new System.Windows.Forms.TextBox();
             this.txt_GenarateSpeed = new System.Windows.Forms.TextBox();
             this.chkNameToID = new System.Windows.Forms.CheckBox();
             this.label13 = new System.Windows.Forms.Label();
@@ -77,7 +77,7 @@ namespace BulletinBoard
             this.label3 = new System.Windows.Forms.Label();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.dgvClientInfo = new System.Windows.Forms.DataGridView();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.rtbShowMSG = new System.Windows.Forms.RichTextBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.button7 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
@@ -154,7 +154,7 @@ namespace BulletinBoard
             this.tabPage4.Location = new System.Drawing.Point(4, 4);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(1330, 509);
+            this.tabPage4.Size = new System.Drawing.Size(1321, 509);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = " 设备设置";
             this.tabPage4.UseVisualStyleBackColor = true;
@@ -275,7 +275,7 @@ namespace BulletinBoard
             // 
             // tabPage3
             // 
-            this.tabPage3.Controls.Add(this.txt_FinalDeviceName);
+            this.tabPage3.Controls.Add(this.txtFinalStation);
             this.tabPage3.Controls.Add(this.txt_GenarateSpeed);
             this.tabPage3.Controls.Add(this.chkNameToID);
             this.tabPage3.Controls.Add(this.label13);
@@ -284,17 +284,17 @@ namespace BulletinBoard
             this.tabPage3.Location = new System.Drawing.Point(4, 4);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(1330, 509);
+            this.tabPage3.Size = new System.Drawing.Size(1321, 509);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "统计设置";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
-            // txt_FinalDeviceName
+            // txtFinalStation
             // 
-            this.txt_FinalDeviceName.Location = new System.Drawing.Point(193, 20);
-            this.txt_FinalDeviceName.Name = "txt_FinalDeviceName";
-            this.txt_FinalDeviceName.Size = new System.Drawing.Size(473, 35);
-            this.txt_FinalDeviceName.TabIndex = 7;
+            this.txtFinalStation.Location = new System.Drawing.Point(193, 20);
+            this.txtFinalStation.Name = "txtFinalStation";
+            this.txtFinalStation.Size = new System.Drawing.Size(473, 35);
+            this.txtFinalStation.TabIndex = 7;
             // 
             // txt_GenarateSpeed
             // 
@@ -350,7 +350,7 @@ namespace BulletinBoard
             this.tabPage2.Location = new System.Drawing.Point(4, 4);
             this.tabPage2.Margin = new System.Windows.Forms.Padding(4);
             this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Size = new System.Drawing.Size(1330, 509);
+            this.tabPage2.Size = new System.Drawing.Size(1321, 509);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "服务器设置";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -393,7 +393,7 @@ namespace BulletinBoard
             this.txtStationList.Multiline = true;
             this.txtStationList.Name = "txtStationList";
             this.txtStationList.ReadOnly = true;
-            this.txtStationList.Size = new System.Drawing.Size(615, 433);
+            this.txtStationList.Size = new System.Drawing.Size(604, 433);
             this.txtStationList.TabIndex = 0;
             // 
             // groupBox1
@@ -494,7 +494,7 @@ namespace BulletinBoard
             this.groupBox3.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Padding = new System.Windows.Forms.Padding(4);
-            this.groupBox3.Size = new System.Drawing.Size(683, 77);
+            this.groupBox3.Size = new System.Drawing.Size(675, 77);
             this.groupBox3.TabIndex = 62;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "服务端参数";
@@ -636,12 +636,12 @@ namespace BulletinBoard
             // tabPage1
             // 
             this.tabPage1.Controls.Add(this.dgvClientInfo);
-            this.tabPage1.Controls.Add(this.richTextBox1);
+            this.tabPage1.Controls.Add(this.rtbShowMSG);
             this.tabPage1.Controls.Add(this.groupBox5);
             this.tabPage1.Location = new System.Drawing.Point(4, 4);
             this.tabPage1.Margin = new System.Windows.Forms.Padding(4);
             this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Size = new System.Drawing.Size(1330, 509);
+            this.tabPage1.Size = new System.Drawing.Size(1321, 509);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "运行状态";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -656,17 +656,17 @@ namespace BulletinBoard
             this.dgvClientInfo.ReadOnly = true;
             this.dgvClientInfo.RowHeadersWidth = 51;
             this.dgvClientInfo.RowTemplate.Height = 27;
-            this.dgvClientInfo.Size = new System.Drawing.Size(708, 351);
+            this.dgvClientInfo.Size = new System.Drawing.Size(620, 351);
             this.dgvClientInfo.TabIndex = 65;
             // 
-            // richTextBox1
+            // rtbShowMSG
             // 
-            this.richTextBox1.Location = new System.Drawing.Point(725, 11);
-            this.richTextBox1.Margin = new System.Windows.Forms.Padding(4);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(596, 494);
-            this.richTextBox1.TabIndex = 64;
-            this.richTextBox1.Text = "";
+            this.rtbShowMSG.Location = new System.Drawing.Point(638, 11);
+            this.rtbShowMSG.Margin = new System.Windows.Forms.Padding(4);
+            this.rtbShowMSG.Name = "rtbShowMSG";
+            this.rtbShowMSG.Size = new System.Drawing.Size(674, 494);
+            this.rtbShowMSG.TabIndex = 64;
+            this.rtbShowMSG.Text = "";
             // 
             // groupBox5
             // 
@@ -680,14 +680,14 @@ namespace BulletinBoard
             this.groupBox5.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Padding = new System.Windows.Forms.Padding(4);
-            this.groupBox5.Size = new System.Drawing.Size(708, 136);
+            this.groupBox5.Size = new System.Drawing.Size(620, 136);
             this.groupBox5.TabIndex = 61;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "服务端参数";
             // 
             // button7
             // 
-            this.button7.Location = new System.Drawing.Point(568, 36);
+            this.button7.Location = new System.Drawing.Point(496, 39);
             this.button7.Name = "button7";
             this.button7.Size = new System.Drawing.Size(113, 80);
             this.button7.TabIndex = 62;
@@ -697,7 +697,7 @@ namespace BulletinBoard
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(421, 36);
+            this.button3.Location = new System.Drawing.Point(376, 39);
             this.button3.Margin = new System.Windows.Forms.Padding(4);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(113, 80);
@@ -728,18 +728,18 @@ namespace BulletinBoard
             // 
             // tbx_port
             // 
-            this.tbx_port.Location = new System.Drawing.Point(79, 81);
+            this.tbx_port.Location = new System.Drawing.Point(70, 83);
             this.tbx_port.Margin = new System.Windows.Forms.Padding(4);
             this.tbx_port.Name = "tbx_port";
-            this.tbx_port.Size = new System.Drawing.Size(320, 35);
+            this.tbx_port.Size = new System.Drawing.Size(298, 35);
             this.tbx_port.TabIndex = 2;
             // 
             // tbx_IP
             // 
-            this.tbx_IP.Location = new System.Drawing.Point(79, 36);
+            this.tbx_IP.Location = new System.Drawing.Point(70, 36);
             this.tbx_IP.Margin = new System.Windows.Forms.Padding(4);
             this.tbx_IP.Name = "tbx_IP";
-            this.tbx_IP.Size = new System.Drawing.Size(320, 35);
+            this.tbx_IP.Size = new System.Drawing.Size(298, 35);
             this.tbx_IP.TabIndex = 1;
             // 
             // tabControl1
@@ -758,7 +758,7 @@ namespace BulletinBoard
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.Padding = new System.Drawing.Point(20, 3);
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1338, 557);
+            this.tabControl1.Size = new System.Drawing.Size(1329, 557);
             this.tabControl1.TabIndex = 65;
             // 
             // tabPage5
@@ -770,7 +770,7 @@ namespace BulletinBoard
             this.tabPage5.Location = new System.Drawing.Point(4, 4);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(1330, 509);
+            this.tabPage5.Size = new System.Drawing.Size(1321, 509);
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "MES参数";
             this.tabPage5.UseVisualStyleBackColor = true;
@@ -1218,7 +1218,7 @@ namespace BulletinBoard
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1338, 557);
+            this.ClientSize = new System.Drawing.Size(1329, 557);
             this.Controls.Add(this.tabControl1);
             this.DoubleBuffered = true;
             this.Font = new System.Drawing.Font("SimSun", 12F);
@@ -1277,7 +1277,7 @@ namespace BulletinBoard
         private System.Windows.Forms.DataGridView dgvPModelSettings;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.TabPage tabPage3;
-        private System.Windows.Forms.TextBox txt_FinalDeviceName;
+        private System.Windows.Forms.TextBox txtFinalStation;
         private System.Windows.Forms.TextBox txt_GenarateSpeed;
         private System.Windows.Forms.CheckBox chkNameToID;
         private System.Windows.Forms.Label label13;
@@ -1312,7 +1312,7 @@ namespace BulletinBoard
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.DataGridView dgvClientInfo;
-        private System.Windows.Forms.RichTextBox richTextBox1;
+        private System.Windows.Forms.RichTextBox rtbShowMSG;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.Button button7;
         private System.Windows.Forms.Button button3;

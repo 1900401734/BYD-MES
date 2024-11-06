@@ -6,14 +6,16 @@
         /// 是否查询MES成功
         /// </summary>
         public bool IsHandle { get; set; }
+
         /// <summary>
         /// 处理是否成功
         /// </summary>
-        public bool IsProcess {  get; set; }
+        public bool IsProcess { get; set; }
 
-        public string WorkInformats {  get; set; }
+        public string WorkInformats { get; set; }
 
-        public string ExStr {  get; set; }
+        public string ExStr { get; set; }
+
         public string ORDER { get; set; }
 
         public string ITEM { get; set; }

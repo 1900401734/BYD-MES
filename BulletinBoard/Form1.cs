@@ -50,13 +50,9 @@ namespace BulletinBoard
             LoadServerConfig();             // 加载服务器基本配置
             RefreshStatus();                // 加载已连接的客户端信息
 
-            string dbPath = $"{lblDatabasePath.Text}\\{DateTime.Now:Y}产线数据.mdb";
+            string dbPath = $@"{lblDatabasePath.Text}\{DateTime.Now:Y}产线数据.mdb";
             if (mdbABC.TryConnectDatabase(dbPath) == false)
-            {
                 GenerateProductLineDatabase();  // 生成产线数据库
-                mdbABC.EnsureConnectionOpened();
-            }
-            mdbABC.EnsureConnectionOpened();
 
             ManageMonthlyDatabaseSwitch();
         }
@@ -152,7 +148,7 @@ namespace BulletinBoard
                     txt_PLineDescription.Text = dashboardCongfig.Rows[i]["ProductLineDescription"].ToString();
                     cboPLineAttribute.SelectedItem = dashboardCongfig.Rows[i]["ProductLlineAttributes"].ToString();
                     lblDatabasePath.Text = dashboardCongfig.Rows[i]["Posits"].ToString();
-                    txt_FinalDeviceName.Text = dashboardCongfig.Rows[i]["WorkName"].ToString();
+                    txtFinalStation.Text = dashboardCongfig.Rows[i]["WorkName"].ToString();
                     string isStationIDChecked = dashboardCongfig.Rows[i]["FinishedName"].ToString();
                     if (isStationIDChecked == "True")
                     {
@@ -267,12 +263,12 @@ namespace BulletinBoard
             DataTable BulletinsTable = dbHelper.Find("select * from Bulletins where ID = '1'");
             if (BulletinsTable.Rows.Count > 0)
             {
-                /*string sql = "update [Bulletins] set [WorkName]='" + txt_FinalDeviceName.Text + "'" + ",[FinishedName]='" + checkBox1.Checked + "'" +
-                              ",[DegreesSev]='" + textBox9.Text + "'" + " where [ID] = '1'";*/
+                /*string sql = "update [Bulletins] set [WorkName]='" + txtFinalStation.Text + "'" + ",[FinishedName]='" + chkNameToID.Checked + "'" +
+                              ",[DegreesSev]='" + txt_GenarateSpeed.Text + "'" + " where [ID] = '1'";*/
 
                 string updateSql = $@" UPDATE [Bulletins]
-                                       SET [WorkName] = '{txt_FinalDeviceName.Text}'
-                                       [FinishedName] = '{chkNameToID.Checked}'
+                                       SET [WorkName] = '{txtFinalStation.Text}',
+                                       [FinishedName] = '{chkNameToID.Checked}',
                                        [DegreesSev] = '{txt_GenarateSpeed.Text}'
                                        WHERE [ID] = '1' ";
 
@@ -289,7 +285,7 @@ namespace BulletinBoard
 
         #endregion
 
-        #region ------------- 产线数据库 -------------
+        #region ------------- 生成产线数据库 -------------
 
         /// <summary>
         /// 重新生成产线数据库
@@ -319,10 +315,10 @@ namespace BulletinBoard
         private void GenerateProductLineDatabase()
         {
             string dbPath = $@"{lblDatabasePath.Text}\{DateTime.Now:Y}产线数据.mdb";
-            MDBHelper.CreateAccessDatabase(dbPath);
+            MDBHelper.CreateAccessDatabase(dbPath);     // 创建数据库文件
 
             // 创建产线信息表
-            StringBuilder sb = new StringBuilder(" 基地名称,车间名称,产线名称,产线工位数量,产线描述,产线属性");
+            StringBuilder field = new StringBuilder(" 基地名称,车间名称,产线名称,产线工位数量,产线描述,产线属性");
             ArrayList arrayList = new ArrayList();
             object[] obj = new object[] { "基地名称", "车间名称", "产线名称", "产线工位数量", "产线描述", "产线属性" };
             arrayList.AddRange(obj);
@@ -332,10 +328,10 @@ namespace BulletinBoard
                 object[] obj1 = new object[stationTable.Rows.Count];
                 for (int i = 0; i < stationTable.Rows.Count; i++)
                 {
-                    sb.Append(",");
+                    field.Append(",");
                     int count = (i + 1);
                     obj1[i] = "工位" + count;
-                    sb.Append("工位" + count);
+                    field.Append("工位" + count);
                 }
                 arrayList.AddRange(obj1);
             }
@@ -394,7 +390,7 @@ namespace BulletinBoard
                     }
                 }
 
-                string sql = "insert into 产线信息 (" + sb + ") values (" + str1 + ")";
+                string sql = "insert into 产线信息 (" + field + ") values (" + str1 + ")";
                 bool result = dbHelper.Add(sql.ToString());
                 if (result)
                 {
@@ -622,18 +618,18 @@ namespace BulletinBoard
                             break;
                         case "1":   // 故障信息处理
                             MapStationNameWithStationID(processedData);
-                            NewMethod1(processedData);
+                            ProcessFaultsTable(processedData);
                             break;
                         case "2":   // 生产信息处理
                             MapStationNameWithStationID(processedData);
-                            NewMethod2(processedData);
+                            ProcessProductTable(processedData);
                             break;
                         case "3":   // 统计信息
-                            NewMethod3Async(processedData);
+                            ProcessProductionStatisticsAsync(processedData);
                             break;
                         case "4":   // 易损件信息
                             MapStationNameWithStationID(processedData);
-                            NewMethod4(processedData);
+                            ProcessConsumablePartsInfo(processedData);
                             break;
                         case "5":   // 工位状态处理
                             AddStationName(sourceIP, processedData);
@@ -734,274 +730,311 @@ namespace BulletinBoard
         }
 
         /// <summary>
-        /// 易损件信息
+        /// 处理易损件信息的更新或新增
         /// </summary>
-        /// <param name="dateshuzu"></param>
-        private void NewMethod4(string[] dateshuzu)
+        /// <param name="processedData">易损件数据数组：
+        /// [1] - 易损件所在工位
+        /// [2] - 机台名称
+        /// [3] - 易损件所在位置
+        /// [4] - 易损件名称
+        /// [5] - 易损件理论使用次数
+        /// [6] - 易损件已使用次数
+        /// </param>
+        private void ProcessConsumablePartsInfo(string[] processedData)
         {
-            /// 4+易损件所在工位+机台名称+ 易损件所在位置+易损件名称+易损件理论使用次数+易损件已使用次数
-            /// 易损件所在工位", "机台名称", "易损件所在位置", "易损件名称", "易损件理论使用次数",
+            // 4+易损件所在工位+机台名称+ 易损件所在位置+易损件名称+易损件理论使用次数+易损件已使用次数
+            // "易损件所在工位", "机台名称", "易损件所在位置", "易损件名称", "易损件理论使用次数",
             // "易损件已使用次数","易损件剩余使用次数"
-            int count4_1 = 0;//易损件理论使用次数
-            int count4_2 = 0;//易损件已使用次数
-            int count4_3 = 0;//易损件剩余使用次数
-            if (int.TryParse(dateshuzu[5], out count4_1) && int.TryParse(dateshuzu[6], out count4_2))
+
+            int theoryCount = 0;
+            int usedCount = 0;
+            int remainingCount = 0;
+
+            // 计算剩余使用次数 = 理论使用次数 - 已使用次数
+            if (int.TryParse(processedData[5], out theoryCount) && int.TryParse(processedData[6], out usedCount))
             {
-                count4_3 = count4_1 - count4_2;
+                remainingCount = theoryCount - usedCount;
             }
-            DataTable table4 = mdbABC.Find("select * from 易损件信息 where 易损件所在工位='" + dateshuzu[1] + "'and 机台名称='"
-                + dateshuzu[2] + "'and 易损件所在位置='" + dateshuzu[3] + "'and 易损件名称='" + dateshuzu[4] + "'");
-            if (table4.Rows.Count > 0)
+
+            //DataTable consumablePartsTable = mdbABC.Find("select * from 易损件信息 where 易损件所在工位='" + processedData[1] + "'and 机台名称='"
+            //    + processedData[2] + "'and 易损件所在位置='" + processedData[3] + "'and 易损件名称='" + processedData[4] + "'");
+
+            DataTable consumablePartsTable = mdbABC.Find($"SELECT * FROM 易损件信息 WHERE 易损件所在工位='{processedData[1]}' " +
+                $"AND 机台名称='{processedData[2]}' " +
+                $"AND 易损件所在位置='{processedData[3]}' " +
+                $"AND 易损件名称='{processedData[4]}'");
+
+            // 存在则更新使用次数信息
+            if (consumablePartsTable.Rows.Count > 0)
             {
-                string sql1 = "update [易损件信息] set [易损件已使用次数]='" + count4_2 + "'," +
-                    "[易损件理论使用次数]='" + count4_1 + "', [易损件剩余使用次数] = '" + count4_3 + "'" +
-                    " where [机台名称] = '" + dateshuzu[2] + "'and 易损件名称='" + dateshuzu[4] + "'";
-                var result1 = mdbABC.Change(sql1);
-                if (result1 == true)
+                //string updateSql = "update [易损件信息] set [易损件已使用次数]='" + usedCount + "'," +
+                //    "[易损件理论使用次数]='" + theoryCount + "', [易损件剩余使用次数] = '" + remainingCount + "'" +
+                //    " where [机台名称] = '" + processedData[2] + "'and 易损件名称='" + processedData[4] + "'";
+
+                string updateSql = $@"UPDATE [易损件信息] 
+                        SET [易损件已使用次数]='{usedCount}',
+                            [易损件理论使用次数]='{theoryCount}', 
+                            [易损件剩余使用次数]='{remainingCount}'
+                        WHERE [机台名称]='{processedData[2]}' 
+                        AND 易损件名称='{processedData[4]}'";
+
+                var result = mdbABC.Change(updateSql);
+                if (result == true)
                 {
-                    this.BeginInvoke(ShowMsgAction, "工位：" + dateshuzu[1] + "机台：" + dateshuzu[2] +
-                        "易损件信息更新：" + dateshuzu[3] + dateshuzu[4]);
+                    this.BeginInvoke(ShowMsgAction,
+                        $"工位：{processedData[1]}机台：{processedData[2]}易损件信息更新：{processedData[3]}{processedData[4]}");
                 }
             }
+            // 不存在则新增易损件记录
             else
             {
-                string sql1 = "insert into 易损件信息 (易损件所在工位, 机台名称, 易损件所在位置, 易损件名称, " +
+                /*string insertSql = "insert into 易损件信息 (易损件所在工位, 机台名称, 易损件所在位置, 易损件名称, " +
                     "易损件理论使用次数,易损件已使用次数,易损件剩余使用次数)" +
-                    " values ('" + dateshuzu[1] + "','" + dateshuzu[2] + "','" + dateshuzu[3] + "','" + dateshuzu[4] + "','"
-                    + count4_1 + "','" + count4_2 + "','" + count4_3 + "')";
-                bool result1 = mdbABC.Add(sql1.ToString());
-                if (result1 == true)
+                    " values ('" + processedData[1] + "','" + processedData[2] + "','" + processedData[3] + "','" + processedData[4] + "','"
+                    + theoryCount + "','" + usedCount + "','" + remainingCount + "')";*/
+
+                string insertSql = $@"INSERT INTO 易损件信息 (
+                    易损件所在工位, 
+                    机台名称, 
+                    易损件所在位置, 
+                    易损件名称, 
+                    易损件理论使用次数,
+                    易损件已使用次数,
+                    易损件剩余使用次数
+                ) values (
+                    '{processedData[1]}',
+                    '{processedData[2]}',
+                    '{processedData[3]}',
+                    '{processedData[4]}',
+                    '{theoryCount}',
+                    '{usedCount}',
+                    '{remainingCount}'
+                )";
+
+                bool isAddSuccessful = mdbABC.Add(insertSql);
+                if (isAddSuccessful == true)
                 {
-                    this.BeginInvoke(ShowMsgAction, "工位：" + dateshuzu[1] + "机台：" + dateshuzu[2] +
-                        "新增易损件信息:" + dateshuzu[3] + dateshuzu[4]);
+                    this.BeginInvoke(ShowMsgAction,
+                        $"工位：{processedData[1]}机台：{processedData[2]}新增易损件信息:{processedData[3]}{processedData[4]}");
                 }
             }
         }
 
         /// <summary>
-        /// 统计信息ModPros
+        /// 生产工位的列表
         /// </summary>
-        /// <param name="dateshuzu"></param>
-        List<Dictionary<string, List<string>>> listDic = new List<Dictionary<string, List<string>>>();
+        List<Dictionary<string, List<string>>> productionStationList = new List<Dictionary<string, List<string>>>();
 
-        private async void NewMethod3Async(string[] dateshuzu)
+        /// <summary>
+        /// 处理生产统计信息并更新数据库
+        /// </summary>
+        /// <param name="productionData">生产数据数组:
+        /// [0] - 类型标识符
+        /// [1] - 工位名称
+        /// [2] - 工单号
+        /// [3] - 工单数量
+        /// [4] - 完成数量
+        /// [5] - 完成率
+        /// [6] - 合格率
+        /// [7] - 整体节拍
+        /// [8] - 生产产品总数
+        /// [9] - 工序时间
+        /// [10] - 利用时间
+        /// [11] - 负荷时间
+        /// [12] - 直通率
+        /// [13] - 成品名称
+        /// </param>
+        private async void ProcessProductionStatisticsAsync(string[] productionData)
         {
-            if (txt_FinalDeviceName.Text.Trim().Length == 0)
+            // 验证最后工位名称是否输入
+            if (txtFinalStation.Text.Trim().Length == 0)
             {
                 this.BeginInvoke(ShowMsgAction, "输入最后一个机台！！！");
                 return;
             }
-            if (listDic.Count == 0)
+
+            // 首次添加生产统计数据
+            if (productionStationList.Count == 0)
             {
-                Dictionary<string, List<string>> dicmapA = new Dictionary<string, List<string>>();
-                dicmapA.Add(dateshuzu[1], ListDicodmh(dateshuzu));
-                listDic.Add(dicmapA);
-                /*if (dicmapA.Count == productTable.Rows.Count)
+                // 即提取productionData[1]中所包含的工位名称，并建立工位名称与剩下索引值之间的映射
+                string stationName = productionData[1];
+                List<string> productionStatsticInfoList = ConvertToProductionStatsList(productionData);
+
+                // stationDataMap：工位名称与对应生产统计数据的映射；
+                var stationDataMap = new Dictionary<string, List<string>>() // 集合初始化器
                 {
-                    double count1 = productTable.Rows.Count;//工位数量
-                    double num1 = 0;//工序
-                    double num2 = 0;//工序总和
-                    double num3 = 0;//瓶颈;
-                    double num4 = 0;//直通率
-                    double num5 = 1; //直通率乘积
-                    double timenum1 = 0;//利用时间
-                                        //  double timenum2 = 0;//利用时间总和
-                    double timenum3 = 0;//负荷时间
-                                        // double timenum4 = 0;//负荷时间总和
-                    foreach (List<string> valuelist in dicmapA.Values)
-                    {
-                        //0工单号//1成品名称//2工单数量
-                        //3完成数量//4完成率//5合格率//6整体节拍//7工序时间//8利用时间 //9负荷时间
-                        //10生产产品数量（总数）//11直通率
-                        num2 += num1;
-                        double.TryParse(valuelist[7], out num3);
-                        if (num3 > num1)//计算最小的
-                        {
-                            double.TryParse(valuelist[7], out num1);//工序
-                            num3 = num1;
-                        }
-                        double.TryParse(valuelist[11], out num4);
-                        if (num4 != 0)//直通率乘积
-                        {
-                            num5 *= num4;
-                        }
-                        double.TryParse(valuelist[8], out timenum1);
-                        double.TryParse(valuelist[9], out timenum3);
-                    }
-                    DataRowView dataRowView = (DataRowView)comboBox2.SelectedItem;
-                    if (dicmapA.ContainsKey(dataRowView["名称"].ToString()))
-                    {
-                        List<string> dicstrkey = dicmapA[dataRowView["名称"].ToString()];
-                        string sql3_1 = "insert into 统计信息 (工单号, 成品名称, 工单数量, 完成数量, 完成率, 合格率,整线节拍" +
-                                                                ",线平衡,OEE,直通率,更新时间,更新标识 )  values ('";
-                        //0工单号//1成品名称//2工单数量
-                        //3完成数量//4完成率//5合格率//6整体节拍//7工序时间//8利用时间 //9负荷时间
-                        //10生产产品数量（总数）//11直通率
-                        sql3_1 += dicstrkey[0] + "','";
-                        sql3_1 += dicstrkey[1] + "','";
-                        sql3_1 += dicstrkey[2] + "','";
-                        sql3_1 += dicstrkey[3] + "','";
-                        sql3_1 += dicstrkey[4] + "','";
-                        sql3_1 += dicstrkey[5] + "','";
-                        sql3_1 += dicstrkey[6] + "','";
-                        if (num2 != 0 && num3 != 0 && count1 != 0)
-                        {
-                            sql3_1 += num2 / (count1 / num3) + "','";
-                        }
-                        else
-                        {
-                            sql3_1 += "  " + "','";
-                        }
-                        string OEE = " ";
-                        double.TryParse(dicstrkey[8], out timenum1);//利用时间
-                        double.TryParse(dicstrkey[9], out timenum3);//负荷时间
-                        double rowcount9 = 0;//生产产品数量（总数）
-                        double.TryParse(dicstrkey[10], out rowcount9);
-                        double textcount9 = 0;//设计数度
-                        double.TryParse(textBox9.Text, out textcount9);
-                        double numhg = 0;//合格率
-                        double.TryParse(dicstrkey[5], out numhg);
-                        if (timenum1 != 0 && timenum3 != 0 && textcount9 != 0 && textcount9 != 0 && numhg != 0)
-                        {
-                            OEE = (timenum1 / timenum3) * (rowcount9 / (timenum1 * textcount9)) * numhg + "";
-                        }
-                        sql3_1 += OEE + "','";
-                        sql3_1 += num5 + "','";
-                        sql3_1 += DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "','";
-                        sql3_1 += "F" + "')";
-                        var result3_1 = mdb.Add(sql3_1.ToString());
-                        if (result3_1)
-                        {
-                            this.BeginInvoke(ShowMsgAction, "添加一条统计信息");
-                            listDic.Remove(dicmapA);
-                        }
-                    }
-                }*/
+                    {stationName, productionStatsticInfoList}
+                };
+
+                // Fix bug: Add stationDataMap to productionSationList
+                productionStationList.Add(stationDataMap);
             }
             else
             {
-                for (int i = 0; i < listDic.Count; i++)
+                // 遍历现有生产统计数据
+                for (int i = 0; i < productionStationList.Count; i++)
                 {
-                    Dictionary<string, List<string>> dicmap = new Dictionary<string, List<string>>();
-                    dicmap = listDic[i];
-                    if (dicmap.ContainsKey(txt_FinalDeviceName.Text))
+                    // currentStationMap：表示当前处理的机台名称与对应生产统计数据的映射
+                    var currentStationDataMap = new Dictionary<string, List<string>>();
+                    currentStationDataMap = productionStationList[i];
+
+                    // 如果找到最终工位，计算统计信息
+                    if (currentStationDataMap.ContainsKey(txtFinalStation.Text))
                     {
-                        bool pingjin = true;
-                        double count1 = dicmap.Count;//工位数量
-                        double num1 = 0;//工序
-                        double num2 = 0;//工序总和
-                        double num3 = 0;//瓶颈;
-                        double num4 = 0;//直通率
-                        double num5 = 1; //直通率乘积
-                        double timenum1 = 0;//利用时间
-                                            //  double timenum2 = 0;//利用时间总和
-                        double timenum3 = 0;//负荷时间
-                                            // double timenum4 = 0;//负荷时间总和
-                        foreach (List<string> valuelist in dicmap.Values)
+                        // 计算生产线性能指标
+                        bool isFirstStation = true;
+                        double count = currentStationDataMap.Count; // 工位数量
+                        double processingTime = 0;                  // 处理时间（工序时间）
+                        double totalProcessingTime = 0;             // 总处理时间（工序时间总和）
+                        double bottleneckTime = 0;                  // 瓶颈时间;
+                        double yieldRate = 0;                       // 直通率
+                        double totalYieldRate = 1;                  // 总直通率（直通率乘积）
+                        double utilizationTime = 0;                 // 利用时间
+                        double loadTime = 0;                        // 负荷时间
+                        //double timenum2 = 0;                      // 总利用时间（利用时间总和）
+                        //double timenum4 = 0;                      // 总负荷时间（负荷时间总和）
+
+                        // 遍历每个工位对应的生产统计数据
+                        foreach (List<string> statisticsInfoList in currentStationDataMap.Values)
                         {
-                            double.TryParse(valuelist[7], out num1);//工序
-                            //0工单号//1成品名称//2工单数量
-                            //3完成数量//4完成率//5合格率//6整体节拍//7工序时间//8利用时间 //9负荷时间
-                            //10生产产品数量（总数）//11直通率
-                            num2 += num1;
-                            if (pingjin)
+                            // statisticsInfoList[i]:
+                            // [0] - 工单号         [1] - 成品名称         [2] - 工单数量
+                            // [3] - 完成数量       [4] - 完成率           [5] - 合格率
+                            // [6] - 整体节拍       [7] - 工序时间         [8] - 利用时间
+                            // [9] - 负荷时间       [10] - 生产产品数量    [11] - 直通率
+
+                            // 处理工序时间
+                            double.TryParse(statisticsInfoList[7], out processingTime);    // 工序时间
+                            totalProcessingTime += processingTime;
+
+                            // 计算瓶颈时间
+                            if (isFirstStation)
                             {
-                                pingjin = false;
-                                double.TryParse(valuelist[7], out num3);
+                                isFirstStation = false;
+                                double.TryParse(statisticsInfoList[7], out bottleneckTime);
                             }
-                            if (num3 > num1)//计算最小的
+
+                            if (bottleneckTime > processingTime)    // 计算最小的
                             {
                                 //double.TryParse(valuelist[7], out num1);//工序
-                                num3 = num1;
+                                bottleneckTime = processingTime;
                             }
-                            double.TryParse(valuelist[11], out num4);
-                            num4 /= 100;
-                            if (num4 != 0)//直通率乘积
-                            {
-                                num5 *= num4;
-                            }
-                            //   double.TryParse(valuelist[8], out timenum1);
-                            //   double.TryParse(valuelist[9], out timenum3);
-                        }
-                        // DataRowView dataRowView = (DataRowView)comboBox2.SelectedItem;
 
-                        List<string> dicstrkey = dicmap[txt_FinalDeviceName.Text.ToString()];
-                        StatInformaAS statInformaAS = await BydWorkCom.BydWorkStatisticsAsync(dicstrkey[0], "");
+                            // 计算直通率
+                            double.TryParse(statisticsInfoList[11], out yieldRate);
+                            yieldRate /= 100;
+
+                            if (yieldRate != 0) // 直通率乘积
+                            {
+                                totalYieldRate *= yieldRate;
+                            }
+
+                        }
+
+                        // 获取最终工位数据
+                        List<string> productionStatsticInfoList = currentStationDataMap[txtFinalStation.Text];
+
+                        string workOrder = productionStatsticInfoList[0];   // 工单号
+
+                        // 更新工单完成情况
+                        StatInformaAS statInformaAS = await BydWorkCom.BydWorkStatisticsAsync(workOrder, "");
+
                         if (statInformaAS.IsHandle && statInformaAS.IsProcess)
                         {
-                            dicstrkey[2] = statInformaAS.ORDER_NUM;
-                            dicstrkey[3] = statInformaAS.COMP_NUM;
-                            dicstrkey[4] = statInformaAS.COMP_RATE.TrimEnd('%');
+                            productionStatsticInfoList[2] = statInformaAS.ORDER_NUM;                        // 工单数量
+                            productionStatsticInfoList[3] = statInformaAS.COMP_NUM;                         // 完成数量
+                            productionStatsticInfoList[4] = statInformaAS.COMP_RATE.TrimEnd('%');  // 完成率
                         }
 
-                        string sql3_1 = "insert into 统计信息 (工单号, 成品名称, 工单数量, 完成数量, 完成率, 合格率,整线节拍" +
-          ",线平衡,OEE,直通率,更新时间,更新标识 )  values ('";
-                        //0工单号//1成品名称//2工单数量
-                        //3完成数量//4完成率//5合格率//6整体节拍//7工序时间//8利用时间 //9负荷时间
-                        //10生产产品数量（总数）//11直通率
-                        double dicstrkey4 = 0;
-                        double.TryParse(dicstrkey[4], out dicstrkey4);
-                        dicstrkey[4] = (dicstrkey4 / 100).ToString();
-                        double dicstrkey5 = 0;
-                        double.TryParse(dicstrkey[5], out dicstrkey5);
-                        dicstrkey[5] = (dicstrkey5 / 100).ToString();
-                        sql3_1 += dicstrkey[0] + "','";
-                        sql3_1 += dicstrkey[1] + "','";
-                        sql3_1 += dicstrkey[2] + "','";
-                        sql3_1 += dicstrkey[3] + "','";
-                        sql3_1 += dicstrkey[4] + "','";
-                        sql3_1 += dicstrkey[5] + "','";
-                        sql3_1 += dicstrkey[6] + "','";
-                        if (num2 != 0 && num3 != 0 && count1 != 0)
+                        string insertSql = "INSERT INTO 统计信息 (工单号, 成品名称, 工单数量, 完成数量, 完成率, 合格率,整线节拍" +
+                                        ",线平衡,OEE,直通率,更新时间,更新标识 )  VALUES ('";
+
+                        // [0] - 工单号         [1] - 成品名称         [2] - 工单数量
+                        // [3] - 完成数量       [4] - 完成率           [5] - 合格率
+                        // [6] - 整体节拍       [7] - 工序时间         [8] - 利用时间
+                        // [9] - 负荷时间       [10] - 产品数量    [11] - 直通率
+
+                        // 计算完成率
+                        double completeRate = 0;
+                        double.TryParse(productionStatsticInfoList[4], out completeRate);
+                        productionStatsticInfoList[4] = (completeRate / 100).ToString();
+
+                        // 计算合格率
+                        double passRate = 0;
+                        double.TryParse(productionStatsticInfoList[5], out passRate);
+                        productionStatsticInfoList[5] = (passRate / 100).ToString();
+
+                        // 插入工单号、成品名称、工单数量、完成数量、完成率、合格率、整体节拍
+                        insertSql += productionStatsticInfoList[0] + "','";
+                        insertSql += productionStatsticInfoList[1] + "','";
+                        insertSql += productionStatsticInfoList[2] + "','";
+                        insertSql += productionStatsticInfoList[3] + "','";
+                        insertSql += productionStatsticInfoList[4] + "','";
+                        insertSql += productionStatsticInfoList[5] + "','";
+                        insertSql += productionStatsticInfoList[6] + "','";
+
+                        // 计算并插入线平衡
+                        if (totalProcessingTime != 0 && bottleneckTime != 0 && count != 0)
                         {
-                            double AA = num2 / (count1 * num3);
-                            sql3_1 += AA.ToString("0.0000") + "','";
+                            double lineBalance = totalProcessingTime / (count * bottleneckTime);
+                            insertSql += lineBalance.ToString("0.0000") + "','";
                         }
                         else
                         {
-                            sql3_1 += "0" + "','";
+                            insertSql += "0" + "','";
                         }
+
                         string OEE = "";
-                        double.TryParse(dicstrkey[8], out timenum1);//利用时间
-                        double.TryParse(dicstrkey[9], out timenum3);//负荷时间
-                        double rowcount9 = 0;//生产产品数量（总数）
-                        double.TryParse(dicstrkey[10], out rowcount9);
-                        double textcount9 = 0;//设计数度
-                        double.TryParse(txt_GenarateSpeed.Text, out textcount9);
-                        double numhg = 0;//合格率
-                        double.TryParse(dicstrkey[5], out numhg);
-                        if (timenum1 != 0 && timenum3 != 0 && textcount9 != 0 && textcount9 != 0 && numhg != 0)
+                        double.TryParse(productionStatsticInfoList[8], out utilizationTime);    // 利用时间
+                        double.TryParse(productionStatsticInfoList[9], out loadTime);           // 负荷时间
+
+                        double rowcount9 = 0;
+                        double.TryParse(productionStatsticInfoList[10], out rowcount9);         // 生产产品数量（总数）
+
+                        double textcount9 = 0;
+                        double.TryParse(txt_GenarateSpeed.Text, out textcount9);                      // 设计数度
+
+                        double numhg = 0;
+                        double.TryParse(productionStatsticInfoList[5], out numhg);              // 合格率
+
+                        // 计算OEE
+                        if (utilizationTime != 0 && loadTime != 0 && textcount9 != 0 && textcount9 != 0 && numhg != 0)
                         {
-                            double OEE1 = ((timenum1 / timenum3) * (rowcount9 / (timenum1 * textcount9)) * numhg);
+                            double OEE1 = ((utilizationTime / loadTime) * (rowcount9 / (utilizationTime * textcount9)) * numhg);
                             OEE = OEE1.ToString("0.0000");
                         }
                         else
                         {
                             OEE = "0";
                         }
-                        sql3_1 += OEE + "','";
-                        sql3_1 += num5.ToString("0.0000") + "','";
-                        sql3_1 += DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "','";
-                        sql3_1 += "F" + "')";
-                        var result3_1 = mdbABC.Add(sql3_1.ToString());
+
+                        // 插入OEE、直通率、更新时间、更新标识
+                        insertSql += OEE + "','";
+                        insertSql += totalYieldRate.ToString("0.0000") + "','";
+                        insertSql += DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "','";
+                        insertSql += "F" + "')";
+
+                        // 执行数据插入
+                        var result3_1 = mdbABC.Add(insertSql);
                         if (result3_1)
                         {
                             this.BeginInvoke(ShowMsgAction, "添加一条统计信息");
-                            listDic.Remove(dicmap);
+                            productionStationList.Remove(currentStationDataMap);
                         }
 
                     }
-                    else if (dicmap.ContainsKey(dateshuzu[1]))
+                    // 处理新工位数据
+                    else if (currentStationDataMap.ContainsKey(productionData[1]))
                     {
                         Dictionary<string, List<string>> dicmapA = new Dictionary<string, List<string>>();
-                        dicmapA.Add(dateshuzu[1], ListDicodmh(dateshuzu));
-                        listDic.Add(dicmapA);
+                        dicmapA.Add(productionData[1], ConvertToProductionStatsList(productionData));
+                        productionStationList.Add(dicmapA);
                         break;
                     }
                     else
                     {
-                        dicmap.Add(dateshuzu[1], ListDicodmh(dateshuzu));
-                        listDic[i] = dicmap;
+                        currentStationDataMap.Add(productionData[1], ConvertToProductionStatsList(productionData));
+                        productionStationList[i] = currentStationDataMap;
                         break;
                     }
                 }
@@ -1009,106 +1042,208 @@ namespace BulletinBoard
 
         }
 
-        private List<string> ListDicodmh(string[] dateshuzu)
+        /// <summary>
+        /// 将生产数据数组转换为生产统计信息列表
+        /// </summary>
+        /// <param name="productionData">生产数据数组:
+        /// [0] - 数据类型标识符
+        /// [1] - 机台名称
+        /// [2] - 工单号
+        /// [3] - 工单数量
+        /// [4] - 完成数量
+        /// [5] - 完成率
+        /// [6] - 合格率
+        /// [7] - 整体节拍
+        /// [8] - 生产产品总数
+        /// [9] - 工序时间
+        /// [10] - 利用时间
+        /// [11] - 负荷时间
+        /// [12] - 直通率
+        /// [13] - 成品名称
+        /// </param>
+        /// <returns>包含生产统计信息的有序列表</returns>
+        private List<string> ConvertToProductionStatsList(string[] productionData)
         {
-            //3+机台名称1+工单号2+工单数量3+完成数量4+
-            //完成率5+合格率6+整体节拍7+生产产品数量（总数）8
-            //+ 工序时间9+利用时间10+负荷时间11+直通率12+成品名称13
-            List<string> list = new List<string>();
-            list.Add(dateshuzu[2]);//工单号
-            list.Add(dateshuzu[13]);//成品名称
-            list.Add(dateshuzu[3]);//工单数量
-            list.Add(dateshuzu[4]);//完成数量
-            list.Add(dateshuzu[5]);//完成率
-            list.Add(dateshuzu[6]);//合格率
-            list.Add(dateshuzu[7]);//整体节拍
-            list.Add(dateshuzu[9]);//工序时间
-            list.Add(dateshuzu[10]);//利用时间
-            list.Add(dateshuzu[11]);//负荷时间
-            list.Add(dateshuzu[8]);//生产产品数量（总数）
-            list.Add(dateshuzu[12]);//直通率
-            return list;
+            // productionData[]：
+            // 3 + 机台名称1 + 工单号2    + 工单数量3  + 完成数量4 + 完成率5    + 合格率6 + 整体节拍7 + 生产产品数量（总数）8
+            //   + 工序时间9 + 利用时间10 + 负荷时间11 +  直通率12 + 成品名称13
+
+            #region 
+
+            // 初始化生产统计信息列表
+            var productionStats = new List<string>();
+
+            // [0] - 工单号         [1] - 成品名称         [2] - 工单数量
+            // [3] - 完成数量       [4] - 完成率           [5] - 合格率
+            // [6] - 整体节拍       [7] - 工序时间         [8] - 利用时间
+            // [9] - 负荷时间       [10] - 生产产品数量    [11] - 直通率
+
+            #endregion
+
+            // 按固定顺序添加生产统计数据
+            productionStats.Add(productionData[2]);     // 工单号
+            productionStats.Add(productionData[13]);    // 成品名称
+            productionStats.Add(productionData[3]);     // 工单数量
+            productionStats.Add(productionData[4]);     // 完成数量
+            productionStats.Add(productionData[5]);     // 完成率
+            productionStats.Add(productionData[6]);     // 合格率
+            productionStats.Add(productionData[7]);     // 整体节拍
+            productionStats.Add(productionData[9]);     // 工序时间
+            productionStats.Add(productionData[10]);    // 利用时间
+            productionStats.Add(productionData[11]);    // 负荷时间
+            productionStats.Add(productionData[8]);     // 生产产品数量（总数）
+            productionStats.Add(productionData[12]);    // 直通率
+
+            return productionStats;
         }
 
         /// <summary>
         /// 生成信息表
         /// </summary>
-        /// <param name="dateshuzu"></param>
+        /// <param name="processedData"></param>
         /// <param name="conn"></param>
-        private async void NewMethod2(string[] dateshuzu)
+        private async void ProcessProductTable(string[] processedData)
         {
             await Task.Run(() =>
             {
-                /// 2+工位名称+当前工单号+产品条码+操作人员+则式时间+则试结果+ 则试节拍+则试项名称+ 则试项上限+则试项下限+测式项实际值
-                string sql2 = "insert into 生产信息 (工位名称 ,当前工单号, 产品条码,操作人员, " +
+                // 2+工位名称+当前工单号+产品条码+操作人员+则式时间+则试结果+ 则试节拍+则试项名称+ 则试项上限+则试项下限+测式项实际值
+                /*string sql2 = "insert into 生产信息 (工位名称 ,当前工单号, 产品条码,操作人员, " +
                     "测试时间,测试结果,测试节拍,测试项名称," +
                     "测试项上限,测试项下限,测试项实际值, 更新标识)" +
-                       " values ('" + dateshuzu[1] + "','" + dateshuzu[2] + "','" + dateshuzu[3] + "','" + dateshuzu[4] + "','"
-                   + dateshuzu[5] + "','" + dateshuzu[6] + "','" + dateshuzu[7] + "','" + dateshuzu[8] + "','"
-                   + dateshuzu[9] + "','" + dateshuzu[10] + "','" + dateshuzu[11] + "','" + "F" + "')";
-                var result2 = mdbABC.Add(sql2.ToString());
+                       " values ('" + processedData[1] + "','" + processedData[2] + "','" + processedData[3] + "','" + processedData[4] + "','"
+                   + processedData[5] + "','" + processedData[6] + "','" + processedData[7] + "','" + processedData[8] + "','"
+                   + processedData[9] + "','" + processedData[10] + "','" + processedData[11] + "','" + "F" + "')";*/
+                string insertSql = $@"INSERT INTO 生产信息 (工位名称,当前工单号,产品条码,操作人员,测试时间,
+                                        测试结果,测试节拍,测试项名称,测试项上限,测试项下限,测试项实际值,更新标识) 
+                                    VALUES ('{processedData[1]}',
+                                            '{processedData[2]}',
+                                            '{processedData[3]}',
+                                            '{processedData[4]}',
+                                            '{processedData[5]}',
+                                            '{processedData[6]}',
+                                            '{processedData[7]}',
+                                            '{processedData[8]}',
+                                            '{processedData[9]}',
+                                            '{processedData[10]}',
+                                            '{processedData[11]}',
+                                            'F')";
+                var result2 = mdbABC.Add(insertSql.ToString());
             });
         }
 
         /// <summary>
-        /// 故障信息表
+        /// 故障信息表处理方法，
+        /// 处理设备故障的开始和结束记录
         /// </summary>
-        /// <param name="dateshuzu"></param>
-        private void NewMethod1(string[] dateshuzu)
+        /// <param name="faultData">故障信息数组：
+        /// [1] - 故障发生工位
+        /// [2] - 机台名称
+        /// [3] - 故障类型
+        /// [4] - 故障描述
+        /// [5] - 发生时间
+        /// [6] - 结束时间（可选）
+        /// </param>
+        private void ProcessFaultsTable(string[] faultData)
         {
-            /// 1+故障所在工位+机台名称+ 故障状态+故障的描述+触发故障的开始时间 
-            /// 1+故障所在工位+机台名称+故障的描述+触发故障的结束时间
-            DataTable table1 = mdbABC.Find("select * from 故障信息 where 故障发生工位='" + dateshuzu[1] + "'and 机台名称='"
-                + dateshuzu[2] + "'and 故障描述='" + dateshuzu[4] + "'" + "and 发生时间='" + dateshuzu[5] + "'");
-            if (table1.Rows.Count > 0)
+            // 1+故障所在工位+机台名称+ 故障状态+故障描述+触发故障的开始时间 
+            // 1+故障所在工位+机台名称+故障的描述+触发故障的结束时间
+            /* DataTable faultsTable = mdbABC.Find("select * from 故障信息 where 故障发生工位='" + processedData[1] + "'and 机台名称='"
+                 + processedData[2] + "'and 故障描述='" + processedData[4] + "'" + "and 发生时间='" + processedData[5] + "'");*/
+
+            // 1. 查询是否存在匹配的故障记录
+            DataTable faultsTable = mdbABC.Find($@"SELECT * FROM [故障信息] 
+                WHERE [故障发生工位]='{faultData[1]}' 
+                AND [机台名称]='{faultData[2]}' 
+                AND [故障描述]='{faultData[4]}' 
+                AND [发生时间]='{faultData[5]}'");
+
+            // 2. 如果存在记录，说明这是一条故障结束的信息
+            if (faultsTable.Rows.Count > 0)
             {
-                DateTime dateTime1 = new DateTime();
-                if (dateshuzu.Length > 6)
+                DateTime endDataTime = new DateTime();
+
+                // 检查是否有结束时间参数
+                if (faultData.Length > 6)
                 {
-                    bool redtime1 = DateTime.TryParse(dateshuzu[6], out dateTime1);
-                    if (redtime1 == false)
+                    // 验证结束时间格式，如果无效则使用当前时间
+                    bool isEndTimeValid = DateTime.TryParse(faultData[6], out endDataTime);
+                    if (isEndTimeValid == false)
                     {
-                        dateshuzu[6] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                        faultData[6] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                     }
-                    //string sql = "update [Codes] set [Name]='" + funmae + "'" + " where [ID] = '" +
-                    //
-                    //
-                    //+ "'";
-                    string sql1 = "update [故障信息] set [结束时间]='" + dateshuzu[6] + "',更新标识='F'" + " where 故障发生工位='" + dateshuzu[1] + "'and 机台名称='"
-                    + dateshuzu[2] + "'and 故障描述='" + dateshuzu[4] + "'" + "and 发生时间='" + dateshuzu[5] + "'";
-                    var result1 = mdbABC.Change(sql1);
-                    if (result1 == true)
+
+                    // 更新故障记录的结束时间和更新标识
+                    /*string updateSql = "update [故障信息] set [结束时间]='" + processedData[6] + "',更新标识='F'" + " where 故障发生工位='" + processedData[1] + "'and 机台名称='"
+                    + processedData[2] + "'and 故障描述='" + processedData[4] + "'" + "and 发生时间='" + processedData[5] + "'";*/
+                    string updateSql = $@"UPDATE [故障信息] 
+                        SET [结束时间]='{faultData[6]}',
+                            [更新标识]='F'
+                      WHERE [故障发生工位]='{faultData[1]}' 
+                        AND [机台名称]='{faultData[2]}'
+                        AND [故障描述]='{faultData[4]}'
+                        AND [发生时间]='{faultData[5]}'";
+
+                    var isUpdateSuccessful = mdbABC.Change(updateSql);
+                    if (isUpdateSuccessful)
                     {
-                        this.BeginInvoke(ShowMsgAction, "工位：" + dateshuzu[1] + "机台：" + dateshuzu[2] +
-                            "故障停止信息：" + dateshuzu[3] + dateshuzu[6]);
+                        // 显示更新成功消息
+                        /*this.BeginInvoke(ShowMsgAction, "工位：" + processedData[1] + "机台：" + processedData[2] +
+                            "故障停止信息：" + processedData[3] + processedData[6]);*/
+                        this.BeginInvoke(ShowMsgAction,
+                            $"工位：{faultData[1]}机台：{faultData[2]}故障停止信息：{faultData[3]}{faultData[6]}");
                     }
                 }
             }
+            // 3. 如果不存在记录，说明这是一条新的故障记录
             else
             {
-                string datime = "";
-                DateTime dateTime1 = new DateTime();
-                if (dateshuzu.Length > 6)
+                string endTime = "";
+                DateTime dt = new DateTime();
+
+                // 处理可能存在的结束时间
+                if (faultData.Length > 6)
                 {
-                    bool redtime1 = DateTime.TryParse(dateshuzu[6], out dateTime1);
+                    bool redtime1 = DateTime.TryParse(faultData[6], out dt);
                     if (redtime1 == false)
                     {
-                        dateshuzu[6] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                        faultData[6] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                     }
-                    datime = dateshuzu[6];
+                    endTime = faultData[6];
                 }
-                DateTime dateTime = new DateTime();
-                bool redtime = DateTime.TryParse(dateshuzu[5], out dateTime);
-                if (redtime)
+
+                // 验证故障发生时间的有效性
+                DateTime startDateTime = new DateTime();
+                bool isParseSuccessful = DateTime.TryParse(faultData[5], out startDateTime);
+                if (isParseSuccessful)
                 {
-                    string sql1 = "insert into 故障信息 (故障发生工位, 机台名称, 故障类型, 故障描述, 发生时间, 结束时间, 更新标识)" +
-                        " values ('" + dateshuzu[1] + "','" + dateshuzu[2] + "','" + dateshuzu[3] + "','" + dateshuzu[4] + "','"
-                        + dateshuzu[5] + "','" + datime + "','" + "F" + "')";
-                    bool result1 = mdbABC.Add(sql1.ToString());
-                    if (result1 == true)
+                    // 插入新的故障记录
+                    /*string insertSql = "insert into 故障信息 (故障发生工位, 机台名称, 故障类型, 故障描述, 发生时间, 结束时间, 更新标识)" +
+                        " values ('" + processedData[1] + "','" + processedData[2] + "','" + processedData[3] + "','" + processedData[4] + "','"
+                        + processedData[5] + "','" + endTime + "','" + "F" + "')";*/
+                    string insertSql = $@"INSERT INTO [故障信息] (
+                        [故障发生工位], 
+                        [机台名称], 
+                        [故障类型], 
+                        [故障描述], 
+                        [发生时间], 
+                        [结束时间], 
+                        [更新标识]
+                        ) VALUES (
+                        '{faultData[1]}',
+                        '{faultData[2]}',
+                        '{faultData[3]}',
+                        '{faultData[4]}',
+                        '{faultData[5]}',
+                        '{endTime}',
+                        'F'
+                        )";
+
+                    bool isInsertSuccessful = mdbABC.Add(insertSql);
+                    if (isInsertSuccessful)
                     {
-                        this.BeginInvoke(ShowMsgAction, "工位：" + dateshuzu[1] + "机台：" + dateshuzu[2] +
-                            "故障发生信息：" + dateshuzu[3] + dateshuzu[4] + dateshuzu[5]);
+                        // 显示插入成功消息
+                        this.BeginInvoke(ShowMsgAction,
+                        $"工位：{faultData[1]}机台：{faultData[2]}故障发生信息：{faultData[3]}{faultData[4]}{faultData[5]}");
                     }
                 }
             }
@@ -1251,11 +1386,9 @@ namespace BulletinBoard
 
                 // 绑定端口并开始监听
                 serverSocket.Bind(serverEndPoint);
-                ShowMsg("信息: 服务器监听启动成功!");
-
-                // 设置监听队列长度
                 serverSocket.Listen(100);  // 最大允许100个连接请求排队
                 IsServerStart = true;
+                ShowMsg("信息: 服务器监听启动成功!");
 
                 // 启动异步任务处理客户端连接
                 Task.Factory.StartNew(() =>
@@ -1279,7 +1412,7 @@ namespace BulletinBoard
             }
             catch (Exception ex)
             {
-                ShowMsg($"错误信息: {ex.Message}");
+                ShowMsg($"服务器启动失败: {ex.Message}");
             }
         }
 
@@ -1362,7 +1495,7 @@ namespace BulletinBoard
                             {
                                 ShowMsg($"收到【{endPoint}】心跳：{receivedMsg}");
 
-                                Send(clientSocket, "OK");   // 发送心跳响应
+                                FeedbackToHeartbeat(clientSocket, "OK");   // 发送心跳响应
                             }
                             else
                             {
@@ -1394,7 +1527,7 @@ namespace BulletinBoard
         /// 专门用于发送心跳响应
         /// </summary>
         /// <param name="message"></param>
-        void Send(Socket clientSocket, string message)
+        void FeedbackToHeartbeat(Socket clientSocket, string message)
         {
             try
             {
@@ -1405,16 +1538,16 @@ namespace BulletinBoard
             {
                 clientList.Remove(clientSocket.RemoteEndPoint.ToString());
                 clientSocket.Close();
-                ShowMsg(ex.Message);
+                ShowMsg($"心跳响应发送失败：{ex.Message}");
             }
 
         }
 
         /// <summary>
-        /// 发送消息
+        /// 发送消息到客户端
         /// </summary>
         /// <param name="message"></param>
-        void Send(string message)
+        void Send(string message, string messageSource)
         {
             try
             {
@@ -1428,7 +1561,7 @@ namespace BulletinBoard
             }
             catch (Exception ex)
             {
-                ShowMsg(ex.Message);
+                ShowMsg($"{messageSource}发送失败：{ex.Message}");
                 MessageBox.Show("发送失败");
             }
 
@@ -1438,12 +1571,12 @@ namespace BulletinBoard
         {
             Invoke(new Action(() =>
             {
-                if (richTextBox1.TextLength > 50000)
+                if (rtbShowMSG.TextLength > 50000)
                 {
-                    richTextBox1.Clear();
+                    rtbShowMSG.Clear();
                 }
                 string info = string.Format("{0}:{1}\r\n", DateTime.Now.ToString("G"), msg);
-                richTextBox1.AppendText(info);
+                rtbShowMSG.AppendText(info);
             }));
         }
 
@@ -1720,12 +1853,12 @@ namespace BulletinBoard
 
         private void btnSendPModel_Click(object sender, EventArgs e)
         {
-            Send("0+" + cboProductModel.SelectedValue);
+            Send($"0+{cboProductModel.Text}", "产品型号");
         }
 
         private void btnSendWorkOrder_Click(object sender, EventArgs e)
         {
-            Send("1+" + txt_WorkOrder.Text);
+            Send($"1+{txt_WorkOrder.Text}", "工单号");
         }
 
         private void LogMsg(string msg)

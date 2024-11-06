@@ -39,20 +39,10 @@ namespace MesDatas
         /// <returns>连接成功返回 true，否则返回 false</returns>
         public bool TryConnectDatabase(string dbPath)
         {
-            if (string.IsNullOrEmpty(dbPath))
-            {
-                throw new ArgumentNullException(nameof(dbPath), "数据库路径不能为空");
-            }
-
-            if (!File.Exists(dbPath))
-            {
-                throw new FileNotFoundException("数据库文件不存在", dbPath);
-            }
-
             try
             {
                 // 创建一个 OleDbConnection对象
-                string connectionString = $" Provider = Microsoft.Jet.OLEDB.4.0 ;Data Source ={dbPath};Persist Security Info=True";
+                string connectionString = $" Provider = Microsoft.Jet.OLEDB.4.0 ; Data Source ={dbPath}; Persist Security Info=True";
                 connection = new OleDbConnection(connectionString);
                 connection.Open();
                 return true;
@@ -232,7 +222,7 @@ namespace MesDatas
         }
 
         /// <summary>
-        /// 获取数据
+        /// 获取数据,返回表格
         /// </summary>
         /// <param name="sql"></param>
         /// <returns></returns>
@@ -241,10 +231,6 @@ namespace MesDatas
             OleDbDataAdapter dbDataAdapter = new OleDbDataAdapter(sql, connection);
             DataTable dt = new DataTable();
             dbDataAdapter.Fill(dt);
-            //foreach (DataRow item in dt.Rows)
-            //{
-            //    Console.WriteLine(item[0] + "|" + item[1] + "|" + InvalidOperationException:“未在本地计算机上注册“Microsoft.Jet.OLEDB.4.0”提供程item[2] + "|" + item[3]);
-            //}
             return dt;
         }
 
@@ -293,11 +279,12 @@ namespace MesDatas
                 {
                     Directory.CreateDirectory(dirName);
                 }
-                //创建Catalog目录类
+
+                // 创建Catalog目录类
                 ADOX.CatalogClass catalog = new ADOX.CatalogClass();
-                string _connectionStr = "Provider=Microsoft.Jet.OLEDB.4.0;" + "Data Source=" + path
-                       + ";Jet OLEDB:Engine Type=5";
-                //根据联结字符串使用Jet数据库引擎创建数据库
+                string _connectionStr = $" Provider=Microsoft.Jet.OLEDB.4.0; Data Source = {path}; Jet OLEDB:Engine Type=5 ";
+
+                // 根据联结字符串使用Jet数据库引擎创建数据库
                 catalog.Create(_connectionStr);
                 System.Runtime.InteropServices.Marshal.FinalReleaseComObject(catalog.ActiveConnection);
                 System.Runtime.InteropServices.Marshal.FinalReleaseComObject(catalog);
@@ -310,22 +297,14 @@ namespace MesDatas
             }
         }
 
-        //创建mdb 
-        public static bool CreateMDBDataBase(string mdbPath)
-        {
-            try
-            {
-                ADOX.CatalogClass cat = new ADOX.CatalogClass();
-                cat.Create("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + mdbPath + ";");
-                cat = null;
-                return true;
-            }
-            catch { return false; }
-        }
-
-        //新建mdb的表 
-        //mdbHead是一个ArrayList，存储的是table表中的具体列名。 
-        public static bool CreateMDBTable(string mdbPath, string tableName, ArrayList mdbHead)
+        /// <summary>
+        /// 创建MDBPlus中的表格
+        /// </summary>
+        /// <param name="mdbPath"></param>
+        /// <param name="tableName"></param>
+        /// <param name="fieldName">fieldName是一个ArrayList，存储的是table表中的具体列名。</param>
+        /// <returns></returns>
+        public static bool CreateMDBTable(string mdbPath, string tableName, ArrayList fieldName)
         {
             try
             {
@@ -352,13 +331,13 @@ namespace MesDatas
                 //autoIncCol.Properties["Jet OLEDB:AutoIncrement Step"].Value = 1; // 设置自增步长为1，根据需要更改  
                 tbl.Columns.Append(autoIncCol, ADOX.DataTypeEnum.adInteger, 1); // 将自增字段添加到表中
 
-                int size = mdbHead.Count;
+                int size = fieldName.Count;
                 for (int i = 0; i < size; i++)
                 {
                     //增加一个文本字段 
                     ADOX.ColumnClass col2 = new ADOX.ColumnClass();
                     col2.ParentCatalog = cat;
-                    col2.Name = mdbHead[i].ToString();//列的名称 
+                    col2.Name = fieldName[i].ToString();//列的名称 
                     col2.Properties["Jet OLEDB:Allow Zero Length"].Value = true;
                     tbl.Columns.Append(col2, ADOX.DataTypeEnum.adVarWChar, 500);
                 }
