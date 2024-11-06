@@ -4,7 +4,7 @@ using System.ComponentModel;
 namespace MesDatas.DatasModel
 {
     [SugarTable("BarcodeVefictn")]
-    public class BarcodeVefictn
+    public class BarcodeVerification
     {
         [SugarColumn(ColumnName = "ID", IsPrimaryKey = true, IsIdentity = true)]
         [DisplayName("ID")]
@@ -69,9 +69,9 @@ namespace MesDatas.DatasModel
             return length;
         }
 
-        public static BarcodeVefictn GetBarcodeVefictnDefault()
+        public static BarcodeVerification GetBarcodeVefictnDefault()
         {
-            BarcodeVefictn barcodeVefictn = new BarcodeVefictn();
+            BarcodeVerification barcodeVefictn = new BarcodeVerification();
             barcodeVefictn.ID = 1;
             barcodeVefictn.LanguageId = 0;
             barcodeVefictn.BarcodeStartPLC = "D1000";

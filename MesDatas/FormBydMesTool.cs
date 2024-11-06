@@ -104,16 +104,16 @@ namespace BydMesTool
         public void Config_Mes(string ip, string port, string timeout,
            string url, string site, string user, string password, string resource, string operation, string ncCode)
         {
-            工艺部信息化组.CONFIG.IP = ip;
-            工艺部信息化组.CONFIG.PORT = port;
-            工艺部信息化组.CONFIG.TimeOut = int.Parse(timeout);
-            工艺部信息化组.CONFIG.URL = url;
-            工艺部信息化组.CONFIG.Site = site;
-            工艺部信息化组.CONFIG.UserName = user;
-            工艺部信息化组.CONFIG.Password = password;
-            工艺部信息化组.CONFIG.Resource = resource;
-            工艺部信息化组.CONFIG.Operation = operation;
-            工艺部信息化组.CONFIG.NcCode = ncCode;
+            工艺部信息化组.MesConfig.IP = ip;
+            工艺部信息化组.MesConfig.PORT = port;
+            工艺部信息化组.MesConfig.TimeOut = int.Parse(timeout);
+            工艺部信息化组.MesConfig.URL = url;
+            工艺部信息化组.MesConfig.Site = site;
+            工艺部信息化组.MesConfig.UserName = user;
+            工艺部信息化组.MesConfig.Password = password;
+            工艺部信息化组.MesConfig.Resource = resource;
+            工艺部信息化组.MesConfig.Operation = operation;
+            工艺部信息化组.MesConfig.NcCode = ncCode;
         }
 
         public string MesUserCheck { get { return UserCheckCmd.Text; } }
@@ -122,17 +122,17 @@ namespace BydMesTool
 
         public void UsersVarify(out bool 验证结果, out string MES反馈, out string XMLOUT)
         {
-            BydMesCom.用户验证(out 验证结果, out MES反馈, out XMLOUT);
+            MesIntegrationService.VarifyUserLogin(out 验证结果, out MES反馈, out XMLOUT);
         }
 
         public void BarCodeVarify(string 产品条码, out bool 验证结果, out string MES反馈, out string XMLOUT)
         {
-            BydMesCom.条码验证(产品条码, out 验证结果, out MES反馈, out XMLOUT);
+            MesIntegrationService.VarifyBarcode(产品条码, out 验证结果, out MES反馈, out XMLOUT);
         }
 
         public void UpDateToMes(bool 测试结果, string 产品条码, string 文件版本, string 软件版本, string 测试项, out bool 验证结果, out string MES反馈, out string XMLOUT)
         {
-            BydMesCom.条码上传(测试结果, 产品条码, 文件版本, 软件版本, 测试项, out 验证结果, out MES反馈, out XMLOUT);
+            MesIntegrationService.UploadBarcode(测试结果, 产品条码, 文件版本, 软件版本, 测试项, out 验证结果, out MES反馈, out XMLOUT);
         }
 
         private void userClick(object sender, EventArgs e)

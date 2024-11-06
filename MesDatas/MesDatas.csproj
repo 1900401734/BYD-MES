@@ -289,7 +289,7 @@
     <Compile Include="DatasDataGridView\PrinterDataGridView\PrintersDataGridView.cs" />
     <Compile Include="DatasDataGridView\PrinterDataGridView\PrinterSettingDataGridView.cs" />
     <Compile Include="DatasDataGridView\SytemSetDerivedDataGridView.cs" />
-    <Compile Include="DatasModel\BarcodeVefictn.cs" />
+    <Compile Include="DatasModel\BarcodeVerification.cs" />
     <Compile Include="DatasModel\Codes.cs" />
     <Compile Include="DatasModel\DeviceInformation.cs" />
     <Compile Include="DatasModel\PrinterModel\Printers.cs" />
@@ -414,9 +414,10 @@
     </Compile>
     <Compile Include="LogConfig\NLogHelperYY.cs" />
     <Compile Include="MCore.cs" />
-    <Compile Include="mdbDatas.cs" />
+    <Compile Include="MDBHelper.cs" />
     <Compile Include="MdbTool.cs" />
     <Compile Include="mescom_bgd.cs" />
+    <Compile Include="MESDataFormatter.cs" />
     <Compile Include="MESModel\StatInforma.cs" />
     <Compile Include="MesTool.cs" />
     <Compile Include="MultiLanguage.cs" />
@@ -432,6 +433,7 @@
     <Compile Include="RawPrinterHelper.cs" />
     <Compile Include="SaveHistoricalData\DatabaseOperations.cs" />
     <Compile Include="SqlConverter\SqlToJsonConverter.cs" />
+    <Compile Include="UIUpdateUtils.cs" />
     <Compile Include="UpdateModel\ConiferFile.cs" />
     <Compile Include="Utiey\FaultsBLL.cs" />
     <Compile Include="Utiey\WhiteNightShift.cs" />

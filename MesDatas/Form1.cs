@@ -60,8 +60,6 @@ namespace MesDatas
 {
     public partial class Form1 : Form, IMesDatasBase
     {
-
-
         #region ----------------- 登录状态相关的属性与方法 -----------------
 
         private int MES { get; set; }
@@ -175,24 +173,36 @@ namespace MesDatas
 
         #endregion
 
-        public string[] Parameter_txt = new string[10000];
+        /// <summary>
+        /// <para>
+        /// MES_Result[2002] = "1" 条码验证通过，
+        /// MES_Result[2004] = "1" 条码验证失败；
+        /// </para>
+        /// MES_Result[2006] = "1" 结果上传成功，
+        /// MES_Result[2008] = "1" 结果上传失败；
+        /// <para>
+        /// MES_Result[3688] = "3" 产品总结果OK，否则NG；
+        /// </para>
+        /// </summary>
+        public string[] MES_Result = new string[10000];
+        string[] Value = new string[10000];
+        public bool 产品结果;
+        public string WorkOrder;
+        public string appVersion;
+        public string fileVersion;
 
-        List<string> list = null;           // 实际值
+        List<string> actualValueList = null;// 实际值
         List<string> beatList = null;       // 节拍
         List<string> maxList = null;        // 上限
         List<string> minList = null;        // 下限
         List<string> resultList = null;     // 结果
         List<string> workStNameList = null;
 
-        mdbDatas mdb = null;
-        public string WorkOrder;
-        public bool 产品结果;
-        public int Num = 0;
+        MDBHelper dbHelper = null;
         public string barcodeInfo = null;
-        string[] Value = new string[10000];
-        string[] Parameter_Model = new string[25000];
+        //string[] Parameter_Model = new string[25000];
 
-        Assembly asm = Assembly.GetExecutingAssembly();
+        Assembly assembly = Assembly.GetExecutingAssembly();
         ResourceManager resources = null;
         int LanguageId = 0;
 
@@ -203,17 +213,17 @@ namespace MesDatas
             if (language == "zh-CN")
             {
                 LanguageId = 0;
-                resources = new ResourceManager("MesDatas.Language_Resources.language_Chinese", asm);
+                resources = new ResourceManager("MesDatas.Language_Resources.language_Chinese", assembly);
             }
             else if (language == "en-US")
             {
                 LanguageId = 1;
-                resources = new ResourceManager("MesDatas.Language_Resources.language_English", asm);
+                resources = new ResourceManager("MesDatas.Language_Resources.language_English", assembly);
             }
             else if (language == "th-TH")
             {
                 LanguageId = 2;
-                resources = new ResourceManager("MesDatas.Language_Resources.language_Thai", asm);
+                resources = new ResourceManager("MesDatas.Language_Resources.language_Thai", assembly);
             }
 
             this.WindowState = FormWindowState.Maximized;
@@ -245,21 +255,21 @@ namespace MesDatas
             lblCurrentTime.Text = DateTime.Now.ToString();
         }
 
-        string[] targetStation = new string[] { };  // 目标工位序号
-        string[] testItems = new string[] { };      // 测试项目名称
-        string[] actualValue = new string[] { };    // 实际值点位
-        string[] maxValue = new string[] { };       // 上限点位
-        string[] minValue = new string[] { };       // 下限点位
-        string[] beat = new string[] { };           // 节拍点位
-        string[] testResult = new string[] { };     // 结果点位
-        string[] unitName = new string[] { };       // 单位
-        string[] standardValue = new string[] { };  // 标准值点位
+        string[] targetStationNum = new string[] { };   // 目标工位序号
+        string[] testItemsName = new string[] { };      // 测试项目名称
+        string[] actualValuePoint = new string[] { };   // 实际值点位
+        string[] maxValuePoint = new string[] { };      // 上限点位
+        string[] minValuePoint = new string[] { };      // 下限点位
+        string[] beatPoint = new string[] { };          // 节拍点位
+        string[] testResultPoint = new string[] { };    // 结果点位
+        string[] unitName = new string[] { };           // 单位
+        string[] standardValuePoint = new string[] { }; // 标准值点位
 
         string[] stationName = new string[] { };    // 工位名称
         string[] kpisPointSets = new string[] { };  // 生产指标点位集合
         string[] kpisNameSets = new string[] { };   // 生产指标名称集合
 
-        List<BarcodeVefictn> barcodeVefictnList = new List<BarcodeVefictn>();
+        List<BarcodeVerification> barcodeVefictnList = new List<BarcodeVerification>();
 
         // 字典用于存储每个CheckBox的初始状态
         private Dictionary<System.Windows.Forms.CheckBox, bool> checkBoxStates = new Dictionary<System.Windows.Forms.CheckBox, bool>();
@@ -360,11 +370,12 @@ namespace MesDatas
             // 用户登录验证
             if (isOffLine == 0)
             {
-                VarifyUserLogin_MES(null, null);
+                VarifyUserLogin_MES();
+                //VarifyUserLogin_MESAsync();
             }
             else
             {
-                lblRunningStatus.ForeColor = G;
+                lblRunningStatus.ForeColor = Color.Green;
                 lblRunningStatus.Text = resources.GetString("UserCheck");    // 单机用户验证成功
                 lblOperatePrompt.Text = resources.GetString("scanning");     // 等待扫描条码
             }
@@ -372,8 +383,8 @@ namespace MesDatas
             ConnectDashboard(); // 连接看板
             ConnectPLC();       // 连接PLC
 
-            taskProcess_MES = new Task(Process_MES);     // 更新PLC状态指示灯 & 向PLC反馈看板连接状态
-            taskProcess_MES.Start();
+            taskUpdateStatus = new Task(Process_MES);     // 更新PLC状态指示灯 & 向PLC反馈看板连接状态
+            taskUpdateStatus.Start();
 
             InitializeModelReadAsync();                  // 读取生产指标
             //Model_Read_Other();
@@ -381,9 +392,9 @@ namespace MesDatas
             Process_Offline();                           // 根据状态写模式
 
             workStNameList = new List<string>();
-            if (targetStation.Length > 0)
+            if (targetStationNum.Length > 0)
             {
-                workStNameList = CodeNum.WorkIDName(targetStation, stationName);
+                workStNameList = CodeNum.WorkIDName(targetStationNum, stationName);
             }
 
             InsertTable(null, null);
@@ -438,19 +449,19 @@ namespace MesDatas
 
             barcodeInfo = "1";
 
-            taskProcesplc = new Task(ProcessPlc_ReadBarcode);   // 读取条码
-            taskProcesplc.Start();
-            taskProcesplc1 = new Task(ProcessPlc_ReadValue);    // 读取工单号等生产数据
-            taskProcesplc1.Start();
-            taskMinMaxplc = new Task(Bind_MaxMinValue);         // 绑定上下值数据
-            taskMinMaxplc.Start();
-            GetMinMaxplc = new Task(Get_MaxMinValue);           // 读取上下值数据
-            GetMinMaxplc.Start();
-            OpenReader_Click(null, null);              // 连接读卡器
+            taskReadBar = new Task(ProcessPlc_ReadBarcode); // 读取条码
+            taskReadBar.Start();
+            taskReadData = new Task(ProcessPlc_ReadData);   // 读取工单号等生产数据
+            taskReadData.Start();
+            taskBindValue = new Task(Bind_MaxMinValue);     // 绑定上下值数据
+            taskBindValue.Start();
+            taskReadMaxMin = new Task(Get_MaxMinValue);     // 读取上下值数据
+            taskReadMaxMin.Start();
+            ConnectReader();                                // 连接读卡器
 
             if (chkPlcControlPrint.Checked)
             {
-                taskProcess_ZPL = new Task(PlcControlPrint);     // PLC控制打印
+                taskProcess_ZPL = new Task(PlcControlPrint);// PLC控制打印
                 taskProcess_ZPL.Start();
             }
 
@@ -523,7 +534,9 @@ namespace MesDatas
             }
         }
 
-        // 达到时间间隔发生的方法
+        /// <summary>
+        /// 达到时间间隔发生的方法
+        /// </summary>
         private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             iOperCount++;
@@ -565,15 +578,15 @@ namespace MesDatas
             //  SetLayout();
         }
 
-        #region ------------ "tools manager" ------------
+        #region ------------ tools manager ------------
 
-        private void StopTools()
+        /*private void StopTools()
         {
             foreach (KeyValuePair<string, IToolBase> tool in mTools)
             {
                 tool.Value.IsRunLoop = false;
             }
-        }
+        }*/
 
         private Dictionary<string, IToolBase> mTools = new Dictionary<string, IToolBase>();
 
@@ -602,11 +615,9 @@ namespace MesDatas
                 SendComamandTest = value;
             }
         }
-        // delegate IToolBase delegateLoadTool(string path);
 
-        private IToolBase LoadTool(string toolPath)
+        /*private IToolBase LoadTool(string toolPath)
         {
-            // @"D:\YCwork\项目文件\2022\21.深圳比亚迪采集软件\MesDatas\ToolSample\bin\Debug\ToolSample.dll"
             try
             {
                 Assembly ass = Assembly.LoadFrom(toolPath);
@@ -626,14 +637,15 @@ namespace MesDatas
             {
                 return null;
             }
-
-        }
+        }*/
 
         #endregion
 
-        #region  ------------ "EnqueueInteracrive" ------------
+        #region  ------------ EnqueueInteracrive ------------
 
-        private void EnqueueInteracrive(InteractiveEventArgs e)
+        //private Queue<InteractiveEventArgs> InterractiveQueue = new Queue<InteractiveEventArgs>();
+
+        /*private void EnqueueInteracrive(InteractiveEventArgs e)
         {
             Invoke(new Action(() =>
             {
@@ -642,29 +654,22 @@ namespace MesDatas
                     InterractiveQueue.Enqueue(e);
                 }
             }));
-        }
+        }*/
 
-        private Queue<InteractiveEventArgs> InterractiveQueue = new Queue<InteractiveEventArgs>();
-        Task taskProcesplc = null;
-        Task GetMinMaxplc = null;
-        Task taskMinMaxplc = null;
-        Task taskProcesplc1 = null;
-        Task taskPLCNFC = null;
-        Task taskProcess = null;
-        Task taskProcess_Offline = null;
-        Task taskProcess_MES = null;
+        Task taskReadBar = null;
+        Task taskReadMaxMin = null;
+        Task taskBindValue = null;
+        Task taskReadData = null;
+        Task taskUpdateStatus = null;
         Task taskProcess_ZPL = null;
-        public bool IsRunningplc = true;
-        bool IsRunning = true;
-        bool IsRunningplc_ReadCode = true;      // 开始读条码标志
-        bool IsRunningplc_ReadValue = true;     // 开始读取生产数据
-        bool IsRunningplc_ReadMaxMin = true;    // 读取、绑定上下限
-        bool IsRunningplc_MES = true;
-        bool IsRunningplc_NFC = true;
-        bool IsRunningplc_tabPage = true;
+
+        bool isReadBar_PLC = true;      // 开始读条码
+        bool isReadData_PLC = true;     // 开始读取生产数据
+        bool isReadMaxMin_PLC = true;   // 读取、绑定上下限
+        bool IsUpdateStatus_PLC = true; // 更新PLC连接状态
+
         bool IsRunningPZL = true;
-        object lockQueue1 = new object();
-        object lockQueue = new object();
+        //object lockQueue = new object();
 
         public static string path4 = System.AppDomain.CurrentDomain.BaseDirectory + "SystemDateBase.mdb";
         public static string pathText = System.AppDomain.CurrentDomain.BaseDirectory + "logfault.txt";
@@ -675,7 +680,7 @@ namespace MesDatas
         /// </summary>
         private void Process_MES()
         {
-            while (IsRunningplc_MES)
+            while (IsUpdateStatus_PLC)
             {
                 this.BeginInvoke(new Action(() =>
                 {
@@ -737,9 +742,9 @@ namespace MesDatas
         /// </summary>
         private void ProcessPlc_ReadBarcode()
         {
-            while (IsRunningplc_ReadCode)
+            while (isReadBar_PLC)
             {
-                Button19_Click(null, null);
+                ReadBarcode();
             }
             Thread.Sleep(50);
             Application.DoEvents();
@@ -748,11 +753,10 @@ namespace MesDatas
         /// <summary>
         /// 读取并上传生产数据
         /// </summary>
-        private async void ProcessPlc_ReadValue()
+        private async void ProcessPlc_ReadData()
         {
-            while (IsRunningplc_ReadValue)
+            while (isReadData_PLC)
             {
-                //Button20_Click(null, null);
                 await ReadData();
             }
             Thread.Sleep(50);
@@ -896,7 +900,16 @@ namespace MesDatas
         string second = DateTime.Now.Second.ToString();
         string millisecond = DateTime.Now.Millisecond.ToString();
 
-        private void LogMsg(string msg)
+        // 异步日志方法
+        private async Task DisplayMessageAsync(string message)
+        {
+            await Task.Run(() =>
+            {
+                DisplayMessage(message);
+            });
+        }
+
+        private void DisplayMessage(string msg)
         {
             this.Invoke(new Action(() =>
             {
@@ -909,6 +922,31 @@ namespace MesDatas
                 SaveCsvLog(msg);
             }));
         }
+
+        /*private async Task LogMsgAsync(string message)
+        {
+            // 定义更新日志的操作
+            Action logAction = () =>
+            {
+                if (rtbProductLog.TextLength > 50000)
+                {
+                    rtbProductLog.Clear();
+                }
+                rtbProductLog.AppendText($"{hour}{minute}{second}{millisecond}:{message}\r\n");
+                rtbProductLog.ScrollToCaret();
+                SaveCsvLog(message);
+            };
+
+            // 根据当前线程决定如何执行
+            if (rtbProductLog.InvokeRequired)
+            {
+                await rtbProductLog.Invoke(logAction);
+            }
+            else
+            {
+                logAction();
+            }
+        }*/
 
         public void SaveCsvLog(string log)
         {
@@ -1128,7 +1166,7 @@ namespace MesDatas
                 return;
             }
             string dataBaseUrl = textBoxPath.Text + ".mdb";
-            mdb = new mdbDatas(dataBaseUrl);
+            dbHelper = new MDBHelper(dataBaseUrl);
 
             StringBuilder sql = new StringBuilder();
 
@@ -1143,19 +1181,19 @@ namespace MesDatas
                 sql.Append("and 产品 = '" + textBox1.Text + "' ");
             }
 
-            DataTable table = mdb.Find(sql.ToString());
+            DataTable table = dbHelper.Find(sql.ToString());
             //tablelist_date(dataBaseUrl);
             //dataGridViewDynamic1.SetDataTable(table);
             // dataGridViewDynamic1.DataSource = table;
             pager = new Pager(table);//分页
-            mdb.CloseConnection();
+            dbHelper.CloseConnection();
         }
 
         public void tablelist_date(string url)
         {
-            mdb = new mdbDatas(url);
+            dbHelper = new MDBHelper(url);
             var sql1 = "select * from [Sheet1]";
-            DataTable dt = mdb.Find(sql1);
+            DataTable dt = dbHelper.Find(sql1);
             if (dt.Columns.Count > 0)
             {
 
@@ -1164,7 +1202,7 @@ namespace MesDatas
                     dataGridViewDynamic1.AddHeader(dt.Columns[i].ColumnName + "\t");
                 }
             }
-            mdb.CloseConnection();
+            dbHelper.CloseConnection();
 
         }
 
@@ -1244,6 +1282,10 @@ namespace MesDatas
 
         #region ---------- MES上传 ----------
 
+        NLog.Logger loggerMESBarCoode = NLog.LogManager.GetLogger("MESBarCoodeLog");
+        NLog.Logger loggerMESData = NLog.LogManager.GetLogger("MESDataLog");
+
+        #region ----- 从文本框获取MES配置参数 -----
         private string ip => textBox_ip.Text;
         private string port => textBox_port.Text;
         private string timeout => textBox_timeout.Text;
@@ -1254,31 +1296,43 @@ namespace MesDatas
         private string url => textBox_url.Text;
         private string site => textBox_site.Text;
         private string resource => textBox_resource.Text;
+        #endregion
+
+        /// <summary>
+        /// MES参数 > 保存
+        /// </summary>
+        private void SaveMesConfig_Click(object sender, EventArgs e)
+        {
+            SaveParameter_MES();
+            LoadParameter_MES();
+            VarifyUserLogin_MES();
+            //VarifyUserLogin_MESAsync();
+        }
 
         /// <summary>
         /// 加载MES联机参数到系统
         /// </summary>
         public void LoadParameter_MES()
         {
-            mdb = new mdbDatas(path4);
-            DataTable table1 = mdb.Find("select * from SytemInfo where ID = '1'");
-            for (int i = 0; i < table1.Rows.Count; i++)
+            dbHelper = new MDBHelper(path4);
+            DataTable table = dbHelper.Find("select * from SytemInfo where ID = '1'");
+            for (int i = 0; i < table.Rows.Count; i++)
             {
-                for (int j = 0; j < table1.Columns.Count; j++)
+                for (int j = 0; j < table.Columns.Count; j++)
                 {
-                    textBox_ip.Text = table1.Rows[i]["IP"].ToString();
-                    textBox_port.Text = table1.Rows[i]["Port"].ToString();
-                    textBox_timeout.Text = table1.Rows[i]["Timeout"].ToString();
-                    textBox_nccode.Text = table1.Rows[i]["NcCode"].ToString();
-                    textBox_opration.Text = table1.Rows[i]["Opration"].ToString();
-                    textBox_password.Text = table1.Rows[i]["Password"].ToString();
-                    textBox_resource.Text = table1.Rows[i]["Resource"].ToString();
-                    textBox_site.Text = table1.Rows[i]["Site"].ToString();
-                    textBox_url.Text = table1.Rows[i]["Url"].ToString();
-                    textBox_user.Text = table1.Rows[i]["User"].ToString();
+                    textBox_ip.Text = table.Rows[i]["IP"].ToString();
+                    textBox_port.Text = table.Rows[i]["Port"].ToString();
+                    textBox_timeout.Text = table.Rows[i]["Timeout"].ToString();
+                    textBox_nccode.Text = table.Rows[i]["NcCode"].ToString();
+                    textBox_opration.Text = table.Rows[i]["Opration"].ToString();
+                    textBox_password.Text = table.Rows[i]["Password"].ToString();
+                    textBox_resource.Text = table.Rows[i]["Resource"].ToString();
+                    textBox_site.Text = table.Rows[i]["Site"].ToString();
+                    textBox_url.Text = table.Rows[i]["Url"].ToString();
+                    textBox_user.Text = table.Rows[i]["User"].ToString();
                 }
             }
-            mdb.CloseConnection();
+            dbHelper.CloseConnection();
         }
 
         /// <summary>
@@ -1306,69 +1360,49 @@ namespace MesDatas
             infoEntity.CodeCheckPass = CodeCheckPass.Text;
             infoEntity.CodeSendCmd = CodeSendCmd.Text;*/
 
-            saveSytemInfo(path4, infoEntity);
+            SaveSystemInfo(path4, infoEntity);
         }
 
         public void Config_Mes(string ip, string port, string timeout, string url, string site,
             string user, string password, string resource, string operation, string ncCode)
         {
-            工艺部信息化组.CONFIG.IP = ip;
-            工艺部信息化组.CONFIG.PORT = port;
-            工艺部信息化组.CONFIG.TimeOut = int.Parse(timeout);
-            工艺部信息化组.CONFIG.URL = url;
-            工艺部信息化组.CONFIG.Site = site;
-            工艺部信息化组.CONFIG.UserName = user;
-            工艺部信息化组.CONFIG.Password = password;
-            工艺部信息化组.CONFIG.Resource = resource;
-            工艺部信息化组.CONFIG.Operation = operation;
-            工艺部信息化组.CONFIG.NcCode = ncCode;
-        }
-
-        public void BarCodeVarify(string 产品条码, out bool 验证结果, out string MES反馈, out string XMLOUT)
-        {
-            BydMesCom.条码验证(产品条码, out 验证结果, out MES反馈, out XMLOUT);
-        }
-
-        /// <summary>
-        /// 测试结果上传
-        /// </summary>
-        public void UpDateToMes(bool 测试结果, string 产品条码, string 文件版本, string 软件版本, string 测试项, out bool 验证结果, out string MES反馈, out string XMLOUT)
-        {
-            BydMesCom.条码上传(测试结果, 产品条码, 文件版本, 软件版本, 测试项, out 验证结果, out MES反馈, out XMLOUT);
-        }
-
-        public void 绑定工单_Mes(string 工单号, out bool 绑定结果, out string MES反馈, out string XMLOUT)
-        {
-            BydMesCom.绑定工单(工单号, out 绑定结果, out MES反馈, out XMLOUT);
+            工艺部信息化组.MesConfig.IP = ip;
+            工艺部信息化组.MesConfig.PORT = port;
+            工艺部信息化组.MesConfig.TimeOut = int.Parse(timeout);
+            工艺部信息化组.MesConfig.URL = url;
+            工艺部信息化组.MesConfig.Site = site;
+            工艺部信息化组.MesConfig.UserName = user;
+            工艺部信息化组.MesConfig.Password = password;
+            工艺部信息化组.MesConfig.Resource = resource;
+            工艺部信息化组.MesConfig.Operation = operation;
+            工艺部信息化组.MesConfig.NcCode = ncCode;
         }
 
         bool isMesLoginSuccessful = false;    // 用户联机验证结果
 
         /// <summary>
-        /// 用户登录验证
+        /// MES交互1：用户验证
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void VarifyUserLogin_MES(object sender, EventArgs e)
+        private void VarifyUserLogin_MES()
         {
             lblRunningStatus.Text = resources.GetString("user_yzz");     // 用户验证中
             lblOperatePrompt.Text = resources.GetString("Wait");         // 请等待
 
             Config_Mes(ip, port, timeout, url, site, user, password, resource, operation, nccode);
 
-            bool 验证结果;
-            string MES反馈;
+            bool validationResult;
+            string MESFeedback;
             string XMLOUT;
-            BydMesCom.用户验证(out 验证结果, out MES反馈, out XMLOUT);
+            MesIntegrationService.VarifyUserLogin(out validationResult, out MESFeedback, out XMLOUT);
 
-            if (验证结果 == true)
+            if (validationResult == true)
             {
-                if (MES反馈 != null)
+                if (MESFeedback != null)
                 {
                     rtbMesLog.Clear();
-                    rtbMesLog.AppendText(MES反馈);
+                    rtbMesLog.AppendText(MESFeedback);
 
-                    lblRunningStatus.ForeColor = G;
+                    lblRunningStatus.ForeColor = Color.Green;
                     lblRunningStatus.Text = resources.GetString("onlineUser_OK");   // 联机用户验证成功
                     lblOperatePrompt.Text = resources.GetString("scanning");        // 等待扫描条码
 
@@ -1377,9 +1411,9 @@ namespace MesDatas
                 else
                 {
                     rtbMesLog.Clear();
-                    rtbMesLog.AppendText(MES反馈);
+                    rtbMesLog.AppendText(MESFeedback);
 
-                    lblRunningStatus.ForeColor = R;
+                    lblRunningStatus.ForeColor = Color.Red;
                     lblRunningStatus.Text = resources.GetString("onlineUser_NG");   // 联机用户验证失败
                     lblOperatePrompt.Text = resources.GetString("Check_param");     // 请检查联机参数
                 }
@@ -1387,121 +1421,123 @@ namespace MesDatas
             else
             {
                 rtbMesLog.Clear();
-                rtbMesLog.AppendText(MES反馈);
+                rtbMesLog.AppendText(MESFeedback);
 
-                lblRunningStatus.ForeColor = R;
+                lblRunningStatus.ForeColor = Color.Red;
                 lblRunningStatus.Text = resources.GetString("onlineUser_NG");
                 lblOperatePrompt.Text = resources.GetString("Check_param");
             }
         }
 
-        NLog.Logger loggerMESBarCoode = NLog.LogManager.GetLogger("MESBarCoodeLog");
-        NLog.Logger loggerMESData = NLog.LogManager.GetLogger("MESDataLog");
-
         /// <summary>
-        /// MES条码验证
+        /// MES交互2：条码验证
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void VarifyBarcode_MES(object sender, EventArgs e)
+        private void VarifyBarcode_MES(string barcodeInfo)
         {
-            Parameter_txt[2002] = "0";
-            Parameter_txt[2004] = "0";
+            MES_Result[2002] = "0";
+            MES_Result[2004] = "0";
 
-            string 产品条码 = barcodeData;
-            bool 验证结果;
-            string MES反馈;
+            bool validationResult;
+            string MESFeedback;
             string XMLOUT;
-            BarCodeVarify(产品条码, out 验证结果, out MES反馈, out XMLOUT);
+            MesIntegrationService.VarifyBarcode(barcodeInfo, out validationResult, out MESFeedback, out XMLOUT);
 
             rtbMesLog.Clear();
-            rtbMesLog.AppendText(MES反馈);
-            loggerMESBarCoode.Trace(MES反馈);
+            rtbMesLog.AppendText(MESFeedback);
+            loggerMESBarCoode.Trace(MESFeedback);
             rtbMesLog.SelectionStart = rtbMesLog.Text.Length;
             rtbMesLog.ScrollToCaret();
 
-            if (验证结果 == true)
+            if (validationResult == true)
             {
-                Parameter_txt[2002] = "1";
+                MES_Result[2002] = "1";
             }
             else
             {
-                Parameter_txt[2004] = "1";
+                MES_Result[2004] = "1";
             }
         }
 
         /// <summary>
-        /// 结果上传
+        /// MES交互3：条码上传
         /// </summary>
-        private void Button7_Click(object sender, EventArgs e)
+        private void UploadResult_MES()
         {
-            Parameter_txt[2006] = "0";
-            Parameter_txt[2008] = "0";
-            LogMsg("结果联机上传");
+            MES_Result[2006] = "0";
+            MES_Result[2008] = "0";
+            DisplayMessage("结果联机上传");
 
             bool productResult = 产品结果;
             string productBarcode = barcodeInfo;
-            string 文件版本 = Parameter_Model[17500];
-            string 软件版本 = Parameter_Model[17800];
+            string 文件版本 = fileVersion;
+            string 软件版本 = appVersion;
 
-            StringBuilder sbl = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
+
+            //　工装信息
             string[] fixtureInfo = txtFixtureBinding.Text.Split('+');
-
             if (fixtureInfo.Length > 0)
             {
                 for (int i = 0; i < fixtureInfo.Length; i++)
                 {
                     if (!string.IsNullOrWhiteSpace(fixtureInfo[i]))
                     {
-                        sbl.Append("!工装编号" + (i + 1) + ",工装," + fixtureInfo[i]);
+                        //sb.Append("!工装编号" + (i + 1) + ",工装," + fixtureInfo[i]);
+                        sb.Append($"!工装编号{i + 1},工装,{fixtureInfo[i]}");
                     }
                 }
             }
 
-            string[] frdeMafrMes = CodeNum.GetProductCodes(cboBarcodeRuleAndFixtures.Text, codesTable);
-            if (frdeMafrMes.Length > 0)
+            // 产品编码
+            string[] productCode = CodeNum.GetProductCodes(cboBarcodeRuleAndFixtures.Text, codesTable);
+            if (productCode.Length > 0)
             {
-                for (int i = 0; i < frdeMafrMes.Length; i++)
+                for (int i = 0; i < productCode.Length; i++)
                 {
-                    if (!string.IsNullOrWhiteSpace(frdeMafrMes[i]))
+                    if (!string.IsNullOrWhiteSpace(productCode[i]))
                     {
-                        sbl.Append("!产品物料号" + (i + 1) + ",物料," + frdeMafrMes[i]);
+                        //sb.Append("!产品物料号" + (i + 1) + ",物料," + frdeMafrMes[i]);
+                        sb.Append($"!产品物料号{i + 1},物料,{productCode[i]}");
                     }
                 }
             }
 
-            if (actualValue.Length > 0)
+            // 测试项目名称1、上限点位1、下限点位1、测试结果点位、实际值1、上限值、下限值、测试结果 
+            if (actualValuePoint.Length > 0)
             {
-                for (int i = 0; i < testItems.Length; i++)
+                for (int i = 0; i < testItemsName.Length; i++)
                 {
-                    if (!list[i].Equals("null"))
+                    if (actualValueList[i] != "null")
                     {
-
-                        if (!maxValue[i].Equals("NO") && !minValue[i].Equals("NO") && !testResult[i].Equals("NO"))
+                        if (maxValuePoint[i] != "NO" && minValuePoint[i] != "NO" && testResultPoint[i] != "NO")
                         {
-                            if (!resultList[i].Equals("null"))
+                            if (resultList[i] != "null")
                             {
-                                sbl.Append("!" + testItems[i] + "," + maxList[i] + "~" + minList[i] + "," + list[i] + "");
-                                sbl.Append("!" + testItems[i] + "测试结果,结果," + resultList[i]);
+                                //sb.Append("!" + testItems[i] + "," + maxList[i] + "~" + minList[i] + "," + list[i] + "");
+                                //sb.Append("!" + testItems[i] + "测试结果,结果," + resultList[i]);
+
+                                sb.Append($"!{testItemsName[i]},{maxList[i]}~{minList[i]},{actualValueList[i]}");
+                                sb.Append($"!{testItemsName[i]}测试结果,结果,{resultList[i]}");
                             }
                         }
                         else
                         {
-                            sbl.Append("!" + testItems[i] + ",测试项值," + list[i] + "");
+                            //sb.Append("!" + testItems[i] + ",测试项值," + list[i] + "");
+                            sb.Append($"!{testItemsName[i]},测试项值,{actualValueList[i]}");
                         }
                     }
                 }
             }
 
-            string 测试项 = "!用户ID," + LoginUser.ToString() + "," + LoginUser.ToString() + "!条码,条码信息," + productBarcode +
-                "!产品型号,型号," + txtProductModel.Text +
-                "" + sbl.ToString() + "!测试总结果,测试结果," + Value[9999];
-
             //!测试项,测试参数,测试值!用户ID,YC,YC!测试人,测试时间,测试结果!YC,2023年8月2日19：1：3,OK!工装,工装代码,41!产品编码,产品名称,产品代码!1144_00,SA3F_5820120,0SF5!生产节拍,文件版本,软件版本!5,20220811,20220811
+            //string 测试项 = "!用户ID," + LoginUser.ToString() + "," + LoginUser.ToString() + "!条码,条码信息," + productBarcode +
+            //    "!产品型号,型号," + txtProductModel.Text +
+            //    "" + sb.ToString() + "!测试总结果,测试结果," + Value[9999];
+            string 测试项 = $"!用户ID,{LoginUser},{LoginName}!条码,条码信息,{productBarcode}!产品型号,型号,{txtProductModel.Text}{sb.ToString()}!测试总结果,测试结果,{Value[9999]}";
 
             bool 验证结果; string MES反馈; string XMLOUT;
 
-            UpDateToMes(productResult, productBarcode, 文件版本, 软件版本, 测试项, out 验证结果, out MES反馈, out XMLOUT);
+            MesIntegrationService.UploadBarcode(productResult, productBarcode, 文件版本, 软件版本, 测试项, out 验证结果, out MES反馈, out XMLOUT);
 
             rtbMesLog.Clear();
             rtbMesLog.AppendText(MES反馈);
@@ -1509,20 +1545,278 @@ namespace MesDatas
 
             if (验证结果 == true)
             {
-                Parameter_txt[2006] = "1";
+                MES_Result[2006] = "1";
             }
             else
             {
-                LogMsg(MES反馈);
-                Parameter_txt[2008] = "1";
+                DisplayMessage(MES反馈);
+                MES_Result[2008] = "1";
             }
-            LogMsg("联机结果上传完成");
 
+            DisplayMessage("联机结果上传完成");
         }
 
-        private void BindWorkOrder(object sender, EventArgs e)
+        /// <summary>
+        /// MES交互1：用户验证 - 异步优化版本
+        /// </summary>
+        /// <returns></returns>
+        private async Task VarifyUserLogin_MESAsync()
         {
-            绑定工单_Mes(WorkOrder, out bool 绑定结果, out string MES反馈, out string XMLOUT);
+            var uiUpdater = new UIUpdateUtils.UIStateUpdater(this)
+                .SetLabel(lblRunningStatus, resources.GetString("user_yzz"))
+                .SetLabel(lblOperatePrompt, resources.GetString("Wait"));
+            uiUpdater.Update();
+
+            try
+            {
+                // 配置MES
+                await Task.Run(() => Config_Mes(ip, port, timeout, url, site, user, password, resource, operation, nccode));
+
+                // 初始化out参数
+                bool validationResult = false;  // 给出参数一个初始值
+                string mesFeedback = string.Empty;  // 给出参数一个初始值
+                string xmlOut = string.Empty;  // 给出参数一个初始值
+
+                // MES验证
+                await Task.Run(() =>
+                {
+                    MesIntegrationService.VarifyUserLogin(out validationResult, out mesFeedback, out xmlOut);
+                });
+
+                if (validationResult)
+                {
+                    if (!string.IsNullOrEmpty(mesFeedback))
+                    {
+                        uiUpdater = new UIUpdateUtils.UIStateUpdater(this)
+                            .SetRichTextBox(rtbMesLog, mesFeedback, true)
+                            .SetLabel(lblRunningStatus, resources.GetString("onlineUser_OK"), Color.Green)
+                            .SetLabel(lblOperatePrompt, resources.GetString("scanning"));
+                        uiUpdater.Update();
+
+                        isMesLoginSuccessful = true;
+                    }
+                    else
+                    {
+                        uiUpdater = new UIUpdateUtils.UIStateUpdater(this)
+                            .SetRichTextBox(rtbMesLog, mesFeedback, true)
+                            .SetLabel(lblRunningStatus, resources.GetString("onlineUser_NG"), Color.Red)
+                            .SetLabel(lblOperatePrompt, resources.GetString("Check_param"));
+                        uiUpdater.Update();
+                    }
+                }
+                else
+                {
+                    uiUpdater = new UIUpdateUtils.UIStateUpdater(this)
+                        .SetRichTextBox(rtbMesLog, mesFeedback, true)
+                        .SetLabel(lblRunningStatus, resources.GetString("onlineUser_NG"), Color.Red)
+                        .SetLabel(lblOperatePrompt, resources.GetString("Check_param"));
+                    uiUpdater.Update();
+                }
+            }
+            catch (Exception ex)
+            {
+                uiUpdater = new UIUpdateUtils.UIStateUpdater(this)
+                    .SetRichTextBox(rtbMesLog, ex.Message, true)
+                    .SetLabel(lblRunningStatus, "Error", Color.Red)
+                    .SetLabel(lblOperatePrompt, resources.GetString("Check_param"));
+                uiUpdater.Update();
+            }
+        }
+
+        /// <summary>
+        /// MES交互2：条码验证 - 异步优化版本
+        /// </summary>
+        /// <param name="barcodeInfo">条码信息</param>
+        /// <returns>验证任务</returns>
+        private async Task VarifyBarcode_MESAsync(string barcodeInfo)
+        {
+            // 初始化参数状态
+            MES_Result[2002] = "0";
+            MES_Result[2004] = "0";
+
+            try
+            {
+                // 初始化out参数
+                bool validationResult = false;
+                string mesFeedback = string.Empty;
+                string xmlOut = string.Empty;
+
+                // 异步执行MES验证
+                await Task.Run(() =>
+                {
+                    MesIntegrationService.VarifyBarcode(
+                        barcodeInfo,
+                        out validationResult,
+                        out mesFeedback,
+                        out xmlOut);
+                });
+
+                // 记录日志
+                await Task.Run(() =>
+                {
+                    loggerMESBarCoode.Trace(mesFeedback);
+                });
+
+                // 使用UI更新工具类批量更新UI
+                var uiUpdater = new UIUpdateUtils.UIStateUpdater(this)
+                    .SetRichTextBox(rtbMesLog, mesFeedback, true);
+                uiUpdater.Update();
+
+                // 更新滚动位置（需要在UI更新后执行）
+                UIUpdateUtils.SafeInvoke(rtbMesLog, () =>
+                {
+                    rtbMesLog.SelectionStart = rtbMesLog.Text.Length;
+                    rtbMesLog.ScrollToCaret();
+                });
+
+                // 根据验证结果更新参数
+                if (validationResult)
+                {
+                    MES_Result[2002] = "1";
+                }
+                else
+                {
+                    MES_Result[2004] = "1";
+                }
+            }
+            catch (Exception ex)
+            {
+                // 异常处理
+                var errorMessage = $"条码验证失败: {ex.Message}";
+
+                var uiUpdater = new UIUpdateUtils.UIStateUpdater(this)
+                    .SetRichTextBox(rtbMesLog, errorMessage, true);
+                uiUpdater.Update();
+
+                await Task.Run(() =>
+                {
+                    loggerMESBarCoode.Error(errorMessage);
+                });
+
+                // 设置错误状态
+                MES_Result[2004] = "1";
+            }
+        }
+
+        /// <summary>
+        /// MES交互3：条码上传 - 异步优化版本
+        /// </summary>
+        /// <remarks>
+        /// 上传当前条码所绑定的物料的测试结果
+        /// </remarks>
+        private async Task UploadResult_MESAsync()
+        {
+            // 初始化参数状态
+            MES_Result[2006] = "0";
+            MES_Result[2008] = "0";
+
+            DisplayMessageAsync("结果联机上传");
+
+            try
+            {
+                // 预处理数据
+                var uploadData = await Task.Run(() =>
+                {
+                    // 基础信息
+                    bool productResult = 产品结果;
+                    string productBarcode = barcodeInfo;
+                    string fileVersion = this.fileVersion;
+                    string appVersion = this.appVersion;
+
+                    // 格式化工装信息
+                    string fixtureInfo = MESDataFormatter.FormatFixtureInfo(txtFixtureBinding.Text);
+
+                    // 格式化产品代码
+                    string[] rawProductsCode = CodeNum.GetProductCodes(cboBarcodeRuleAndFixtures.Text, codesTable);
+                    string productCodes = MESDataFormatter.FormatProductCodes(rawProductsCode);
+
+                    // 格式化测试项信息
+                    string testItemsInfo = string.Empty;
+                    if (actualValuePoint.Length > 0)
+                    {
+                        testItemsInfo = MESDataFormatter.FormatTestItems(
+                            // 测试项目名称1、上限点位1、下限点位1、测试结果点位、实际值1、上限值、下限值、测试结果 
+                            testItemsName, maxValuePoint, minValuePoint, testResultPoint, actualValueList, resultList, maxList, minList);
+                    }
+
+                    // 构建完整的测试信息字符串
+                    string testInfo = MESDataFormatter.BuildTestInfoString(
+                        LoginUser.ToString(),
+                        productBarcode,
+                        txtProductModel.Text,
+                        fixtureInfo,
+                        productCodes,
+                        testItemsInfo,
+                        Value[9999]);
+
+                    return new
+                    {
+                        ProductResult = productResult,
+                        ProductBarcode = productBarcode,
+                        FileVersion = fileVersion,
+                        AppVersion = appVersion,
+                        TestInfo = testInfo
+                    };
+                });
+
+                // 执行MES上传
+                bool validationResult = false;
+                string mesFeedback = string.Empty;
+                string xmlOut = string.Empty;
+
+                await Task.Run(() =>
+                {
+                    MesIntegrationService.UploadBarcode(
+                        uploadData.ProductResult,
+                        uploadData.ProductBarcode,
+                        uploadData.FileVersion,
+                        uploadData.AppVersion,
+                        uploadData.TestInfo,
+                        out validationResult,
+                        out mesFeedback,
+                        out xmlOut);
+                });
+
+                // 更新UI和日志
+                var uiUpdater = new UIUpdateUtils.UIStateUpdater(this)
+                    .SetRichTextBox(rtbMesLog, mesFeedback, true);
+                uiUpdater.Update();
+
+                // 记录日志
+                await Task.Run(() =>
+                {
+                    loggerMESData.Trace(mesFeedback);
+                });
+
+                // 更新参数状态
+                if (validationResult)
+                {
+                    MES_Result[2006] = "1";
+                }
+                else
+                {
+                    await DisplayMessageAsync(mesFeedback);
+                    MES_Result[2008] = "1";
+                }
+
+                await DisplayMessageAsync("联机结果上传完成");
+            }
+            catch (Exception ex)
+            {
+                var errorMessage = $"结果上传失败: {ex.Message}";
+
+                var uiUpdater = new UIUpdateUtils.UIStateUpdater(this)
+                    .SetRichTextBox(rtbMesLog, errorMessage, true);
+                uiUpdater.Update();
+
+                await Task.Run(() =>
+                {
+                    loggerMESData.Error(errorMessage);
+                });
+
+                MES_Result[2008] = "1";
+                await DisplayMessageAsync("联机结果上传异常");
+            }
         }
 
         #endregion
@@ -1635,8 +1929,8 @@ namespace MesDatas
             // 本地数据存放路径：DataPath
             // 其他设置：DeviceName、RFIDPort、读卡器设备号、显示宽度
             // 二次读条码、点位集合、名称集合、
-            mdb = new mdbDatas(path4);
-            DataTable table1 = mdb.Find("select * from SytemSet where ID = '1'");
+            dbHelper = new MDBHelper(path4);
+            DataTable table1 = dbHelper.Find("select * from SytemSet where ID = '1'");
 
             if (table1.Rows.Count > 0)
             {
@@ -1645,7 +1939,7 @@ namespace MesDatas
                     $" [rfidCode]='{tbxReaderDeviceID.Text}', [StatisticsCode]='{txtPointSets.Text}', [StatisticsName]='{txtNameSets.Text}'," +
                     $" [ResultCode]='{txtDisplayWidth.Text}', [readBarCode]='{chkReadBarcodeSecondly.Checked}' where [ID] = '1'";
 
-                var result = mdb.Change(sql);
+                var result = dbHelper.Change(sql);
                 //SqlToJsonConverter.ConvertToJSONLog(sql);
                 if (result)
                 {
@@ -1654,8 +1948,8 @@ namespace MesDatas
             }
             else
             {
-                mdbDatas.CreateAccessDatabase(path4);
-                mdbDatas.CreateMDBTable(path4, "SytemSet", new System.Collections.ArrayList(new object[] { "ID", "IP", "Port", "DataUrl", "DeviceName", "stationCode", "stationName", "wordNo" }));
+                MDBHelper.CreateAccessDatabase(path4);
+                MDBHelper.CreateMDBTable(path4, "SytemSet", new System.Collections.ArrayList(new object[] { "ID", "IP", "Port", "DataUrl", "DeviceName", "stationCode", "stationName", "wordNo" }));
                 DataTable dt = new DataTable("SytemSet");
                 DataColumn ID = new DataColumn("ID", typeof(string));
                 dt.Columns.Add(ID);
@@ -1685,10 +1979,10 @@ namespace MesDatas
                 // dr[5] = textBox4.Text;
                 // dr[6] = textBox5.Text;
                 dr[7] = txtWorkOrder.Text;
-                mdb.DatatableToMdb("SytemSet", dt);
+                dbHelper.DatatableToMdb("SytemSet", dt);
             }
 
-            mdb.CloseConnection();
+            dbHelper.CloseConnection();
 
         }
 
@@ -1729,9 +2023,9 @@ namespace MesDatas
             txtViewStatus.Text = deviceInfo.ViewStatus;             // 看板状态
 
             // 连接数据库
-            mdb = new mdbDatas(path4);
+            dbHelper = new MDBHelper(path4);
             // 检索 "SystemSet" 表格
-            DataTable table1 = mdb.Find("select * from SytemSet where ID = '1'");
+            DataTable table1 = dbHelper.Find("select * from SytemSet where ID = '1'");
             // 从数据库加载系统配置参数
             for (int i = 0; i < table1.Rows.Count; i++)
             {
@@ -1768,7 +2062,7 @@ namespace MesDatas
                     txtNameSets.Text = table1.Rows[i]["StatisticsName"].ToString();     // 名称集合
                 }
             }
-            mdb.CloseConnection();
+            dbHelper.CloseConnection();
         }
 
         /// <summary>
@@ -1796,34 +2090,20 @@ namespace MesDatas
         #region ---------- 上下限数据 ----------
 
         DataTable maxminTable = null;
-
-        /// <summary>
-        /// 实时更新上下限数据
-        /// </summary>
-        public void Bind_MaxMinValue()
-        {
-            while (IsRunningplc_ReadMaxMin)
-            {
-                PLCMaxMin();
-                Thread.Sleep(1500);
-                Application.DoEvents();
-            }
-        }
+        public List<MaxMinValue> ValueList = null;
 
         /// <summary>
         /// 实时读取上限值
         /// </summary>
         public void Get_MaxMinValue()
         {
-            while (IsRunningplc_ReadMaxMin)
+            while (isReadMaxMin_PLC)
             {
                 GetPLCMaxMin();
                 Thread.Sleep(1000);
                 Application.DoEvents();
             }
         }
-
-        public List<MaxMinValue> maxMinValues = null;
 
         /// <summary>
         /// 读取上下限
@@ -1832,11 +2112,9 @@ namespace MesDatas
         {
             if (isPlcConnected == true)
             {
-                maxMinValues = new List<MaxMinValue>();
+                ValueList = new List<MaxMinValue>();
                 for (int i = 0; i < boardTable.Rows.Count; i++)
                 {
-                    //Console.WriteLine($"生产数据读取中{i}");
-
                     MaxMinValue value = new MaxMinValue();
 
                     value.BoardName = boardTable.Rows[i]["BoardName"].ToString();
@@ -1845,36 +2123,31 @@ namespace MesDatas
                     value.MinBoardCode = NullModify(ProcessPointData_PLC(boardTable.Rows[i]["MinBoardCode"].ToString()));
                     value.BoardCode = NullModify(ProcessPointData_PLC(boardTable.Rows[i]["BoardCode"].ToString()));
                     value.Result = NullModify(ProcessPointData_PLC(boardTable.Rows[i]["ResultBoardCode"].ToString()));
-                    maxMinValues.Add(value);
+                    ValueList.Add(value);
                 }
-                maxMinList = maxMinValues;
             }
         }
 
-        public string NullModify(string str)
+        /// <summary>
+        /// 实时更新上下限数据
+        /// </summary>
+        public void Bind_MaxMinValue()
         {
-            if (string.IsNullOrWhiteSpace(str))
+            while (isReadMaxMin_PLC)
             {
-                str = sytemSetDerivedsd.SytemSetnullCoden;
+                PLCMaxMin();
+                Thread.Sleep(1500);
+                Application.DoEvents();
             }
-            if (str.Equals("null"))
-            {
-                str = sytemSetDerivedsd.SytemSetnullCoden;
-            }
-            return str;
         }
-
-        private List<MaxMinValue> maxMinList = null;
 
         private void PLCMaxMin()
         {
             BeginInvoke(new Action(() =>
             {
-                //Console.WriteLine("绑定上下限开始");
-
                 if (isPlcConnected == true)
                 {
-                    List<MaxMinValue> maxMinList = this.maxMinList;
+                    List<MaxMinValue> maxMinList = this.ValueList;
 
                     if (maxminTable == null)
                     {
@@ -1977,253 +2250,276 @@ namespace MesDatas
 
         }
 
+        /// <summary>
+        /// 读取 PLC 值并根据指定的格式返回结果。
+        /// </summary>
+        /// <param name="plcPointInfo"></param>
+        /// <returns></returns>
+        private static string ProcessPointData_PLC(string plcPointInfo)
+        {
+            string outputStr = "";
+
+            if (plcPointInfo.Equals("NO"))
+            {
+                outputStr = "null";
+            }
+
+            else if (plcPointInfo.Contains(":"))
+            {
+                // 提取索引标志，点位信息填写模板：D1090:H-3 D1080:I-5
+                int index = plcPointInfo.IndexOf(":");
+                int index1 = plcPointInfo.IndexOf("-");
+
+                // 提取类型部分，包括：H-short，I-Int32，F-float，J-Int32，N-Int32，O-Int32，S-string
+                string dataType = plcPointInfo.Substring(index + 1, 1);
+
+                // 提取数值部分
+                ushort number = 0;
+                ushort.TryParse(plcPointInfo.Substring(index1 + 1), out number);
+
+                // 提取PLC地址
+                string plcAddress = plcPointInfo.Substring(0, index);
+
+                if (dataType == "H")
+                {
+                    string aa = "";
+                    OperateResult<short> result = KeyenceMcNet.ReadInt16(plcAddress);
+
+                    if (result.IsSuccess)
+                    {
+                        aa = TypeRead.NumericOperate(result.Content.ToString(), number.ToString());
+                    }
+                    else
+                    {
+                        aa = "null";
+                    }
+                    outputStr = aa;
+
+                }        // short
+
+                else if (dataType == "I")
+                {
+                    string aa = "";
+                    OperateResult<int> result = KeyenceMcNet.ReadInt32(plcAddress);
+
+                    if (result.IsSuccess)
+                    {
+                        aa = TypeRead.NumericOperate(result.Content.ToString(), number.ToString());
+                    }
+                    else
+                    {
+                        aa = "null";
+                    }
+                    outputStr = aa;
+
+                }   // Int32
+
+                else if (dataType == "F")
+                {
+                    string aa = "";
+                    OperateResult<float> result = KeyenceMcNet.ReadFloat(plcAddress);
+
+                    if (result.IsSuccess)
+                    {
+                        aa = TypeRead.NumericOperate(result.Content.ToString(), number.ToString());
+                    }
+                    else
+                    {
+                        aa = "null";
+                    }
+                    outputStr = aa;
+
+                }   // float
+
+                else if (dataType == "J")
+                {
+                    string aa = "";
+                    OperateResult<int> result = KeyenceMcNet.ReadInt32(plcAddress);
+
+                    if (result.IsSuccess)
+                    {
+
+                        aa = CodeNum.DivBy100Rounded2(result.Content.ToString());
+                    }
+                    else
+                    {
+                        aa = "null";
+                    }
+                    outputStr = aa;
+
+                }   // Int32
+
+                else if (dataType == "N")
+                {
+                    string aa = "";
+                    OperateResult<int> result = KeyenceMcNet.ReadInt32(plcAddress);
+
+                    if (result.IsSuccess)
+                    {
+                        aa = CodeNum.ConvertToOkNg(result.Content.ToString());
+                    }
+                    else
+                    {
+                        aa = "null";
+                    }
+                    outputStr = aa;
+
+                }   // Int32
+
+                else if (dataType == "O")
+                {
+                    string aa = "";
+                    OperateResult<int> result = KeyenceMcNet.ReadInt32(plcAddress);
+
+                    if (result.IsSuccess)
+                    {
+                        aa = result.Content.ToString();
+                    }
+                    else
+                    {
+                        aa = "null";
+                    }
+                    outputStr = aa;
+
+                }   // Int32
+
+                else if (dataType == "S")
+                {
+                    string ss = "";
+                    OperateResult<string> result = KeyenceMcNet.ReadString(plcAddress, number);
+
+                    if (result.IsSuccess)
+                    {
+                        ss = CodeNum.CleanString(result.Content.ToString());
+                    }
+                    else
+                    {
+                        ss = "null";
+                    }
+                    outputStr = ss;
+
+                }   // string
+
+                else
+                {
+                    var ss = KeyenceMcNet.ReadString(plcAddress, number).Content;
+                    outputStr = ss;
+                }                        // string
+            }
+
+            else
+            {
+                string aa = "";
+                OperateResult<int> readss = KeyenceMcNet.ReadInt32(plcPointInfo);
+                if (readss.IsSuccess)
+                {
+
+                    aa = CodeNum.DivBy100(readss.Content.ToString());
+                }
+                else
+                {
+                    aa = "null";
+                }
+                outputStr = aa;
+            }
+
+            return outputStr;
+        }
+
+        public string NullModify(string str)
+        {
+            if (string.IsNullOrWhiteSpace(str))
+            {
+                str = sytemSetDerivedsd.SytemSetnullCoden;
+            }
+            if (str.Equals("null"))
+            {
+                str = sytemSetDerivedsd.SytemSetnullCoden;
+            }
+            return str;
+        }
+
         #endregion
 
-        private string productModel = " ";  // 产品型号 = 产品名称 = 产品编号
-        private string D1080 = " ";         // 生产总数
-        private string D1084 = " ";         // 工单数量
-        private string D1086 = " ";         // 完成数量
-        private string D1088 = " ";         // 合格数量
-        private string D1090 = " ";         // 生产节拍
-        private string D1082 = " ";         // 保养计数
-        private string D1076 = " ";         // NG数量
-        string completeRate = "  ";         // 完成率
-        string passRate = "  ";             // 合格率
-        string processTime = "   ";         // 工序时间
-        string usingTime = "  ";            // 利用时间
-        string loadTime = "  ";             // 负荷时间
-        string fpy = "  ";                  // 直通率 FPY：First-pass yield = TPY：ThroughPut Yield
-        private string deviceState = null;  // 设备状态
-        string productName = " ";           // 成品名称
+        #region ---------- KPI产线关键性能指标字段 ----------
+
+        /// <summary>
+        ///产品型号 = 产品名称 = 产品编号
+        /// </summary>
+        private string productModel = " ";
+        /// <summary>
+        /// 生产总数
+        /// </summary>
+        private string D1080 = " ";
+        /// <summary>
+        /// 工单数量
+        /// </summary>
+        private string D1084 = " ";
+        /// <summary>
+        /// 完成数量
+        /// </summary>
+        private string D1086 = " ";
+        /// <summary>
+        /// 合格数量
+        /// </summary>
+        private string D1088 = " ";
+        /// <summary>
+        /// 生产节拍
+        /// </summary>
+        private string D1090 = " ";
+        /// <summary>
+        /// 保养计数
+        /// </summary>
+        private string D1082 = " ";
+        /// <summary>
+        /// NG数量
+        /// </summary>
+        private string D1076 = " ";
+        /// <summary>
+        /// 完成率
+        /// </summary>
+        string completeRate = "  ";
+        /// <summary>
+        /// 合格率
+        /// </summary>
+        string passRate = "  ";
+        /// <summary>
+        /// 工序时间
+        /// </summary>
+        string processTime = "   ";
+        /// <summary>
+        /// 利用时间
+        /// </summary>
+        string usingTime = "  ";
+        /// <summary>
+        /// 负荷时间
+        /// </summary>
+        string loadTime = "  ";
+        /// <summary>
+        /// 直通率 FPY：First-pass yield = TPY：ThroughPut Yield
+        /// </summary>
+        string FPY = "  ";
+        /// <summary>
+        /// 设备状态
+        /// </summary>
+        private string deviceState = null;
+        /// <summary>
+        /// 成品名称
+        /// </summary>
+        string productName = " ";
+
+        #endregion
 
         Dictionary<string, string> faultsMap = new Dictionary<string, string>();
         short[] faultTime = new short[] { };
-        bool frockbool = true;
 
-        DataTable kpisTable = null;     // KPIS：Key Performance Indicators 关键性能指标，生产指标
+        DataTable KPIsTable = null;     // KPIS：Key Performance Indicators 关键性能指标，生产指标
         string recipeId = string.Empty; // 配方号
 
         DatasModel.DeviceInformation deviceInfo = new DatasModel.DeviceInformation();
         bool ModelboolPLC = true;
 
-        #region ----------- 更改之前，实时读取生产指标等信息 -----------
-
-        /// <summary>
-        /// 读取产品型号
-        /// </summary>
-        /*private void Model_Read_Other()
-        {
-            // 获取用户输入
-            deviceInfo.DeviceStatus = txtDeviceStatePoint.Text;     // 设备运行状态点位
-            deviceInfo.ProductModel = txtProductModelPoint.Text;    // 产品型号点位
-            deviceInfo.ProductModelLength = txtPMLength.Text;       // PMLength：ProductModelLength 产品型号长度
-            deviceInfo.Save();
-
-            Task.Run(() =>
-            {
-                while (ModelboolPLC)
-                {
-                    Model_Read_PLC();
-                    Thread.Sleep(250);
-                    Application.DoEvents();
-                }
-            });
-        }*/
-
-        /*private void Model_Read_PLC()
-        {
-            if (isPlcConnected == true)
-            {
-                // 读取设备运行状态：D1007
-                deviceState = KeyenceMcNet.ReadInt32(deviceInfo.DeviceStatus).Content.ToString();
-
-                // 读取产品型号(产品名称)：D1120
-                ushort productModelLength = 10;
-                ushort.TryParse(deviceInfo.ProductModelLength, out productModelLength);
-                string pModel = KeyenceMcNet.ReadString(deviceInfo.ProductModel, productModelLength).Content;
-                this.productModel = CodeNum.FormatString(pModel);
-
-                // 从PLC读取生产指标数据，并对读取过来的数据二次处理
-                kpiList = new List<string>();
-                if (kpisPointSets.Length > 0)
-                {
-                    for (int i = 0; i < kpisPointSets.Length; i++)
-                    {
-                        // 从PLC读取相关指标的点位，并处理读过来的数据
-                        if (kpisPointSets[i].Contains("-"))
-                        {
-                            kpiList.Add(ProcessPointData_PLC(kpisPointSets[i]));
-                        }
-                        else
-                        {
-                            int index = kpisPointSets[i].IndexOf(":");
-                            string dataType = kpisPointSets[i].Substring(index + 1, 1);
-                            string plcAddress = kpisPointSets[i].Substring(0, index);
-                            kpiList.Add(CodeNum.HandlePlcData(KeyenceMcNet.ReadInt32(plcAddress).Content.ToString(), dataType));
-                        }
-                    }
-                }
-
-                D1080 = kpiList[0];          // 生产总数
-                D1084 = kpiList[1];          // 工单数量
-                D1086 = kpiList[2];          // 完成数量
-                D1088 = kpiList[3];          // 合格数量
-                D1090 = kpiList[4];          // 生产节拍
-                D1082 = kpiList[5];          // 保养计数
-                D1076 = kpiList[6];          // NG数量
-                fpy = kpiList[7];            // 直通率
-                completeRate = kpiList[8];   // 完成率
-                passRate = kpiList[9];       // 合格率 
-                processTime = kpiList[10];   // 工序时间
-                usingTime = kpiList[11];     // 利用时间
-                loadTime = kpiList[12];      // 负荷时间
-                faultTime = KeyenceMcNet.ReadInt16(txtFaultStartPoint.Text, CodeNum.Shoubtowule(txtFaultLength.Text)).Content;
-
-                Invoke(new Action(() =>
-                {
-                    // 启用实时读取PLC
-                    if (chkReadRecipeId_PLC.Checked)
-                    {
-                        // 读取配方号：D1208
-                        string currentId = KeyenceMcNet.ReadInt32(deviceInfo.RecipeIdPoint).Content.ToString();
-                        if (recipeId != currentId)
-                        {
-                            recipeId = currentId;
-                        }
-                        // 根据配方号更新配方
-                        cboBarcodeRuleAndFixtures.SelectedValue = currentId;
-                        // 更新显示当前配方号
-                        lblRecipeId.Text = currentId;
-
-                        string[] expectedFixtures = CodeNum.ExtractFixturesInfo(cboBarcodeRuleAndFixtures.Text);
-                        string[] frockB = txtFixtureBinding.Text.ToString().Split('+');
-
-                        if (!CodeNum.CompareArray(expectedFixtures, frockB))
-                        {
-                            string frockmm = "";
-
-                            foreach (var frockid in frockB)
-                            {
-                                if (expectedFixtures.Contains(frockid))
-                                {
-                                    if (string.IsNullOrWhiteSpace(frockmm))
-                                    {
-                                        frockmm = frockid;
-                                    }
-                                    else
-                                    {
-                                        frockmm = $"{frockmm} + {frockid}";
-                                    }
-                                }
-                            }
-
-                            txtFixtureBinding.Text = frockmm;
-
-                            string[] frockC = txtFixtureBinding.Text.ToString().Split('+');
-
-                            if (!CodeNum.CompareArray(expectedFixtures, frockC))
-                            {
-                                lblOperatePrompt.Text = resources.GetString("Wait_scan_Jig");   // 等待扫工装
-                            }
-                        }
-                    }
-
-                    // 产品编码
-                    textBox42.Text = CodeNum.CodeStrfror(cboBarcodeRuleAndFixtures.Text, codesTable);
-
-                    // 更新设备运行状态
-                    if (deviceState != null)
-                    {
-                        switch (deviceState)
-                        {
-                            case "1":   // 生产运行 
-                                lblDeviceStatus.ForeColor = Color.Green;
-                                Fouddinog();
-                                break;
-                            case "2":   // 故障未停机  
-                                lblDeviceStatus.ForeColor = Color.Red;
-                                Namestation("触发故障");
-                                break;
-                            case "3":   // 故障停机 
-                                lblDeviceStatus.ForeColor = Color.Red;
-                                Namestation("故障停机");
-                                break;
-                            case "4":   // 待机
-                                lblDeviceStatus.ForeColor = Color.Orange;
-                                Fouddinog();
-                                break;
-                            default:
-                                lblDeviceStatus.ForeColor = Color.Red;
-                                break;
-                        }
-                    }
-
-                    // 更新产品名称文本框的内容
-                    txtProductModel.Text = this.productModel;
-
-                    // 实时更新生产指标的显示
-                    if (kpisNameSets.Length == kpisPointSets.Length && kpisPointSets.Length > 0)
-                    {
-                        // 初始化表格
-                        if (kpisTable == null)
-                        {
-                            kpisTable = new DataTable();
-                            kpisTable.Columns.Add("名称", typeof(string));
-                            kpisTable.Columns.Add("值", typeof(string));
-
-                            for (int i = 0; i < kpisNameSets.Length; i++)
-                            {
-                                DataRow dr = kpisTable.NewRow();
-                                dr["名称"] = kpisNameSets[i];
-                                dr["值"] = kpiList[i];
-                                kpisTable.Rows.Add(dr);
-                            }
-
-                            dataGridViewDynamic3.DataSource = kpisTable;
-
-                            // 禁用列排序
-                            for (int i = 0; i < dataGridViewDynamic3.Columns.Count; i++)
-                            {
-                                dataGridViewDynamic3.Columns[i].SortMode = DataGridViewColumnSortMode.NotSortable;
-                            }
-                        }
-                        else
-                        {
-                            // 实时更新生产指标的显示
-                            for (int i = 0; i < kpisNameSets.Length; i++)
-                            {
-                                dataGridViewDynamic3.Rows[i].Cells[0].Value = kpisNameSets[i];
-                                dataGridViewDynamic3.Rows[i].Cells[1].Value = kpiList[i];
-                            }
-                        }
-
-                    }
-
-                    // 读取成品名称
-                    if (chkReadPName.Checked)
-                    {
-                        txtProductName.Text = CodeNum.FormatString(KeyenceMcNet.ReadString("D1210", 10).Content);
-                    }
-
-                    // 网络打印设置 > 读取PLC型号
-                    if (checkBox4.Checked)
-                    {
-                        textBox28.Text = txtProductModel.Text;
-                    }
-                    // 驱动打印设置 > 读取PLC型号
-                    if (checkBox15.Checked)
-                    {
-                        textBox52.Text = txtProductModel.Text;
-                    }
-                    Thread.Sleep(150);
-                    Application.DoEvents();
-                }));
-            }
-        }*/
-
-        #endregion
-
-        #region  ----------- 优化后 -> 读取生产指标等信息 -----------
+        #region  ----------- 读取生产指标等信息 -----------
 
         List<string> kpiList = null;
 
@@ -2417,7 +2713,7 @@ namespace MesDatas
         {
             if (kpisNameSets.Length == kpisPointSets.Length && kpisPointSets.Length > 0)
             {
-                if (kpisTable == null)
+                if (KPIsTable == null)
                 {
                     InitializeKpiTable();
                 }
@@ -2430,19 +2726,19 @@ namespace MesDatas
 
         private void InitializeKpiTable()
         {
-            kpisTable = new DataTable();
-            kpisTable.Columns.Add("名称", typeof(string));
-            kpisTable.Columns.Add("值", typeof(string));
+            KPIsTable = new DataTable();
+            KPIsTable.Columns.Add("名称", typeof(string));
+            KPIsTable.Columns.Add("值", typeof(string));
 
             for (int i = 0; i < kpisNameSets.Length; i++)
             {
-                DataRow dr = kpisTable.NewRow();
+                DataRow dr = KPIsTable.NewRow();
                 dr["名称"] = kpisNameSets[i];
                 dr["值"] = kpiList[i];
-                kpisTable.Rows.Add(dr);
+                KPIsTable.Rows.Add(dr);
             }
 
-            dataGridViewDynamic3.DataSource = kpisTable;
+            dataGridViewDynamic3.DataSource = KPIsTable;
 
             for (int i = 0; i < dataGridViewDynamic3.Columns.Count; i++)
             {
@@ -2614,8 +2910,6 @@ namespace MesDatas
             }));
         }
 
-        Socket socketClient = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-
         /// <summary>
         /// 系统设置页面的保存按钮
         /// </summary>
@@ -2640,6 +2934,8 @@ namespace MesDatas
 
         #region ---------- 显示列表 ----------
 
+        private int Num = 0;
+
         /// <summary>
         /// 显示列表表头
         /// </summary>
@@ -2651,7 +2947,7 @@ namespace MesDatas
 
             dataGridViewDynamic2.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
             int totalValidItems = 0;
-            totalValidItems = CodeNum.GetValidItems(maxValue) + CodeNum.GetValidItems(minValue) + CodeNum.GetValidItems(testResult);
+            totalValidItems = CodeNum.GetValidItems(maxValuePoint) + CodeNum.GetValidItems(minValuePoint) + CodeNum.GetValidItems(testResultPoint);
 
             // 固定的基本信息列
             for (int i = 0; i < 7; i++)
@@ -2669,36 +2965,36 @@ namespace MesDatas
             dataGridViewDynamic2.Columns[6].HeaderText = resources.GetString("d2CSSJ");     // 测试时间
 
             // 动态配置测试项相关的列
-            for (int i = 7; i < ((testItems.Length + totalValidItems) + 7); i++)
+            for (int i = 7; i < ((testItemsName.Length + totalValidItems) + 7); i++)
             {
                 dataGridViewDynamic2.Columns.Add(new DataGridViewTextBoxColumn());
                 dataGridViewDynamic2.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             }
 
             int a = 7;
-            if (actualValue.Length > 0)
+            if (actualValuePoint.Length > 0)
             {
-                for (int i = 0; i < testItems.Length; i++)
+                for (int i = 0; i < testItemsName.Length; i++)
                 {
                     dataGridViewDynamic2.Columns[a].Width = CodeNum.ParseIntOrDefault(txtDisplayWidth.Text);
-                    dataGridViewDynamic2.Columns[a].HeaderText = testItems[i] + unitName[i];
+                    dataGridViewDynamic2.Columns[a].HeaderText = testItemsName[i] + unitName[i];
                     a = a + 1;
-                    if (!maxValue[i].Equals("NO"))
+                    if (!maxValuePoint[i].Equals("NO"))
                     {
                         dataGridViewDynamic2.Columns[a].Width = CodeNum.ParseIntOrDefault(txtDisplayWidth.Text);
-                        dataGridViewDynamic2.Columns[a].HeaderText = testItems[i] + "上限" + unitName[i];
+                        dataGridViewDynamic2.Columns[a].HeaderText = testItemsName[i] + "上限" + unitName[i];
                         a = a + 1;
                     }
-                    if (!minValue[i].Equals("NO"))
+                    if (!minValuePoint[i].Equals("NO"))
                     {
                         dataGridViewDynamic2.Columns[a].Width = CodeNum.ParseIntOrDefault(txtDisplayWidth.Text);
-                        dataGridViewDynamic2.Columns[a].HeaderText = testItems[i] + "下限" + unitName[i];
+                        dataGridViewDynamic2.Columns[a].HeaderText = testItemsName[i] + "下限" + unitName[i];
                         a = a + 1;
                     }
-                    if (!testResult[i].Equals("NO"))
+                    if (!testResultPoint[i].Equals("NO"))
                     {
                         dataGridViewDynamic2.Columns[a].Width = CodeNum.ParseIntOrDefault(txtDisplayWidth.Text);
-                        dataGridViewDynamic2.Columns[a].HeaderText = testItems[i] + "结果";
+                        dataGridViewDynamic2.Columns[a].HeaderText = testItemsName[i] + "结果";
                         a = a + 1;
                     }
                 }
@@ -2724,65 +3020,65 @@ namespace MesDatas
                     this.dataGridViewDynamic2.Rows.Clear();
                 }
 
-                var upState = "失败";
-                if (Parameter_txt[2006] == "1")
+                var uploadState = "失败";
+                if (MES_Result[2006] == "1")
                 {
-                    upState = "成功";
+                    uploadState = "成功";
                 }
                 else if (isOffLine == 1)
                 {
-                    upState = "本地";
+                    uploadState = "本地";
                 }
 
                 DateTime now = DateTime.Now;
                 //添加行
-                //int index = this.dataGridViewDynamic2.Rows.Add();
-                DataGridViewRow dataGdVwRow = new DataGridViewRow();
-                dataGdVwRow.CreateCells(this.dataGridViewDynamic2);
-                dataGdVwRow.Cells[0].Value = Num;                   // 序号
-                dataGdVwRow.Cells[1].Value = barcodeInfo;           // 条码
-                dataGdVwRow.Cells[2].Value = Value[9999];           // 产品结果
-                dataGdVwRow.Cells[3].Value = txtProductModel.Text;  // 产品型号 = 产品名称 = 产品编号
-                dataGdVwRow.Cells[4].Value = LoginUser.ToString();  // 操作员
-                dataGdVwRow.Cells[5].Value = upState;               // 上传状态
-                dataGdVwRow.Cells[6].Value = now.ToString("MM-dd HH:mm:ss");    // 测试时间
+                DataGridViewRow dgvRow = new DataGridViewRow();
+                dgvRow.CreateCells(this.dataGridViewDynamic2);
+                dgvRow.Cells[0].Value = Num;                   // 序号
+                dgvRow.Cells[1].Value = barcodeInfo;           // 条码
+                dgvRow.Cells[2].Value = Value[9999];           // 产品结果
+                dgvRow.Cells[3].Value = txtProductModel.Text;  // 产品型号 = 产品名称 = 产品编号
+                dgvRow.Cells[4].Value = LoginUser.ToString();  // 操作员
+                dgvRow.Cells[5].Value = uploadState;           // 上传状态
+                dgvRow.Cells[6].Value = now.ToString("MM-dd HH:mm:ss");    // 测试时间
 
                 int a = 7;
-                if (list.Count > 0)
+                if (actualValueList.Count > 0)
                 {
-                    for (int i = 0; i < list.Count; i++)
+                    for (int i = 0; i < actualValueList.Count; i++)
                     {
-                        dataGdVwRow.Cells[a].Value = list[i];
+                        dgvRow.Cells[a].Value = actualValueList[i];
                         a = a + 1;
+
                         if (maxList.Count > i)
                         {
-                            if (!maxValue[i].Equals("NO"))
+                            if (maxValuePoint[i] != "NO")
                             {
-                                dataGdVwRow.Cells[a].Value = maxList[i];
+                                dgvRow.Cells[a].Value = maxList[i];
                                 a = a + 1;
                             }
                         }
 
                         if (minList.Count > i)
                         {
-                            if (!minValue[i].Equals("NO"))
+                            if (minValuePoint[i] != "NO")
                             {
-                                dataGdVwRow.Cells[a].Value = minList[i];
+                                dgvRow.Cells[a].Value = minList[i];
                                 a = a + 1;
                             }
                         }
 
                         if (resultList.Count > i)
                         {
-                            if (!testResult[i].Equals("NO"))
+                            if (testResultPoint[i] != "NO")
                             {
-                                dataGdVwRow.Cells[a].Value = resultList[i];
+                                dgvRow.Cells[a].Value = resultList[i];
                                 a = a + 1;
                             }
                         }
                     }
                 }
-                this.dataGridViewDynamic2.Rows.Insert(0, dataGdVwRow);
+                this.dataGridViewDynamic2.Rows.Insert(0, dgvRow);
             }));
 
             /*this.dataGridViewDynamic2.Rows.Insert(index, dataGridViewDynamic2.Rows[index]);
@@ -2807,6 +3103,11 @@ namespace MesDatas
 
         #endregion
 
+        #region ---------- 保存历史数据 ----------
+
+        // 在您的表单类中使用
+        private DatabaseOperations dbOps;
+
         /// <summary>
         /// 保存生产历史数据到本地
         /// </summary>
@@ -2816,28 +3117,22 @@ namespace MesDatas
             {
                 try
                 {
-                    LogMsg("生产数据本地保存中...");
+                    DisplayMessage("生产数据本地保存中...");
 
                     DateTime time = DateTime.Now;
                     string year = time.Year.ToString();
                     string month = time.Month.ToString();
 
                     InitializeDatabaseOperations();
-                    Test1($@"{lblDataPath.Text}\{year}年{month}月生产数据.mdb");
+                    SaveHistoricalData($@"{lblDataPath.Text}\{year}年{month}月生产数据.mdb");
 
-                    // Test($"{lblDataPath.Text}\\{year}年{month}月生产数据.mdb");
-                    LogMsg("生产数据本地保存完成");
+                    DisplayMessage("生产数据本地保存完成");
                 }
                 catch (Exception ex)
                 {
                 }
             });
         }
-
-        #region ---------- 保存历史数据 ----------
-
-        // 在您的表单类中使用
-        private DatabaseOperations dbOps;
 
         private void InitializeDatabaseOperations()
         {
@@ -2848,104 +3143,29 @@ namespace MesDatas
                 txtFixtureBinding.Text,
                 cboBarcodeRuleAndFixtures.Text,
                 LoginUser.ToString(),
-                testItems,
-                maxValue,
-                minValue,
-                testResult
+                testItemsName,
+                maxValuePoint,
+                minValuePoint,
+                testResultPoint
             );
         }
 
-        private async Task Test1(string conn)
+        /// <summary>
+        /// 保存历史数据
+        /// </summary>
+        private async Task SaveHistoricalData(string conn)
         {
-            await dbOps.TestAsync(conn, barcodeInfo, Value, codesTable, list, maxList, minList, resultList);
+            await dbOps.TestAsync(conn, barcodeInfo, Value, codesTable, actualValueList, maxList, minList, resultList);
         }
 
         #endregion
 
-        private void Test(string conn)
+        #region ------------ 主业务逻辑 ------------
+
+        private void SaveSystemInfo(string conn, SytemInfoEntity systemInfo)
         {
-            Invoke(new Action(() =>
-            {
-                mdbDatas.CreateAccessDatabase(conn);
-                StringBuilder str = new StringBuilder("产品,当前工单号,工装编号,产品编码, 条码, 测试人,测试时间,测试结果");
-                ArrayList arrayList = new ArrayList();
-                object[] obj = new object[] { "产品", "当前工单号", "工装编号", "产品编码", "条码", "测试人", "测试时间", "测试结果" };
-                arrayList.AddRange(obj);
-
-                if (testItems.Length > 0)
-                {
-                    //object[] obj1 = new object[((testItems.Length)*4)];
-                    for (int i = 0; i < (testItems.Length); i++)
-                    {
-                        str.Append(",");
-                        arrayList.Add(testItems[i]);
-                        str.Append(testItems[i]);
-                        if (!maxValue[i].Equals("NO") && !minValue[i].Equals("NO") && !testResult[i].Equals("NO"))
-                        {
-                            str.Append(",");
-                            arrayList.Add(testItems[i] + "上限");
-                            str.Append(testItems[i] + "上限");
-                            str.Append(",");
-                            arrayList.Add(testItems[i] + "下限");
-                            str.Append(testItems[i] + "下限");
-                            str.Append(",");
-                            arrayList.Add(testItems[i] + "结果");
-                            str.Append(testItems[i] + "结果");
-                        }
-                    }
-                    // arrayList.AddRange(obj1);
-                }
-
-                mdbDatas.CreateMDBTable(conn, "Sheet1", arrayList);//new System.Collections.ArrayList(new object[] { "产品", "条码", "测试人", "测试时间","测试结果", "PLC配方", "文件版本","软件版本"}));
-                mdb = new mdbDatas(conn);
-
-                DateTime now = DateTime.Now;
-                string CP = txtProductModel.Text == "" ? "无" : txtProductModel.Text;
-                string barcode = barcodeInfo == "" ? " " : barcodeInfo;
-                StringBuilder str1 = new StringBuilder();
-                str1.Append("'" + CP + "',");
-                str1.Append("'" + txtWorkOrder.Text + "',");
-                str1.Append("'" + txtFixtureBinding.Text + "',");
-                str1.Append("'" + CodeNum.GetProductCodeString(cboBarcodeRuleAndFixtures.Text, codesTable) + "',");
-                str1.Append("'" + barcode + "',");
-                str1.Append("'" + LoginUser.ToString() + "',");
-                str1.Append("'" + now.ToString("yyyy年MM月dd日 HH:mm:ss") + "',");
-                str1.Append("'" + Value[9999] + "'");
-
-                if (list.Count > 0)
-                {
-                    for (int i = 0; i < list.Count; i++)
-                    {
-
-                        str1.Append(",");
-                        string rst = " ";
-                        if (list[i].Length > 0)
-                        {
-                            rst = list[i];
-                        }
-                        str1.Append("'" + rst + "'");
-                        if (!maxValue[i].Equals("NO") && !minValue[i].Equals("NO") && !testResult[i].Equals("NO"))
-                        {
-                            str1.Append(",");
-                            str1.Append("'" + CodeNum.GetNullIfEmpty(maxList[i]) + "'");
-                            str1.Append(",");
-                            str1.Append("'" + CodeNum.GetNullIfEmpty(minList[i]) + "'");
-                            str1.Append(",");
-                            str1.Append("'" + CodeNum.GetNullIfEmpty(resultList[i]) + "'");
-                        }
-                    }
-                }
-
-                string sql = "insert into Sheet1 (" + str + ") values (" + str1 + ")";
-                bool result = mdb.Add(sql.ToString());
-                mdb.CloseConnection();
-            }));
-        }
-
-        private void saveSytemInfo(string conn, SytemInfoEntity systemInfo)
-        {
-            mdb = new mdbDatas(conn);
-            DataTable table1 = mdb.Find("select * from SytemInfo where ID = '1'");
+            dbHelper = new MDBHelper(conn);
+            DataTable table1 = dbHelper.Find("select * from SytemInfo where ID = '1'");
 
             if (table1.Rows.Count > 0)
             {
@@ -3001,7 +3221,7 @@ namespace MesDatas
                         $"[NcCode] = '{systemInfo.NcCode}', [Opration] = '{systemInfo.Opration}', [Resource] = '{systemInfo.Resource}', " +
                         $"[Site] = '{systemInfo.Site}', [Url] = '{systemInfo.Url}', [User] = '{systemInfo.User}', [Password] = '{systemInfo.Password}' where [ID] = '1'";
 
-                    var result = mdb.Change(sql);
+                    var result = dbHelper.Change(sql);
                     if (result)
                     {
                         string changeLog = string.Join("\n", changeDetails);
@@ -3011,16 +3231,14 @@ namespace MesDatas
                 }
                 else
                 {
-
                     MessageBox.Show("没有任何变化，无需保存。");
-
                 }
             }
 
             else
             {
-                mdbDatas.CreateAccessDatabase(conn);
-                mdbDatas.CreateMDBTable(conn, "SytemInfo", new System.Collections.ArrayList(new object[]
+                MDBHelper.CreateAccessDatabase(conn);
+                MDBHelper.CreateMDBTable(conn, "SytemInfo", new System.Collections.ArrayList(new object[]
                 { "ID", "IP", "Port", "Timeout", "NcCode", "Opration", "Password", "Resource", "Site", "Url",
                     "User", "FileVersion", "SoftwareVersion", "UserCheckCmd", "UserCheckPass", "UserCheckFail",
                     "CodeCheckCmd", "CodeCheckPass", "CodeSendCmd" }));
@@ -3087,42 +3305,23 @@ namespace MesDatas
                 dr[16] = "";
                 dr[17] = "";
                 dr[18] = "";
-                mdb.DatatableToMdb("SytemInfo", dt);
+                dbHelper.DatatableToMdb("SytemInfo", dt);
             }
 
-            mdb.CloseConnection();
+            dbHelper.CloseConnection();
         }
 
-        BarcodeVefictn barcodeValidation = null;
+        BarcodeVerification barcodeValidation = null;
 
         string barcodeData = string.Empty;
 
         /// <summary>
         /// 读取条码
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Button19_Click(object sender, EventArgs e)
+        private void ReadBarcode()
         {
             if (isPlcConnected == true)
             {
-                /*Invoke(new Action(() =>
-                {
-                    DateTime time = DateTime.Now;
-                    string currentYear = time.Year.ToString();
-                    string currentMonth = time.Month.ToString();
-                    string currentDay = time.Day.ToString();
-
-                    DateTime times_Start = dateTimePicker1.Value.Date;
-                    DateTime times_End = dateTimePicker2.Value.Date;
-
-                    string times_Start_string = times_Start.ToString();
-                    string times_End_string = times_End.ToString();
-
-                    DateTime times_Start_Sub = DateTime.Parse(times_Start_string);
-                    DateTime times_End_Sub = DateTime.Parse(times_End_string);
-                }));*/
-
                 barcodeValidation = null;
 
                 for (int i = 0; i < barcodeVefictnList.Count; i++)
@@ -3140,7 +3339,7 @@ namespace MesDatas
 
                 if (barcodeValidation != null)
                 {
-                    Invoke(new Action(() =>
+                    Invoke(new Action(async () =>
                     {
                         // 初始化状态指示灯
                         lblScanBarcodeStatus.ForeColor = Color.Black; // 扫码状态指示灯
@@ -3153,28 +3352,28 @@ namespace MesDatas
                         lblProductResult.BackColor = Color.White;
 
                         // 读取条码 (D1100)
-                        LogMsg("准备读码....");
+                        DisplayMessage("准备读码....");
                         ushort barcodeLength = barcodeValidation.GetBarcodeLength();
                         string rawBarcode = KeyenceMcNet.ReadString(barcodeValidation.BarcodePositionPLC, barcodeLength).Content;
                         barcodeData = CodeNum.CleanString(rawBarcode);
                         txtShowBarcode.Text = barcodeData;
-                        LogMsg($"条码【D1100】 = {barcodeData}");
+                        DisplayMessage($"条码【D1100】 = {barcodeData}");
 
                         // 判断条码是否为空
                         if (string.IsNullOrEmpty(barcodeData))
                         {
-                            lblScanBarcodeStatus.ForeColor = R;
+                            lblScanBarcodeStatus.ForeColor = Color.Red;
                             txtShowBarcode.Text = barcodeValidation.NoBarcodePrompt;   // 条码数据：未读到条码
-                            LogMsg(barcodeValidation.NoBarcodePrompt);
+                            DisplayMessage(barcodeValidation.NoBarcodePrompt);
                             try
                             {
                                 // 验证失败结束点位
                                 KeyenceMcNet.Write(barcodeValidation.ErrorBarcodeEndPLC, 1);
-                                LogMsg("反馈条码验证【D1005】 = 1");
+                                DisplayMessage("反馈条码验证【D1005】 = 1");
                             }
                             catch (Exception ex)
                             {
-                                LogMsg(ex.ToString());
+                                DisplayMessage(ex.ToString());
                             }
                             return;
                         }
@@ -3213,14 +3412,14 @@ namespace MesDatas
                                             // 验证条码则保存到数据库
                                             if (CodeNum.CompareArray(expectedFixtures, frockC))
                                             {
-                                                mdb = new mdbDatas(path4);
-                                                DataTable table1 = mdb.Find("select * from SytemSet where ID = '1'");
+                                                dbHelper = new MDBHelper(path4);
+                                                DataTable table1 = dbHelper.Find("select * from SytemSet where ID = '1'");
                                                 if (table1.Rows.Count > 0)
                                                 {
                                                     string sql = "update [SytemSet] set [BoardBeat]='" + txtFixtureBinding.Text + "' where [ID] = '1'";
-                                                    var result = mdb.Change(sql);
+                                                    var result = dbHelper.Change(sql);
                                                 }
-                                                mdb.CloseConnection();
+                                                dbHelper.CloseConnection();
                                                 lblOperatePrompt.Text = resources.GetString("scanning");// 等待扫描条码
                                             }
 
@@ -3236,26 +3435,26 @@ namespace MesDatas
                                             }
                                             catch (Exception ex)
                                             {
-                                                LogMsg(ex.ToString());
+                                                DisplayMessage(ex.ToString());
                                             }
-                                            LogMsg("反馈条码验证【D1003】 = 2");
+                                            DisplayMessage("反馈条码验证【D1003】 = 2");
                                             return;
                                         }
                                         else
                                         {
-                                            lblRunningStatus.ForeColor = R;
+                                            lblRunningStatus.ForeColor = Color.Red;
                                             lblRunningStatus.Text = resources.GetString("Fixture_NG");
-                                            lblValidationStatus.ForeColor = R;
-                                            LogMsg("工装编号验证失败！");
+                                            lblValidationStatus.ForeColor = Color.Red;
+                                            DisplayMessage("工装编号验证失败！");
                                             try
                                             {
                                                 // 验证失败结束
                                                 KeyenceMcNet.Write(barcodeValidation.ErrorBarcodeEndPLC, 2);
-                                                LogMsg("反馈条码验证【D1005】 = 2");
+                                                DisplayMessage("反馈条码验证【D1005】 = 2");
                                             }
                                             catch (Exception ex)
                                             {
-                                                LogMsg(ex.ToString());
+                                                DisplayMessage(ex.ToString());
                                             }
                                             return;
                                         }
@@ -3271,7 +3470,7 @@ namespace MesDatas
                                         string currentYear = time.Year.ToString();
                                         string currentMonth = time.Month.ToString();
                                         string dataPath = $"{lblDataPath.Text}\\{currentYear}年{currentMonth}月生产数据.mdb";
-                                        mdb = new mdbDatas(dataPath);
+                                        dbHelper = new MDBHelper(dataPath);
                                         string selectSql = $" select * from Sheet1 where 条码 = '{barcodeData}' ";
 
                                         // 屏蔽NG历史数据
@@ -3280,24 +3479,24 @@ namespace MesDatas
                                             selectSql += " and 测试结果 = 'OK' ";
                                         }
 
-                                        bool isDataExist = mdb.DoesDataExist(selectSql);
-                                        mdb.CloseConnection();
+                                        bool isDataExist = dbHelper.DoesDataExist(selectSql);
+                                        dbHelper.CloseConnection();
 
                                         if (isDataExist)
                                         {
-                                            lblRunningStatus.ForeColor = R;
+                                            lblRunningStatus.ForeColor = Color.Red;
                                             lblRunningStatus.Text = barcodeValidation.RepeatcodePrompt;
-                                            lblValidationStatus.ForeColor = R;
-                                            LogMsg("条码重复扫过，请重新扫描！");
+                                            lblValidationStatus.ForeColor = Color.Red;
+                                            DisplayMessage("条码重复扫过，请重新扫描！");
                                             try
                                             {
                                                 // 验证失败
                                                 KeyenceMcNet.Write(barcodeValidation.ErrorBarcodeEndPLC, 1);
-                                                LogMsg("反馈条码验证【D1005】 = 1");
+                                                DisplayMessage("反馈条码验证【D1005】 = 1");
                                             }
                                             catch (Exception ex)
                                             {
-                                                LogMsg(ex.ToString());
+                                                DisplayMessage(ex.ToString());
                                             }
                                             return;
                                         }
@@ -3342,9 +3541,9 @@ namespace MesDatas
                             }
                             catch (Exception ex)
                             {
-                                LogMsg(ex.ToString());
+                                DisplayMessage(ex.ToString());
                             }
-                            LogMsg("反馈条码验证【D1003】 = 1");
+                            DisplayMessage("反馈条码验证【D1003】 = 1");
                         }
                         else
                         {
@@ -3352,14 +3551,14 @@ namespace MesDatas
                             if (chkBindWorkOrder.Checked == true)
                             {
                                 WorkOrder = txtWorkOrder.Text;
-                                BindWorkOrder(null, null);
+                                MesIntegrationService.BindWorkOrder(WorkOrder, out bool bindingResult, out string MESFeedback, out string XML);
                             }
 
                             // 上传MES进行条码验证
-                            VarifyBarcode_MES(null, null);
+                            VarifyBarcode_MES(barcodeData);
 
                             // 更新UI并向PLC反馈数值，成功2002=1；失败2004=1；
-                            if (Parameter_txt[2002] == "1")
+                            if (MES_Result[2002] == "1")
                             {
                                 lblRunningStatus.ForeColor = Color.Green;
                                 lblRunningStatus.Text = barcodeValidation.PassPrompt;
@@ -3371,11 +3570,11 @@ namespace MesDatas
                                 }
                                 catch (Exception ex)
                                 {
-                                    LogMsg(ex.ToString());
+                                    DisplayMessage(ex.ToString());
                                 }
-                                LogMsg("反馈条码验证【D1003】 = 1");
+                                DisplayMessage("反馈条码验证【D1003】 = 1");
                             }
-                            else if (Parameter_txt[2004] == "1")
+                            else if (MES_Result[2004] == "1")
                             {
                                 lblRunningStatus.ForeColor = Color.Red;
                                 lblRunningStatus.Text = barcodeValidation.MesErrorPrompt;  // MES条码验证失败
@@ -3386,9 +3585,9 @@ namespace MesDatas
                                 }
                                 catch (Exception ex)
                                 {
-                                    LogMsg(ex.ToString());
+                                    DisplayMessage(ex.ToString());
                                 }
-                                LogMsg("反馈条码验证【D1005】 = 1");
+                                DisplayMessage("反馈条码验证【D1005】 = 1");
                             }
 
                             Thread.Sleep(200);
@@ -3396,7 +3595,7 @@ namespace MesDatas
                         }
 
                         lblOperatePrompt.Text = resources.GetString("ScanBarCode_OK");  // 扫码完成
-                        LogMsg("条码读取完成.........");
+                        DisplayMessage("条码读取完成.........");
                     }));
                 }
 
@@ -3411,28 +3610,28 @@ namespace MesDatas
                         string rawBarcode = KeyenceMcNet.ReadString(barcodeValidation.BarcodePositionPLC, barcodeLength).Content;
                         barcodeData = CodeNum.CleanString(rawBarcode);
                         txtShowBarcode.Text = barcodeData;
-                        LogMsg($"条码【D1100】 = {barcodeData}");
+                        DisplayMessage($"条码【D1100】 = {barcodeData}");
 
                         if (string.IsNullOrEmpty(this.barcodeData))
                         {
-                            lblScanBarcodeStatus.ForeColor = R;
+                            lblScanBarcodeStatus.ForeColor = Color.Red;
                             txtShowBarcode.Text = resources.GetString("barCode_State");
-                            LogMsg("未获取到条码，请重新扫描！");
+                            DisplayMessage("未获取到条码，请重新扫描！");
                             try
                             {
                                 //KeyenceMcNet.Write("D1005", 1);
                                 KeyenceMcNet.Write(barcodeValidation.ErrorBarcodeEndPLC, 1);
-                                LogMsg("反馈条码验证【D1005】 = 1");
+                                DisplayMessage("反馈条码验证【D1005】 = 1");
                             }
                             catch (Exception ex)
-                            { LogMsg(ex.ToString()); }
+                            { DisplayMessage(ex.ToString()); }
                             return;
                         }
                         string[] frockA = textBox42.Text.ToString().Split('+');
                         if (frockA.Contains(this.barcodeData))
                         {
-                            lblScanBarcodeStatus.ForeColor = G;
-                            lblRunningStatus.ForeColor = G;
+                            lblScanBarcodeStatus.ForeColor = Color.Green;
+                            lblRunningStatus.ForeColor = Color.Green;
                             lblRunningStatus.Text = resources.GetString("material_OK");
                             try
                             {
@@ -3441,24 +3640,24 @@ namespace MesDatas
                                 KeyenceMcNet.Write(barcodeValidation.PassBarcodeEndPLC, 3);
                             }
                             catch (Exception ex)
-                            { LogMsg(ex.ToString()); }
-                            LogMsg("反馈条码验证【D1003】 =3");
+                            { DisplayMessage(ex.ToString()); }
+                            DisplayMessage("反馈条码验证【D1003】 =3");
                             return;
                         }
                         else
                         {
-                            lblRunningStatus.ForeColor = R;
+                            lblRunningStatus.ForeColor = Color.Red;
                             lblRunningStatus.Text = resources.GetString("material_NG");
-                            lblValidationStatus.ForeColor = R;
-                            LogMsg("物料验证失败，请重新扫描！");
+                            lblValidationStatus.ForeColor = Color.Red;
+                            DisplayMessage("物料验证失败，请重新扫描！");
                             try
                             {
                                 //KeyenceMcNet.Write("D1005", 3);
                                 KeyenceMcNet.Write(barcodeValidation.ErrorBarcodeEndPLC, 3);
-                                LogMsg("反馈条码验证【D1005】 =3");
+                                DisplayMessage("反馈条码验证【D1005】 =3");
                             }
                             catch (Exception ex)
-                            { LogMsg(ex.ToString()); }
+                            { DisplayMessage(ex.ToString()); }
                             return;
                         }
                     }));
@@ -3466,23 +3665,23 @@ namespace MesDatas
             }
         }
 
-        private bool VarifyBarcodeRule(BarcodeVefictn barcodeVefictn, string barcodeRule)
+        private bool VarifyBarcodeRule(BarcodeVerification barcodeVefictn, string barcodeRule)
         {
             // 条码验证规则为空
             if (string.IsNullOrWhiteSpace(barcodeRule))
             {
-                lblRunningStatus.ForeColor = R;
+                lblRunningStatus.ForeColor = Color.Red;
                 lblRunningStatus.Text = barcodeVefictn.ErrorPrompt;
-                lblValidationStatus.ForeColor = R;
-                LogMsg("没有选择条码验证规则！！！");
+                lblValidationStatus.ForeColor = Color.Red;
+                DisplayMessage("没有选择条码验证规则！！！");
                 try
                 {
                     KeyenceMcNet.Write(barcodeVefictn.ErrorBarcodeEndPLC, 1);
-                    LogMsg("反馈条码验证【D1005】 = 1");
+                    DisplayMessage("反馈条码验证【D1005】 = 1");
                 }
                 catch (Exception ex)
                 {
-                    LogMsg(ex.ToString());
+                    DisplayMessage(ex.ToString());
                 }
                 return false;
             }
@@ -3510,15 +3709,15 @@ namespace MesDatas
                     lblRunningStatus.ForeColor = Color.Red;
                     lblRunningStatus.Text = barcodeVefictn.ErrorPrompt;
                     lblValidationStatus.ForeColor = Color.Red;
-                    LogMsg("实际条码前缀与条码验证规则不匹配！！！");
+                    DisplayMessage("实际条码前缀与条码验证规则不匹配！！！");
                     try
                     {
                         KeyenceMcNet.Write(barcodeVefictn.ErrorBarcodeEndPLC, 1);
-                        LogMsg("反馈条码验证【D1005】 = 1");
+                        DisplayMessage("反馈条码验证【D1005】 = 1");
                     }
                     catch (Exception ex)
                     {
-                        LogMsg(ex.ToString());
+                        DisplayMessage(ex.ToString());
                     }
                     return false;
                 }
@@ -3526,178 +3725,7 @@ namespace MesDatas
             return true;
         }
 
-        public Label lb = new Label();
-        Color G = Color.Green;
-        Color R = Color.Red;
-        Color W = Color.White;
-        Color B = Color.Black;
-        Color O = Color.Orange;
-
-        /// <summary>
-        /// 获取生产结果
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        /*private void Button20_Click(object sender, EventArgs e)
-        {
-            if (isPlcConnected == true)
-            {
-                // D1200:
-                var short_D100 = KeyenceMcNet.ReadInt32(sytemSetDerivedsd.StartProductPoint).Content;
-
-                if (short_D100 == 1)
-                {
-                    Invoke(new Action(() =>
-                   {
-                       //Console.WriteLine("开始读取数据 = " + DateTime.Now.Hour.ToString() +
-                       //   DateTime.Now.Minute.ToString() + DateTime.Now.Second.ToString() + "_" +
-                       //   DateTime.Now.Millisecond.ToString() + ":" + short_D100);
-                       lblOperatePrompt.Text = resources.GetString("begin_read_data");  // 开始读取数据
-                       barcodeInfo = barcodeData;
-                       LogMsg("生产结果数据读取中....");
-
-                       string[] Read_string = new string[10000];
-                       //string[] Read_string1 = new string[100];
-                       list = new List<string>();
-                       beatList = new List<string>();
-                       maxList = new List<string>();//
-                       minList = new List<string>();
-                       resultList = new List<string>();
-
-                       // 二次读条码（适用于转盘机台）
-                       if (chkReadBarcodeSecondly.Checked == true)
-                       {
-                           // D1050
-                           ushort secondProductLength = 10;
-                           ushort.TryParse(sytemSetDerivedsd.SecondProductLength, out secondProductLength);
-                           string rawBarcode = KeyenceMcNet.ReadString(sytemSetDerivedsd.SecondProductPoint, secondProductLength).Content;
-                           barcodeInfo = CodeNum.FormatString(rawBarcode);
-                       }
-
-                       // 读取测试项对应的具体测试数据
-                       if (boardTable.Rows.Count > 0)
-                       {
-                           for (int i = 0; i < boardTable.Rows.Count; i++)
-                           {
-                               list.Add(ProcessPointData_PLC(boardTable.Rows[i]["BoardCode"].ToString()));            // 实际值
-                               maxList.Add(ProcessPointData_PLC(boardTable.Rows[i]["MaxBoardCode"].ToString()));      // 上限值
-                               minList.Add(ProcessPointData_PLC(boardTable.Rows[i]["MinBoardCode"].ToString()));      // 下限值
-                               resultList.Add(ProcessPointData_PLC(boardTable.Rows[i]["ResultBoardCode"].ToString()));// 测试结果
-                               beatList.Add(ProcessPointData_PLC(boardTable.Rows[i]["BeatBoardCode"].ToString()));    // 节拍
-                           }
-                       }
-
-                       // 读产品总结果（产品状态）D1078 TotalProductPoint
-                       Parameter_txt[3688] = KeyenceMcNet.ReadInt32(sytemSetDerivedsd.TotalProductPoint).Content.ToString();
-
-                       //Read_string[3688] = KeyenceMcNet.ReadInt32(sytemSetDerivedsd.TotalProductPoint).Content.ToString();
-                       //Parameter_txt[3688] = Convert.ToString(Convert.ToDouble(Read_string[3688]));
-                   }));
-
-                    // 更新产品结果UI
-                    Invoke(new Action(() =>
-                    {
-                        if (Parameter_txt[3688] == "3")
-                        {
-                            lblProductResult.Text = "OK";
-                            lblProductResult.ForeColor = Color.White;
-                            lblProductResult.BackColor = Color.Green;
-                            Value[9999] = "OK";
-                        }
-                        else
-                        {
-                            lblProductResult.Text = "NG";
-                            lblProductResult.ForeColor = Color.White;
-                            lblProductResult.BackColor = Color.Red;
-                            Value[9999] = "NG";
-                        }
-                    }));
-
-                    // 上传数据
-                    if (OffLineType == 0)
-                    {
-                        Invoke(new Action(() =>
-                        {
-                            lblRunningStatus.ForeColor = Color.Black;
-                            lblRunningStatus.Text = resources.GetString("Mes_upload");  // 联机数据上传中
-                            lblOperatePrompt.Text = resources.GetString("Wait");        // 请等待
-                            lblUploadStatus.ForeColor = Color.Orange;
-
-                            if (Value[9999] == "OK")
-                            {
-                                产品结果 = true;
-                            }
-                            else
-                            {
-                                产品结果 = false;
-                            }
-
-                            // 上传测试结果至MES
-                            Button7_Click(null, null);
-
-                            if (Parameter_txt[2006] == "1")
-                            {
-                                lblRunningStatus.Text = resources.GetString("Mes_upload_OK");   // 联机数据上传成功
-                                lblUploadStatus.ForeColor = Color.Green;
-                                //KeyenceMcNet.Write("D3672", Convert.ToInt16(1));
-                            }
-                            else if (Parameter_txt[2008] == "1")
-                            {
-                                lblRunningStatus.Text = resources.GetString("Mes_upload_NG");   // 联机数据上传失败
-                                lblUploadStatus.ForeColor = Color.Red;
-                                lblOperatePrompt.Text = resources.GetString("Re_upload");       // 请重新上传
-                                // KeyenceMcNet.Write("D3674", Convert.ToInt16(1));
-                            }
-                        }));
-                    }
-
-                    // 生产数据上传看板
-                    if (isDashboardConnected)
-                    {
-                        Thread thread = new Thread(SendReceived);
-                        thread.IsBackground = true;
-                        thread.Start();
-                    }
-
-                    // 生产数据保存到本地
-                    Invoke(new Action(() =>
-                    {
-                        Num = Num + 1;
-                        Thread threadLeft = new Thread(显示结果_Left);
-                        threadLeft.IsBackground = true;
-                        threadLeft.Start();
-
-                        lblRunningStatus.Text = resources.GetString("Read_data");   // 本地数据保存中
-                        lblOperatePrompt.Text = resources.GetString("Wait");        // 请等待
-                        Thread threadsaveInfo = new Thread(SaveProductionDataAsync);
-                        threadsaveInfo.IsBackground = true;
-                        threadsaveInfo.Start();
-
-                        lblRunningStatus.Text = resources.GetString("Read_data_OK");        // 本地数据保存完成 
-                        lblOperatePrompt.Text = resources.GetString("Continue_production"); // 请取下产品继续生产
-                        LogMsg("数据读取完成");
-                        LogMsg("生产结果读取完成...");
-
-                        try
-                        {
-                            // D1202 EndProductPoint
-                            KeyenceMcNet.Write(sytemSetDerivedsd.EndProductPoint, 1);
-                        }
-                        catch (Exception ex)
-                        {
-                            LogMsg(ex.ToString());
-                        }
-                        LogMsg("生产结果读取反馈【D1202】 = 1");
-
-                        Thread.Sleep(200);
-                        Application.DoEvents();
-                        lblRunningStatus.Text = resources.GetString("scanning");
-                    }));
-                }
-            }
-        }*/
-
-        #region -------- 优化后，处理生产数据（读取、上传、保存） --------
+        #region 处理生产数据（读取、上传、保存）
 
         private async Task ReadData()
         {
@@ -3724,17 +3752,21 @@ namespace MesDatas
         private async Task UpdateUIForDataReading()
         {
             InvokeOnUIThreadAsync(() =>
-           {
-               lblOperatePrompt.Text = resources.GetString("begin_read_data");  // 开始读取数据
-               LogMsg("生产结果数据读取中....");
-           });
+            {
+                lblOperatePrompt.Text = resources.GetString("begin_read_data");  // 开始读取数据
+                DisplayMessage("生产结果数据读取中....");
+            });
         }
 
+        /// <summary>
+        /// 读取产线数据
+        /// </summary>
+        /// <returns></returns>
         private async Task ReadProductionData()
         {
             await Task.Run(() =>
             {
-                list = new List<string>();
+                actualValueList = new List<string>();
                 beatList = new List<string>();
                 maxList = new List<string>();
                 minList = new List<string>();
@@ -3795,7 +3827,7 @@ namespace MesDatas
                 var results = await Task.WhenAll(tasks);
                 foreach (var result in results)
                 {
-                    list.Add(result.ListItem);
+                    actualValueList.Add(result.ListItem);
                     maxList.Add(result.MaxItem);
                     minList.Add(result.MinItem);
                     resultList.Add(result.ResultItem);
@@ -3806,14 +3838,14 @@ namespace MesDatas
 
         private void ReadTotalProductResult()
         {
-            Parameter_txt[3688] = KeyenceMcNet.ReadInt32(sytemSetDerivedsd.TotalProductPoint).Content.ToString();
+            MES_Result[3688] = KeyenceMcNet.ReadInt32(sytemSetDerivedsd.TotalProductPoint).Content.ToString();
         }
 
         private async Task UpdateProductResultUI()
         {
             await InvokeOnUIThreadAsync(() =>
             {
-                if (Parameter_txt[3688] == "3")
+                if (MES_Result[3688] == "3")
                 {
                     lblProductResult.Text = "OK";
                     lblProductResult.ForeColor = Color.White;
@@ -3845,17 +3877,17 @@ namespace MesDatas
             });
 
             // 联机结果上传
-            await Task.Run(() => Button7_Click(null, null));
+            await Task.Run(() => UploadResult_MES());
+            //await Task.Run(() => UploadResult_MESAsync());
 
-            // 
             InvokeOnUIThreadAsync(() =>
             {
-                if (Parameter_txt[2006] == "1")
+                if (MES_Result[2006] == "1")
                 {
                     lblRunningStatus.Text = resources.GetString("Mes_upload_OK");   // 联机数据上传成功
                     lblUploadStatus.ForeColor = Color.Green;
                 }
-                else if (Parameter_txt[2008] == "1")
+                else if (MES_Result[2008] == "1")
                 {
                     lblRunningStatus.Text = resources.GetString("Mes_upload_NG");   // 联机数据上传失败
                     lblUploadStatus.ForeColor = Color.Red;
@@ -3889,8 +3921,8 @@ namespace MesDatas
             {
                 lblRunningStatus.Text = resources.GetString("Read_data_OK");
                 lblOperatePrompt.Text = resources.GetString("Continue_production");
-                LogMsg("数据读取完成");
-                LogMsg("生产结果读取完成...");
+                DisplayMessage("数据读取完成");
+                DisplayMessage("生产结果读取完成...");
             });
         }
 
@@ -3899,11 +3931,11 @@ namespace MesDatas
             try
             {
                 await Task.Run(() => KeyenceMcNet.Write(sytemSetDerivedsd.EndProductPoint, 1));
-                LogMsg("生产结果读取反馈【D1202】 = 1");
+                DisplayMessage("生产结果读取反馈【D1202】 = 1");
             }
             catch (Exception ex)
             {
-                LogMsg(ex.ToString());
+                DisplayMessage(ex.ToString());
             }
 
             await Task.Delay(200);
@@ -3917,223 +3949,9 @@ namespace MesDatas
 
         #endregion
 
-        /// <summary>
-        /// 读取 PLC 值并根据指定的格式返回结果。
-        /// </summary>
-        /// <param name="plcPointInfo"></param>
-        /// <returns></returns>
-        private static string ProcessPointData_PLC(string plcPointInfo)
-        {
-            string outputStr = "";
+        #endregion
 
-            if (plcPointInfo.Equals("NO"))
-            {
-                outputStr = "null";
-            }
-
-            else if (plcPointInfo.Contains(":"))
-            {
-                // 提取索引标志，点位信息填写模板：D1090:H-3 D1080:I-5
-                int index = plcPointInfo.IndexOf(":");
-                int index1 = plcPointInfo.IndexOf("-");
-
-                // 提取类型部分，包括：H-short，I-Int32，F-float，J-Int32，N-Int32，O-Int32，S-string
-                string dataType = plcPointInfo.Substring(index + 1, 1);
-
-                // 提取数值部分
-                ushort number = 0;
-                ushort.TryParse(plcPointInfo.Substring(index1 + 1), out number);
-
-                // 提取PLC地址
-                string plcAddress = plcPointInfo.Substring(0, index);
-
-                if (dataType == "H")
-                {
-                    string aa = "";
-                    OperateResult<short> result = KeyenceMcNet.ReadInt16(plcAddress);
-
-                    if (result.IsSuccess)
-                    {
-                        aa = TypeRead.NumericOperate(result.Content.ToString(), number.ToString());
-                    }
-                    else
-                    {
-                        aa = "null";
-                    }
-                    outputStr = aa;
-
-                }        // short
-
-                else if (dataType == "I")
-                {
-                    string aa = "";
-                    OperateResult<int> result = KeyenceMcNet.ReadInt32(plcAddress);
-
-                    if (result.IsSuccess)
-                    {
-                        aa = TypeRead.NumericOperate(result.Content.ToString(), number.ToString());
-                    }
-                    else
-                    {
-                        aa = "null";
-                    }
-                    outputStr = aa;
-
-                }   // Int32
-
-                else if (dataType == "F")
-                {
-                    string aa = "";
-                    OperateResult<float> result = KeyenceMcNet.ReadFloat(plcAddress);
-
-                    if (result.IsSuccess)
-                    {
-                        aa = TypeRead.NumericOperate(result.Content.ToString(), number.ToString());
-                    }
-                    else
-                    {
-                        aa = "null";
-                    }
-                    outputStr = aa;
-
-                }   // float
-
-                else if (dataType == "J")
-                {
-                    string aa = "";
-                    OperateResult<int> result = KeyenceMcNet.ReadInt32(plcAddress);
-
-                    if (result.IsSuccess)
-                    {
-
-                        aa = CodeNum.DivBy100Rounded2(result.Content.ToString());
-                    }
-                    else
-                    {
-                        aa = "null";
-                    }
-                    outputStr = aa;
-
-                }   // Int32
-
-                else if (dataType == "N")
-                {
-                    string aa = "";
-                    OperateResult<int> result = KeyenceMcNet.ReadInt32(plcAddress);
-
-                    if (result.IsSuccess)
-                    {
-                        aa = CodeNum.ConvertToOkNg(result.Content.ToString());
-                    }
-                    else
-                    {
-                        aa = "null";
-                    }
-                    outputStr = aa;
-
-                }   // Int32
-
-                else if (dataType == "O")
-                {
-                    string aa = "";
-                    OperateResult<int> result = KeyenceMcNet.ReadInt32(plcAddress);
-
-                    if (result.IsSuccess)
-                    {
-                        aa = result.Content.ToString();
-                    }
-                    else
-                    {
-                        aa = "null";
-                    }
-                    outputStr = aa;
-
-                }   // Int32
-
-                else if (dataType == "S")
-                {
-                    string ss = "";
-                    OperateResult<string> result = KeyenceMcNet.ReadString(plcAddress, number);
-
-                    if (result.IsSuccess)
-                    {
-                        ss = CodeNum.CleanString(result.Content.ToString());
-                    }
-                    else
-                    {
-                        ss = "null";
-                    }
-                    outputStr = ss;
-
-                }   // string
-
-                else
-                {
-                    var ss = KeyenceMcNet.ReadString(plcAddress, number).Content;
-                    outputStr = ss;
-                }                        // string
-            }
-
-            else
-            {
-                string aa = "";
-                OperateResult<int> readss = KeyenceMcNet.ReadInt32(plcPointInfo);
-                if (readss.IsSuccess)
-                {
-
-                    aa = CodeNum.DivBy100(readss.Content.ToString());
-                }
-                else
-                {
-                    aa = "null";
-                }
-                outputStr = aa;
-            }
-
-            return outputStr;
-        }
-
-        /// <summary>
-        /// 读取
-        /// </summary>
-        /// <param name="KeyenceMcNet"></param>
-        /*public List<string> PCodenum(string[] strarr, string strtyp)
-        {
-            List<string> listarr = new List<string>();
-            if (strarr.Length > 0)
-            {
-                string boardBeat = "   ";//
-                for (int i = 0; i < strarr.Length; i++)
-                {
-                    string beatcode = strarr[i];//
-                    if (beatcode.Contains("+"))
-                    {
-                        int count = 0;
-                        string newStr = beatcode.Replace("+", "");
-                        int.TryParse(newStr, out count);
-                        for (int j = 0; j < count; j++)
-                        {
-                            listarr.Add(boardBeat);
-                        }
-                    }
-                    else
-                    {
-                        if (beatcode.Equals("NO"))
-                        {
-                            boardBeat = "   ";
-                            listarr.Add(boardBeat);
-                        }
-                        else
-                        {
-                            boardBeat = KeyenceMcNet.ReadInt32(beatcode).Content.ToString();
-                            boardBeat = Bocmdb.BoardCode(boardBeat, strtyp);
-                            listarr.Add(boardBeat);
-                        }
-                    }
-                }
-            }
-            return listarr;
-        }*/
+        #region ------------ 历史数据 ------------
 
         /// <summary>
         /// 导出生产数据
@@ -4149,7 +3967,7 @@ namespace MesDatas
             saveFileDialog1.FileName = "历史数据.xls"; //设置默认另存为的名字
 
             string dataBaseUrl = textBoxPath.Text + ".mdb";
-            mdb = new mdbDatas(dataBaseUrl);
+            dbHelper = new MDBHelper(dataBaseUrl);
             if (this.saveFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 string txtPath = this.saveFileDialog1.FileName;
@@ -4178,25 +3996,15 @@ namespace MesDatas
                     sql.Append("and 产品 = '" + textBox1.Text + "' ");
                 }
 
-                DataTable table = mdb.Find(sql.ToString());
+                DataTable table = dbHelper.Find(sql.ToString());
 
                 NPOIHelper.DataTableToExcel(table, txtPath);
             }
-            mdb.CloseConnection();
+            dbHelper.CloseConnection();
         }
 
         /// <summary>
-        /// MES参数 > 保存
-        /// </summary>
-        private void SaveMesConfig_Click(object sender, EventArgs e)
-        {
-            SaveParameter_MES();
-            LoadParameter_MES();
-            VarifyUserLogin_MES(null, null);
-        }
-
-        /// <summary>
-        /// 选择本地文件存放路径
+        /// 变更产线数据存放路径
         /// </summary>
         private void ChangeStoragePath(object sender, EventArgs e)
         {
@@ -4208,7 +4016,7 @@ namespace MesDatas
         }
 
         /// <summary>
-        /// 历史数据 > 刷新目录
+        /// 刷新目录
         /// </summary>
         private void BtnRefreshDirectory_Click(object sender, EventArgs e)
         {
@@ -4225,7 +4033,7 @@ namespace MesDatas
         }
 
         /// <summary>
-        /// 递归函数 遍历当前目录
+        /// 遍历生产历史数据目录
         /// </summary>
         void FindDirectory(string nowDirectory, TreeNode parentNode)
         {
@@ -4268,26 +4076,7 @@ namespace MesDatas
             }
         }
 
-        /// <summary>
-        /// 变更工单
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ChangeWorkOrder_Click(object sender, EventArgs e)
-        {
-            mdb = new mdbDatas(path4);
-            DataTable table1 = mdb.Find("select * from SytemSet where ID = '1'");
-            if (table1.Rows.Count > 0)
-            {
-                string sql = "update [SytemSet] set [wordNo]='" + txtWorkOrder.Text + "' where [ID] = '1'";
-                var result = mdb.Change(sql);
-                if (result == true)
-                {
-                    MessageBox.Show("变更成功");
-                }
-            }
-            mdb.CloseConnection();
-        }
+        #endregion
 
         #region ------------ 用户管理 ------------
 
@@ -4348,15 +4137,15 @@ namespace MesDatas
             }
 
             string sql = "";
-            mdb = new mdbDatas(userFileuRL);
-            DataTable table1 = mdb.Find("select * from Users where 工号 = '" + UID.Text + "'");
+            dbHelper = new MDBHelper(userFileuRL);
+            DataTable table1 = dbHelper.Find("select * from Users where 工号 = '" + UID.Text + "'");
             if (table1.Rows.Count > 0)
             {
                 //if (comboBox3.SelectedIndex == 1)
                 //{
                 if (tbxBrandID.Text.Length > 0)
                 {
-                    DataTable table = mdb.Find("select * from Users where [厂牌UID] = '" + tbxBrandID.Text + "' and [厂牌UID] <> '' and [工号] <> '" + UID.Text + "' ");
+                    DataTable table = dbHelper.Find("select * from Users where [厂牌UID] = '" + tbxBrandID.Text + "' and [厂牌UID] <> '' and [工号] <> '" + UID.Text + "' ");
                     if (table.Rows.Count > 0)
                     {
                         if (tbxBrandID.Text == table.Rows[0]["厂牌UID"].ToString())
@@ -4376,7 +4165,7 @@ namespace MesDatas
                 //              " where [工号] = '" + UID.Text + "'";
                 //}
 
-                var result = mdb.Change(sql);
+                var result = dbHelper.Change(sql);
                 if (result == true)
                 {
                     MessageBox.Show("修改成功");
@@ -4388,7 +4177,7 @@ namespace MesDatas
                 //{
                 if (tbxBrandID.Text.Length > 0)
                 {
-                    DataTable table = mdb.Find("select * from Users where [厂牌UID] = '" + tbxBrandID.Text + "' and [厂牌UID] <> '' ");
+                    DataTable table = dbHelper.Find("select * from Users where [厂牌UID] = '" + tbxBrandID.Text + "' and [厂牌UID] <> '' ");
                     if (table.Rows.Count > 0)
                     {
                         MessageBox.Show("不能重复注册、请检查厂牌UID是否重复！");
@@ -4404,7 +4193,7 @@ namespace MesDatas
                 //}
 
 
-                bool result = mdb.Add(sql.ToString());
+                bool result = dbHelper.Add(sql.ToString());
                 if (result == true)
                 {
                     MessageBox.Show("新增成功");
@@ -4412,7 +4201,7 @@ namespace MesDatas
 
             }
             btnRefreshUser_Click(null, null);
-            mdb.CloseConnection();
+            dbHelper.CloseConnection();
 
             string modifyInfo = SqlToJsonConverter.ConvertToJSON(sql);
             string final = SqlToJsonConverter.ConvertToCustomLog(modifyInfo);
@@ -4443,11 +4232,11 @@ namespace MesDatas
             string id = (string)dataGridView1.Rows[rowindex].Cells[4].Value;
 
             // 连接到数据库
-            mdb = new mdbDatas(userFileuRL);
+            dbHelper = new MDBHelper(userFileuRL);
 
             // 删除前先执行查找
             string selectSql = $"SELECT [用户名], [用户权限] FROM [Users] WHERE [工号] = '{id}'";
-            DataTable userInfo = mdb.Find(selectSql);
+            DataTable userInfo = dbHelper.Find(selectSql);
 
             string username = "";
             string permissions = "";
@@ -4458,7 +4247,7 @@ namespace MesDatas
             }
 
             string sql = $" DELETE FROM [Users] WHERE [工号] = '{id}' ";
-            bool bl = mdb.Del(sql);
+            bool bl = dbHelper.Del(sql);
             if (bl == true)
             {
                 MessageBox.Show("删除成功");
@@ -4467,7 +4256,7 @@ namespace MesDatas
                 loggerAccount.Trace(delInfo);
             }
             btnRefreshUser_Click(null, null);
-            mdb.CloseConnection();
+            dbHelper.CloseConnection();
         }
 
         /// <summary>
@@ -4477,11 +4266,11 @@ namespace MesDatas
         /// <param name="e"></param>
         private void btnRefreshUser_Click(object sender, EventArgs e)
         {
-            mdb = new mdbDatas(userFileuRL);
-            userCollection = mdb.Find("select 用户名,用户密码,用户权限,厂牌UID,工号 from Users where 用户权限 <> 'DEV'");
+            dbHelper = new MDBHelper(userFileuRL);
+            userCollection = dbHelper.Find("select 用户名,用户密码,用户权限,厂牌UID,工号 from Users where 用户权限 <> 'DEV'");
             userInfoEntities = DataConverter.ConvertDataTableToList(userCollection);
             dataGridView1.DataSource = userCollection;
-            mdb.CloseConnection();
+            dbHelper.CloseConnection();
         }
 
         /// <summary>
@@ -4535,8 +4324,8 @@ namespace MesDatas
         /// </summary>
         public void UpLoginInfo()
         {
-            mdb = new mdbDatas(userFileuRL);
-            DataTable table = mdb.Find("select 登录次数 from Users where [工号] = '" + LoginUser + "'");
+            dbHelper = new MDBHelper(userFileuRL);
+            DataTable table = dbHelper.Find("select 登录次数 from Users where [工号] = '" + LoginUser + "'");
             if (table.Rows.Count > 0)
             {
                 int i = 0;
@@ -4546,13 +4335,13 @@ namespace MesDatas
                 }
                 string sql = "update [Users] set [最后登录时间]='" + DateTime.Now.ToString() + "',[登录次数]='" + (i + 1) + "' where [工号] = '" + LoginUser + "'";
 
-                var result = mdb.Change(sql);
+                var result = dbHelper.Change(sql);
                 //if (result == true)
                 //{
                 //    MessageBox.Show("修改成功");
                 //}
             }
-            mdb.CloseConnection();
+            dbHelper.CloseConnection();
         }
 
         /// <summary>
@@ -4585,8 +4374,8 @@ namespace MesDatas
         /// <param name="e"></param>
         private void button22_Click(object sender, EventArgs e)
         {
-            mdb = new mdbDatas(path4);
-            DataTable table1 = mdb.Find("select * from SytemSet where ID = '1'");
+            dbHelper = new MDBHelper(path4);
+            DataTable table1 = dbHelper.Find("select * from SytemSet where ID = '1'");
             if (table1.Rows.Count > 0)
             {
                 string comtb = "0";
@@ -4595,7 +4384,7 @@ namespace MesDatas
                     comtb = cboBarcodeRuleAndFixtures.SelectedValue.ToString();
                 }
                 string sql = $"update [SytemSet] set [faults]='{comtb}', Workstname ='{chkReadRecipeId_PLC.Checked}' where [ID] = '1'";
-                var result = mdb.Change(sql);
+                var result = dbHelper.Change(sql);
                 if (result == true)
                 {
                     lblRecipeId.Text = comtb;
@@ -4609,7 +4398,7 @@ namespace MesDatas
                 //SqlToJsonConverter.ConvertToJSONLog(sql);
             }
 
-            mdb.CloseConnection();
+            dbHelper.CloseConnection();
 
 
         }
@@ -4641,7 +4430,7 @@ namespace MesDatas
                 }
                 catch (Exception ex)
                 {
-                    LogMsg(ex.ToString());
+                    DisplayMessage(ex.ToString());
                     MessageBox.Show("发送PLC失败！");
                 }
             }
@@ -4746,8 +4535,8 @@ namespace MesDatas
         {
             BtnRefreshAtBulletin(null, null);
 
-            mdb = new mdbDatas(path4);
-            DataTable table1 = mdb.Find("select * from SytemSocket where ID = 1");
+            dbHelper = new MDBHelper(path4);
+            DataTable table1 = dbHelper.Find("select * from SytemSocket where ID = 1");
 
             for (int i = 0; i < table1.Rows.Count; i++)
             {
@@ -4767,7 +4556,7 @@ namespace MesDatas
                     if (cokPosi == "True") chkReadPName.Checked = true;
                 }
             }
-            mdb.CloseConnection();
+            dbHelper.CloseConnection();
 
             // 创建一个新的列对象并设置其属性保存
             DataGridViewButtonColumn buttonColumn = new DataGridViewButtonColumn();
@@ -4805,9 +4594,9 @@ namespace MesDatas
         /// <param name="e"></param>
         private void BtnRefreshAtBulletin(object sender, EventArgs e)
         {
-            mdb = new mdbDatas(path4);
+            dbHelper = new MDBHelper(path4);
 
-            vubPartsTable = mdb.Find("select  [ID] as 编号, [WorkID] as 工位ID, [BoardPosition] as 易损件所在的位置, " +
+            vubPartsTable = dbHelper.Find("select  [ID] as 编号, [WorkID] as 工位ID, [BoardPosition] as 易损件所在的位置, " +
                 "[BoardName] as 易损件的名称, [BoardTheory] as 理论使用次数PLC点位, " +
                 "[BoardCode] as 已经使用的PLC点位 from VulnbleParts");
 
@@ -4828,9 +4617,9 @@ namespace MesDatas
             dgvWeakInfo.DataSource = vubPartsTable;
 
             // 刷新故障信息
-            faultsTable = mdb.Find("select ID as 编号, [WorkID] as 工位ID, [CodeID] as 故障点位, Faults as 故障描述 from SytemFaults");
+            faultsTable = dbHelper.Find("select ID as 编号, [WorkID] as 工位ID, [CodeID] as 故障点位, Faults as 故障描述 from SytemFaults");
             dgvFaultInfo.DataSource = faultsTable;
-            mdb.CloseConnection();
+            dbHelper.CloseConnection();
         }
 
         /// <summary>
@@ -4871,8 +4660,8 @@ namespace MesDatas
                 string bdTheory = this.dgvWeakInfo.Rows[e.RowIndex].Cells[6].Value.ToString();
                 string bdCode = this.dgvWeakInfo.Rows[e.RowIndex].Cells[7].Value.ToString();
 
-                mdb = new mdbDatas(path4);
-                DataTable table1 = mdb.Find("select * from VulnbleParts where [ID] = " + pid);
+                dbHelper = new MDBHelper(path4);
+                DataTable table1 = dbHelper.Find("select * from VulnbleParts where [ID] = " + pid);
 
                 // 修改
                 if (table1.Rows.Count > 0)
@@ -4887,7 +4676,7 @@ namespace MesDatas
                     string sql = $"update [VulnbleParts] set [WorkID] = '{workid}', [BoardPosition] = '{bdPosition}', " +
                     $"[BoardName] = '{bdName}', [BoardTheory] = '{bdTheory}', [BoardCode] = '{bdCode}' where [ID] = {pid}";
 
-                    var result = mdb.Change(sql);
+                    var result = dbHelper.Change(sql);
                     if (result == true)
                     {
                         MessageBox.Show("修改成功");
@@ -4903,7 +4692,7 @@ namespace MesDatas
                 {
                     string sql = $"insert into VulnbleParts ([ID], [WorkID], [BoardPosition], [BoardName], [BoardTheory], [BoardCode]) " +
                                  $"values ({pid}, '{workid}', '{bdPosition}', '{bdName}', '{bdTheory}', '{bdCode}')";
-                    bool result = mdb.Add(sql.ToString());
+                    bool result = dbHelper.Add(sql.ToString());
                     if (result == true)
                     {
                         MessageBox.Show("新增成功");
@@ -4914,7 +4703,7 @@ namespace MesDatas
                     }
                 }
 
-                mdb.CloseConnection();
+                dbHelper.CloseConnection();
                 //button18_Click(null, null);
             }
 
@@ -4959,8 +4748,8 @@ namespace MesDatas
                     return;
                 }
 
-                mdb = new mdbDatas(path4);
-                DataTable table1 = mdb.Find("select * from SytemFaults where [ID] = '" + pid + "'");
+                dbHelper = new MDBHelper(path4);
+                DataTable table1 = dbHelper.Find("select * from SytemFaults where [ID] = '" + pid + "'");
 
                 // 修改
                 if (table1.Rows.Count > 0)
@@ -4975,7 +4764,7 @@ namespace MesDatas
                     string sql = $"update [SytemFaults] set [WorkID] = '{workID}', [CodeID] = '{codeID}', " +
                         $"[Faults] = '{funmae}' where [ID] = '{pid}'";
 
-                    var result = mdb.Change(sql);
+                    var result = dbHelper.Change(sql);
                     if (result == true)
                     {
                         MessageBox.Show("修改成功");
@@ -4992,7 +4781,7 @@ namespace MesDatas
                     string sql = $"insert into SytemFaults ([ID],[WorkID],[CodeID],[Faults]) " +
                         $"values ('{pid}', '{workID}', '{codeID}', '{funmae}')";
 
-                    bool result = mdb.Add(sql.ToString());
+                    bool result = dbHelper.Add(sql.ToString());
                     if (result == true)
                     {
                         MessageBox.Show("新增成功");
@@ -5003,7 +4792,7 @@ namespace MesDatas
                     }
                 }
 
-                mdb.CloseConnection();
+                dbHelper.CloseConnection();
                 //button18_Click(null, null);
             }
 
@@ -5022,8 +4811,8 @@ namespace MesDatas
                 return;
             }
 
-            mdb = new mdbDatas(path4);
-            DataTable table1 = mdb.Find("select * from SytemSocket where ID = 1");
+            dbHelper = new MDBHelper(path4);
+            DataTable table1 = dbHelper.Find("select * from SytemSocket where ID = 1");
             if (table1.Rows.Count > 0)
             {
                 string sql = $"update [SytemSocket] set [IP]='{txtDashboardIP.Text}', [Port]='{txtDashboardPort.Text}', " +
@@ -5031,13 +4820,13 @@ namespace MesDatas
                     $"[BoardTheory]='{txtProductName.Text}', [BoardPosition]='{chkReadPName.Checked}', " +
                     $"[FaultCode]='{txtFaultStartPoint.Text}',[FaultLeng]='{txtFaultLength.Text}' where [ID] = 1";
 
-                var result = mdb.Change(sql);
+                var result = dbHelper.Change(sql);
                 if (result == true)
                 {
                     MessageBox.Show("保存成功");
                 }
             }
-            mdb.CloseConnection();
+            dbHelper.CloseConnection();
         }
 
         #endregion
@@ -5077,7 +4866,7 @@ namespace MesDatas
         {
             Invoke(new Action(() =>
             {
-                lblDashboardStatus.ForeColor = R;
+                lblDashboardStatus.ForeColor = Color.Red;
             }));
 
             await Task.Run(() =>
@@ -5114,7 +4903,7 @@ namespace MesDatas
 
                             Invoke(new Action(() =>
                             {
-                                lblDashboardStatus.ForeColor = G;
+                                lblDashboardStatus.ForeColor = Color.Green;
 
                             }));
 
@@ -5244,7 +5033,7 @@ namespace MesDatas
                  string shotji = "3+" + txtDeviceName.Text + "+" + txtWorkOrder.Text + "+" + D1084 + "+" + D1086 + "+"
                      + completeRate + "+" + passRate + "+" + D1090 + "+" + D1080
                          + "+" + processTime + "+" + usingTime + "+" + loadTime
-                         + "+" + fpy + "+" + txtProductModel.Text;
+                         + "+" + FPY + "+" + txtProductModel.Text;
                  bulletindata += shotji;
                  //ShowMsg(shotji);
                  //Send(shotji);
@@ -5314,27 +5103,27 @@ namespace MesDatas
                          //Send(chesCCC);
                      }
                  }
-                 if (beatList.Count == list.Count &&
+                 if (beatList.Count == actualValueList.Count &&
                 maxList.Count == minList.Count &&
-                maxList.Count == list.Count &&
-                workStNameList.Count == list.Count &&
-                resultList.Count == list.Count &&
-                list.Count > 0 && testItems.Length > 0)
+                maxList.Count == actualValueList.Count &&
+                workStNameList.Count == actualValueList.Count &&
+                resultList.Count == actualValueList.Count &&
+                actualValueList.Count > 0 && testItemsName.Length > 0)
                  {
 
-                     for (int i = 0; i < list.Count; i++)
+                     for (int i = 0; i < actualValueList.Count; i++)
                      {
-                         if (!list[i].Equals("null"))
+                         if (!actualValueList[i].Equals("null"))
                          {
                              //输出：
                              //2+工位名称+当前工单号+产品条码+
                              //操作人员+则式时间+
                              //则试结果+ 则试节拍+则试项名称+ 则试项上限+则试项下限+测式项实际值
-                             if (maxValue[i].Equals("NO") && minValue[i].Equals("NO") && testResult[i].Equals("NO"))
+                             if (maxValuePoint[i].Equals("NO") && minValuePoint[i].Equals("NO") && testResultPoint[i].Equals("NO"))
                              {
                                  string cheshixm = "2+" + workStNameList[i] + "+" + txtWorkOrder.Text + "+" + barcodeInfo + "+"
                                          + LoginUser.ToString() + "+" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") +
-                                             "+" + Value[9999] + "+" + D1090 + "+" + testItems[i] + "+" + "" + "+" + "" + "+" + list[i];
+                                             "+" + Value[9999] + "+" + D1090 + "+" + testItemsName[i] + "+" + "" + "+" + "" + "+" + actualValueList[i];
                                  bulletindata += "|" + cheshixm;
                                  // ShowMsg(cheshixm);
                                  // Send(cheshixm);
@@ -5344,7 +5133,7 @@ namespace MesDatas
 
                                  string cheshixm1 = "2+" + workStNameList[i] + "+" + txtWorkOrder.Text + "+" + barcodeInfo + "+"
                                   + LoginUser.ToString() + "+" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") +
-                                      "+" + Value[9999] + "+" + D1090 + "+" + testItems[i] + "+" + maxList[i] + "+" + minList[i] + "+" + list[i];
+                                      "+" + Value[9999] + "+" + D1090 + "+" + testItemsName[i] + "+" + maxList[i] + "+" + minList[i] + "+" + actualValueList[i];
                                  bulletindata += "|" + cheshixm1;
 
                                  //ShowMsg(cheshixm1);
@@ -5456,16 +5245,16 @@ namespace MesDatas
                         KeyenceMcNet.Write(deviceInfo.FormulaModify, 1);
                         //D1206
                         KeyenceMcNet.Write(deviceInfo.FormulaNumModify, int.Parse(dateshuzu[1].ToString()));
-                        mdb = new mdbDatas(path4);
-                        DataTable table1 = mdb.Find("select * from SytemSet where ID = '1'");
+                        dbHelper = new MDBHelper(path4);
+                        DataTable table1 = dbHelper.Find("select * from SytemSet where ID = '1'");
                         if (table1.Rows.Count > 0)
                         {
                             string sql = "update [SytemSet] set [faults]='" + dateshuzu[1] + "'" +
                                 //",Workstname ='" + checkBox6.Checked + "'" + 
                                 " where [ID] = '1'";
-                            var result = mdb.Change(sql);
+                            var result = dbHelper.Change(sql);
                         }
-                        mdb.CloseConnection();
+                        dbHelper.CloseConnection();
                         Invoke(new Action(() =>
                         {
                             cboBarcodeRuleAndFixtures.SelectedValue = dateshuzu[1];
@@ -5475,7 +5264,7 @@ namespace MesDatas
                     }
                     catch (Exception ex)
                     {
-                        LogMsg(ex.ToString());
+                        DisplayMessage(ex.ToString());
                         Send("6+" + lblDeviceName.Text + "配方切换失败");
                     }
                     break;
@@ -6329,17 +6118,17 @@ namespace MesDatas
         /// <param name="num"></param>
         private void SeriaPtail(int num)
         {
-            mdb = new mdbDatas(path4);
-            DataTable table1 = mdb.Find("select Ptail from Printers where ID = 1");
+            dbHelper = new MDBHelper(path4);
+            DataTable table1 = dbHelper.Find("select Ptail from Printers where ID = 1");
             if (table1.Rows.Count > 0)
             {
                 int numA = num + 1;
                 string seriaA = numA.ToString().PadLeft(5, '0');
                 string sql = "update [Printers] set [Ptail]='" + seriaA + "'" +
                               " where [ID] = 1";
-                var result = mdb.Change(sql);
+                var result = dbHelper.Change(sql);
             }
-            DataTable table2 = mdb.Find("select Ptail from Printers where ID = 1");
+            DataTable table2 = dbHelper.Find("select Ptail from Printers where ID = 1");
             for (int i = 0; i < table2.Rows.Count; i++)
             {
                 for (int j = 0; j < table2.Columns.Count; j++)
@@ -6347,7 +6136,7 @@ namespace MesDatas
                     textBox26.Text = table2.Rows[i]["Ptail"].ToString();
                 }
             }
-            mdb.CloseConnection();
+            dbHelper.CloseConnection();
             label62.Text = Pfunime() + textBox26.Text;
         }
 
@@ -6634,7 +6423,7 @@ namespace MesDatas
         DataTable codesTable;   // 存储产品编号与条码验证型号
         DataTable boardTable;   // 存储PLC点位信息
         BindingList<Codes> bindingCodes = new BindingList<Codes>();                         // 存储配方设置相关的参数
-        BindingList<BarcodeVefictn> bindingVefictn = new BindingList<BarcodeVefictn>();     // 条码相关数据
+        BindingList<BarcodeVerification> bindingVefictn = new BindingList<BarcodeVerification>();     // 条码相关数据
 
         /// <summary>
         /// 从数据库加载 Board 表格保存到对应的数组中，并为 DataGridView4,5 设置属性
@@ -6643,24 +6432,24 @@ namespace MesDatas
         {
             button23_Click(null, null);
 
-            mdb = new mdbDatas(path4);
-            boardTable = mdb.Find("select * from Board");
+            dbHelper = new MDBHelper(path4);
+            boardTable = dbHelper.Find("select * from Board");
 
             // 检查表格中是否存在数据
             if (boardTable.Rows.Count > 0)
             {
                 // 从数据库表 Board 中的每一行提取特定列的数据，并存储在相应的数组中
-                targetStation = boardTable.AsEnumerable().Select(row => row["WorkID"].ToString()).ToArray();
-                testItems = boardTable.AsEnumerable().Select(row => row["BoardName"].ToString()).ToArray();
-                actualValue = boardTable.AsEnumerable().Select(row => row["BoardCode"].ToString()).ToArray();
-                maxValue = boardTable.AsEnumerable().Select(row => row["MaxBoardCode"].ToString()).ToArray();
-                minValue = boardTable.AsEnumerable().Select(row => row["MinBoardCode"].ToString()).ToArray();
-                beat = boardTable.AsEnumerable().Select(row => row["BeatBoardCode"].ToString()).ToArray();
-                testResult = boardTable.AsEnumerable().Select(row => row["ResultBoardCode"].ToString()).ToArray();
+                targetStationNum = boardTable.AsEnumerable().Select(row => row["WorkID"].ToString()).ToArray();
+                testItemsName = boardTable.AsEnumerable().Select(row => row["BoardName"].ToString()).ToArray();
+                actualValuePoint = boardTable.AsEnumerable().Select(row => row["BoardCode"].ToString()).ToArray();
+                maxValuePoint = boardTable.AsEnumerable().Select(row => row["MaxBoardCode"].ToString()).ToArray();
+                minValuePoint = boardTable.AsEnumerable().Select(row => row["MinBoardCode"].ToString()).ToArray();
+                beatPoint = boardTable.AsEnumerable().Select(row => row["BeatBoardCode"].ToString()).ToArray();
+                testResultPoint = boardTable.AsEnumerable().Select(row => row["ResultBoardCode"].ToString()).ToArray();
                 unitName = boardTable.AsEnumerable().Select(row => row["BoardA1"].ToString()).ToArray();
-                standardValue = boardTable.AsEnumerable().Select(row => row["StandardCode"].ToString()).ToArray();
+                standardValuePoint = boardTable.AsEnumerable().Select(row => row["StandardCode"].ToString()).ToArray();
             }
-            mdb.CloseConnection();
+            dbHelper.CloseConnection();
 
             // 为 DataGridView4 添加 ButtonColumn 列，标题为操作，按钮Text默认显示为 “NO保存”
             DataGridViewButtonColumn btnNOSave = new DataGridViewButtonColumn();
@@ -6707,7 +6496,7 @@ namespace MesDatas
         private void button23_Click(object sender, EventArgs e)
         {
             // 初始化连接数据库
-            mdb = new mdbDatas(path4);
+            dbHelper = new MDBHelper(path4);
 
             // 查询Board表格， ID WorkID BoardName BoardCode MaxBoardCode MinBoardCode BeatBoardCode ResultBoardCode 
             string selectSql = $"select [ID] as 编号, [WorkID] as 工位ID, [BoardName] as 测试项目的名称," +
@@ -6715,7 +6504,7 @@ namespace MesDatas
                 $"[MaxBoardCode] as 测试项目的上限PLC点位, [MinBoardCode] as 测试项目的下限PLC点位," +
                 $"[ResultBoardCode] as 测试项目的结果PLC点位, [BeatBoardCode] as 测试项目的节拍PLC点位," +
                 $"[BoardA1] as 单位 from Board";
-            DataTable boardTable = mdb.Find(selectSql);
+            DataTable boardTable = dbHelper.Find(selectSql);
 
             // 设置 “编号” 列的属性为自动增长、只读、起始值为0
             boardTable.Columns["编号"].AutoIncrement = true;
@@ -6737,7 +6526,7 @@ namespace MesDatas
             dataGridView4.DataSource = boardTable;
 
             // 查询 Codes 表的数据
-            codesTable = mdb.Find("select * from Codes");
+            codesTable = dbHelper.Find("select * from Codes");
 
             // 获取绑定列表对象，刷新 dataGridView5
             bindingCodes = CodesServer.GetCodesBindingList();
@@ -6752,7 +6541,7 @@ namespace MesDatas
             cboBarcodeRuleAndFixtures.DisplayMember = "TooName";
             cboBarcodeRuleAndFixtures.ValueMember = "ID";
 
-            mdb.CloseConnection();
+            dbHelper.CloseConnection();
 
             bindingVefictn = BarcodeVefictnServer.GetBarcodeVefictnBindingList();
             dataGridView6.DataSource = bindingVefictn;
@@ -6853,9 +6642,9 @@ namespace MesDatas
                 string primaryKeyCondition = primaryKeyValue is string ? $"'{primaryKeyValue}'" : primaryKeyValue.ToString();
 
                 // 查询要删除的行数据
-                mdb = new mdbDatas(connectionString);
+                dbHelper = new MDBHelper(connectionString);
                 string selectSql = $"SELECT * FROM {tableName} WHERE [{primaryKeyField}] = {primaryKeyCondition}";
-                DataTable rowTable = mdb.Find(selectSql);
+                DataTable rowTable = dbHelper.Find(selectSql);
 
                 if (rowTable.Rows.Count > 0)
                 {
@@ -6879,7 +6668,7 @@ namespace MesDatas
 
                     // 执行删除操作
                     string deleteSql = $"DELETE FROM {tableName} WHERE [{primaryKeyField}] = {primaryKeyCondition}";
-                    bool bl = mdb.Del(deleteSql);
+                    bool bl = dbHelper.Del(deleteSql);
 
                     if (bl)
                     {
@@ -6892,7 +6681,7 @@ namespace MesDatas
                     }
                 }
 
-                mdb.CloseConnection();
+                dbHelper.CloseConnection();
                 //button23_Click(null, null);
             }
         }
@@ -6902,9 +6691,9 @@ namespace MesDatas
         /// </summary>
         private void ModifyPlcAddress(string pid, string workID, string stanCode, string boardName, string boardCode, string maxBoardCode, string minBoardCode, string resultBoardCode, string beatBoardCode, string beatBoardA1)
         {
-            mdb = new mdbDatas(path4);
+            dbHelper = new MDBHelper(path4);
             string selectSql = $"select * from Board where [ID] = {pid}";
-            DataTable table1 = mdb.Find(selectSql);
+            DataTable table1 = dbHelper.Find(selectSql);
 
             // 修改
             if (table1.Rows.Count > 0)
@@ -6926,7 +6715,7 @@ namespace MesDatas
                         $"[BeatBoardCode] = '{beatBoardCode}', [ResultBoardCode] = '{resultBoardCode}', [BoardA1] = '{beatBoardA1}', " +
                         $"[StandardCode] = '{stanCode}' where [ID] = {pid}";
 
-                    var result = mdb.Change(sql);
+                    var result = dbHelper.Change(sql);
                     if (result == true)
                     {
                         MessageBox.Show("修改成功");
@@ -6944,7 +6733,7 @@ namespace MesDatas
                 string sql = "insert into Board ([ID],[WorkID],[StandardCode],[BoardName],[BoardCode],[MaxBoardCode],[MinBoardCode],[BeatBoardCode],[ResultBoardCode],[BoardA1]) values ("
                     + pid + ",'" + workID + "','" + stanCode + "','" + boardName + "','" + boardCode + "','" + maxBoardCode + "','" + minBoardCode + "','" + beatBoardCode + "','" + resultBoardCode + "','" + beatBoardA1 + "')";
 
-                bool result = mdb.Add(sql.ToString());
+                bool result = dbHelper.Add(sql.ToString());
                 if (result == true)
                 {
                     MessageBox.Show("新增成功");
@@ -6955,7 +6744,7 @@ namespace MesDatas
                 }
             }
 
-            mdb.CloseConnection();
+            dbHelper.CloseConnection();
         }
 
         private void dataGridView5_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -7038,7 +6827,7 @@ namespace MesDatas
         {
             if (e.RowIndex == -1)
             { return; }
-            BarcodeVefictn barcodeVefictn = bindingVefictn[e.RowIndex];
+            BarcodeVerification barcodeVefictn = bindingVefictn[e.RowIndex];
             if (dataGridView6.Columns[e.ColumnIndex].Name == "BtnDel")
             {
                 //说明点击的列是DataGridViewButtonColumn列
@@ -7095,6 +6884,11 @@ namespace MesDatas
         private void SearchPort_Click(object sender, EventArgs e)
         {
             SearchPort();
+        }
+
+        private void ConnectReader()
+        {
+            OpenReader_Click(null, null);
         }
 
         /// <summary>
@@ -7285,17 +7079,18 @@ namespace MesDatas
         /// <summary>
         /// 读取
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void button27_Click(object sender, EventArgs e)
+        private void btnReadValue_Click(object sender, EventArgs e)
         {
-            textBox31.Text = KeyenceMcNet.ReadInt32(textBox23.Text).Content.ToString();
+            txtValue_Read.Text = KeyenceMcNet.ReadInt32(txtPoint_Read.Text).Content.ToString();
             MessageBox.Show("执行完成！");
         }
 
-        private void button28_Click(object sender, EventArgs e)
+        /// <summary>
+        /// 写入
+        /// </summary>
+        private void btnWriteValue_Click(object sender, EventArgs e)
         {
-            KeyenceMcNet.Write(textBox29.Text, int.Parse(textBox36.Text));
+            KeyenceMcNet.Write(txtPoint_Write.Text, int.Parse(txtValue_Write.Text));
             MessageBox.Show("执行完成！");
         }
 
@@ -7312,6 +7107,27 @@ namespace MesDatas
         }
 
         #endregion
+
+        /// <summary>
+        /// 变更工单
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ChangeWorkOrder_Click(object sender, EventArgs e)
+        {
+            dbHelper = new MDBHelper(path4);
+            DataTable table1 = dbHelper.Find("select * from SytemSet where ID = '1'");
+            if (table1.Rows.Count > 0)
+            {
+                string sql = "update [SytemSet] set [wordNo]='" + txtWorkOrder.Text + "' where [ID] = '1'";
+                var result = dbHelper.Change(sql);
+                if (result == true)
+                {
+                    MessageBox.Show("变更成功");
+                }
+            }
+            dbHelper.CloseConnection();
+        }
 
         private void dataGridViewDynamic1_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
         {

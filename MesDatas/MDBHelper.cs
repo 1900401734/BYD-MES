@@ -12,7 +12,7 @@ using System.Windows.Forms;
 
 namespace MesDatas
 {
-    class mdbDatas
+    class MDBHelper
     {
         System.Reflection.Missing vtMissing = System.Reflection.Missing.Value;
         private OleDbConnection myConn;
@@ -21,7 +21,7 @@ namespace MesDatas
         /// 初始化连接数据库
         /// </summary>
         /// <param name="address"></param>
-        public mdbDatas(string address)
+        public MDBHelper(string address)
         {
             try
             {

@@ -15,7 +15,7 @@ namespace MesDatas
     /// </summary>
     public class MdbTool : cToolBase
     {
-        mdbDatas mdb = null;
+        MDBHelper mdb = null;
 
         public MdbTool() : base()
         {
@@ -30,9 +30,9 @@ namespace MesDatas
 
         private void Test()
         {
-            mdbDatas.CreateAccessDatabase("D:\\tt.mdb");
-            mdbDatas.CreateMDBTable("D:\\tt.mdb", "test040914", new System.Collections.ArrayList(new object[] { "ID", "Name", "tt", "66" }));
-            mdb = new mdbDatas("D:\\tt.mdb");
+            MDBHelper.CreateAccessDatabase("D:\\tt.mdb");
+            MDBHelper.CreateMDBTable("D:\\tt.mdb", "test040914", new System.Collections.ArrayList(new object[] { "ID", "Name", "tt", "66" }));
+            mdb = new MDBHelper("D:\\tt.mdb");
 
 
             DataTable dt = new DataTable("test040914");

@@ -17,9 +17,9 @@ namespace MesDatas.DatasServer
             {
                 using (var db = DBConnSugClie.GetDBConn())
                 {
-                    db.CodeFirst.InitTables<BarcodeVefictn>();
-                    BarcodeVefictn barcodeVefictn = BarcodeVefictn.GetBarcodeVefictnDefault();
-                    if (!db.Queryable<BarcodeVefictn>().Where(it => it.ID == barcodeVefictn.ID).Any())
+                    db.CodeFirst.InitTables<BarcodeVerification>();
+                    BarcodeVerification barcodeVefictn = BarcodeVerification.GetBarcodeVefictnDefault();
+                    if (!db.Queryable<BarcodeVerification>().Where(it => it.ID == barcodeVefictn.ID).Any())
                     {
                         db.Insertable(barcodeVefictn).ExecuteCommand();
                     }
@@ -31,13 +31,13 @@ namespace MesDatas.DatasServer
         }
 
         //保存BarcodeVefictn 
-        public static string GetBarcodeVefictnSave(BarcodeVefictn barcodevefictn)
+        public static string GetBarcodeVefictnSave(BarcodeVerification barcodevefictn)
         {
             try
             {
                 using (var db = DBConnSugClie.GetDBConn())
                 {
-                    if (db.Queryable<BarcodeVefictn>().Where(it => it.ID == barcodevefictn.ID).Any())
+                    if (db.Queryable<BarcodeVerification>().Where(it => it.ID == barcodevefictn.ID).Any())
                     {
                         return db.Updateable(barcodevefictn).ExecuteCommand() > 0 ? LanguageResour.PassBtnSave : LanguageResour.ErrorBtnSave;
                     }
@@ -54,7 +54,7 @@ namespace MesDatas.DatasServer
         }
 
         //修改BarcodeVefictn 
-        public static string GetBarcodeVefictnUpdate(BarcodeVefictn barcodevefictn)
+        public static string GetBarcodeVefictnUpdate(BarcodeVerification barcodevefictn)
         {
             try
             {
@@ -70,7 +70,7 @@ namespace MesDatas.DatasServer
         }
 
         //删除BarcodeVefictn 
-        public static string GetBarcodeVefictnDelete(BarcodeVefictn barcodevefictn)
+        public static string GetBarcodeVefictnDelete(BarcodeVerification barcodevefictn)
         {
             try
             {
@@ -90,13 +90,13 @@ namespace MesDatas.DatasServer
         }
 
         // 获取BarcodeVefictn 
-        public static BarcodeVefictn GetBarcodeVefictn(int id)
+        public static BarcodeVerification GetBarcodeVefictn(int id)
         {
             try
             {
                 using (var db = DBConnSugClie.GetDBConn())
                 {
-                    return db.Queryable<BarcodeVefictn>().Where(it => it.ID == id).First();
+                    return db.Queryable<BarcodeVerification>().Where(it => it.ID == id).First();
                 }
             }
             catch (Exception ex)
@@ -106,13 +106,13 @@ namespace MesDatas.DatasServer
         }
 
         // 获取BarcodeVefictn列表 
-        public static List<BarcodeVefictn> GetBarcodeVefictnList()
+        public static List<BarcodeVerification> GetBarcodeVefictnList()
         {
             try
             {
                 using (var db = DBConnSugClie.GetDBConn())
                 {
-                    return db.Queryable<BarcodeVefictn>().ToList();
+                    return db.Queryable<BarcodeVerification>().ToList();
                 }
             }
             catch (Exception ex)
@@ -122,18 +122,18 @@ namespace MesDatas.DatasServer
         }
 
         //获取BarcodeVefictn列表 
-        public static List<BarcodeVefictn> GetBarcodeVefictnList(int LanguageId)
+        public static List<BarcodeVerification> GetBarcodeVefictnList(int LanguageId)
         {
             try
             {
                 using (var db = DBConnSugClie.GetDBConn())
                 {
-                    if (db.Queryable<BarcodeVefictn>().Where(it => it.LanguageId == LanguageId).Any())
+                    if (db.Queryable<BarcodeVerification>().Where(it => it.LanguageId == LanguageId).Any())
                     {
 
-                        return db.Queryable<BarcodeVefictn>().Where(it => it.LanguageId == LanguageId).ToList();
+                        return db.Queryable<BarcodeVerification>().Where(it => it.LanguageId == LanguageId).ToList();
                     }
-                    return db.Queryable<BarcodeVefictn>().Where(it => it.LanguageId == 0).ToList();
+                    return db.Queryable<BarcodeVerification>().Where(it => it.LanguageId == 0).ToList();
                 }
             }
             catch (Exception ex)
@@ -143,19 +143,19 @@ namespace MesDatas.DatasServer
         }
 
         //获取BindingListBarcodeVefictn列表 
-        public static BindingList<BarcodeVefictn> GetBarcodeVefictnBindingList()
+        public static BindingList<BarcodeVerification> GetBarcodeVefictnBindingList()
         {
-            return new BindingList<BarcodeVefictn>(GetBarcodeVefictnList());
+            return new BindingList<BarcodeVerification>(GetBarcodeVefictnList());
         }
 
         // 获取{tableName} 
-        public static BarcodeVefictn GetLangBarcodeVefictn(int LanguageId)
+        public static BarcodeVerification GetLangBarcodeVefictn(int LanguageId)
         {
             try
             {
                 using (var db = DBConnSugClie.GetDBConn())
                 {
-                    return db.Queryable<BarcodeVefictn>().Where(it => it.LanguageId == LanguageId).First();
+                    return db.Queryable<BarcodeVerification>().Where(it => it.LanguageId == LanguageId).First();
                 }
             }
             catch (Exception ex)

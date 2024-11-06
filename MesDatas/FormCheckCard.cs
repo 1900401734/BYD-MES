@@ -75,7 +75,7 @@ namespace MesDatas
         }
 
         public static List<UserInfoEntity> user = null;
-        mdbDatas mdb = null;
+        MDBHelper mdb = null;
         public static string path4 = System.AppDomain.CurrentDomain.BaseDirectory + "SystemDateBase.mdb";
         public static string userFileuRL = "D:\\BYD_Users\\Users_Data.MDB";
 
@@ -143,7 +143,7 @@ namespace MesDatas
         private void GetUserInfo()
         {
             user = new List<UserInfoEntity>();
-            mdb = new mdbDatas(userFileuRL);
+            mdb = new MDBHelper(userFileuRL);
             DataTable table1 = mdb.Find("select * from Users");
 
             for (int i = 0; i < table1.Rows.Count; i++)

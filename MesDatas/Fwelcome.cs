@@ -47,7 +47,7 @@ namespace MesDatas
         public Form工单 Form工单 = new Form工单();
         IniFiles ini_user = new IniFiles(Application.StartupPath + @"Userdata.INI");
         public Stopwatch sw = new Stopwatch();
-        mdbDatas mdb = null;
+        MDBHelper mdb = null;
         public static string path4 = System.AppDomain.CurrentDomain.BaseDirectory + "SystemDateBase.mdb";
         public static string xmlPath = System.AppDomain.CurrentDomain.BaseDirectory + "\\xml\\AddSql.xml";
         public static string userFileuRL = "D:\\BYD_Users\\Users_Data.MDB";
@@ -270,9 +270,9 @@ namespace MesDatas
         /// <param name="conn"></param>
         private void addUserMdb(string conn)
         {
-            mdb = new mdbDatas(conn);
-            mdbDatas.CreateAccessDatabase(conn);
-            mdbDatas.CreateMDBTable(conn, "Users", new System.Collections.ArrayList(new object[] { "用户名", "用户密码", "用户权限", "厂牌UID", "最后登录时间", "登录次数", "工号" }));
+            mdb = new MDBHelper(conn);
+            MDBHelper.CreateAccessDatabase(conn);
+            MDBHelper.CreateMDBTable(conn, "Users", new System.Collections.ArrayList(new object[] { "用户名", "用户密码", "用户权限", "厂牌UID", "最后登录时间", "登录次数", "工号" }));
             DataTable dt = new DataTable("Users");
             DataColumn userid = new DataColumn("用户名", typeof(string));
             dt.Columns.Add(userid);
@@ -348,7 +348,7 @@ namespace MesDatas
             }
             if (AddRColList.Count > 0)
             {
-                mdb = new mdbDatas(path4);
+                mdb = new MDBHelper(path4);
                 if (AddRColList.Count > 0)
                 {
                     foreach (string sql in AddRColList)
@@ -373,7 +373,7 @@ namespace MesDatas
         private void GetDeviceName()
         {
             sytemSet = new SytemSetEntity();
-            mdb = new mdbDatas(path4);
+            mdb = new MDBHelper(path4);
             DataTable table1 = mdb.Find("select * from SytemSet where ID = '1'");
 
             for (int i = 0; i < table1.Rows.Count; i++)
@@ -396,7 +396,7 @@ namespace MesDatas
         private void GetUserInfo()
         {
             user = new List<UserInfoEntity>();
-            mdb = new mdbDatas(userFileuRL);
+            mdb = new MDBHelper(userFileuRL);
             DataTable table1 = mdb.Find("select * from Users");
 
             for (int i = 0; i < table1.Rows.Count; i++)

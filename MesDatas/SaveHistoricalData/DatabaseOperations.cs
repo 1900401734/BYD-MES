@@ -51,9 +51,9 @@ public class DatabaseOperations
 
     private void CreateDatabaseAndTable(string conn)
     {
-        mdbDatas.CreateAccessDatabase(conn);
+        MDBHelper.CreateAccessDatabase(conn);
         var (columnNames, arrayList) = PrepareColumnData();
-        mdbDatas.CreateMDBTable(conn, "Sheet1", arrayList);
+        MDBHelper.CreateMDBTable(conn, "Sheet1", arrayList);
     }
 
     private (string columnNames, ArrayList arrayList) PrepareColumnData()
@@ -84,7 +84,7 @@ public class DatabaseOperations
     private void InsertData(string conn, string barcodeInfo, string[] Value, DataTable codesTable,
                             List<string> list, List<string> maxList, List<string> minList, List<string> resultList)
     {
-        var mdb = new mdbDatas(conn);
+        var mdb = new MDBHelper(conn);
         try
         {
             var (columnNames, values) = PrepareInsertData(barcodeInfo, Value, codesTable, list, maxList, minList, resultList);

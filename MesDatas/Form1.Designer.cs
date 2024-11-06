@@ -35,8 +35,9 @@ namespace MesDatas
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.skinEngine1 = new Sunisoft.IrisSkin.SkinEngine(((System.ComponentModel.Component)(this)));
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.tabPage4 = new System.Windows.Forms.TabPage();
@@ -179,12 +180,12 @@ namespace MesDatas
             this.groupBox29 = new System.Windows.Forms.GroupBox();
             this.label99 = new System.Windows.Forms.Label();
             this.label98 = new System.Windows.Forms.Label();
-            this.textBox36 = new System.Windows.Forms.TextBox();
-            this.textBox31 = new System.Windows.Forms.TextBox();
-            this.textBox29 = new System.Windows.Forms.TextBox();
-            this.textBox23 = new System.Windows.Forms.TextBox();
-            this.button28 = new System.Windows.Forms.Button();
-            this.button27 = new System.Windows.Forms.Button();
+            this.txtValue_Write = new System.Windows.Forms.TextBox();
+            this.txtValue_Read = new System.Windows.Forms.TextBox();
+            this.txtPoint_Write = new System.Windows.Forms.TextBox();
+            this.txtPoint_Read = new System.Windows.Forms.TextBox();
+            this.btnWrite = new System.Windows.Forms.Button();
+            this.btnReadInt32 = new System.Windows.Forms.Button();
             this.btnSaveAtSystemSetting = new System.Windows.Forms.Button();
             this.groupBox17 = new System.Windows.Forms.GroupBox();
             this.tbxReaderDeviceID = new System.Windows.Forms.TextBox();
@@ -441,7 +442,7 @@ namespace MesDatas
             this.groupBox28 = new System.Windows.Forms.GroupBox();
             this.dataGridView5 = new System.Windows.Forms.DataGridView();
             this.label7 = new System.Windows.Forms.Label();
-            this.bindingSource1 = new System.Windows.Forms.BindingSource();
+            this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.tabPage4.SuspendLayout();
             this.tabControl4.SuspendLayout();
             this.tabPage15.SuspendLayout();
@@ -1235,10 +1236,10 @@ namespace MesDatas
             // Column2
             // 
             this.Column2.DataPropertyName = "用户密码";
-            dataGridViewCellStyle1.Format = "*****";
-            dataGridViewCellStyle1.NullValue = "#";
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.Column2.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Format = "*****";
+            dataGridViewCellStyle2.NullValue = "#";
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.Column2.DefaultCellStyle = dataGridViewCellStyle2;
             resources.ApplyResources(this.Column2, "Column2");
             this.Column2.Name = "Column2";
             this.Column2.ReadOnly = true;
@@ -1511,12 +1512,12 @@ namespace MesDatas
             // 
             this.groupBox29.Controls.Add(this.label99);
             this.groupBox29.Controls.Add(this.label98);
-            this.groupBox29.Controls.Add(this.textBox36);
-            this.groupBox29.Controls.Add(this.textBox31);
-            this.groupBox29.Controls.Add(this.textBox29);
-            this.groupBox29.Controls.Add(this.textBox23);
-            this.groupBox29.Controls.Add(this.button28);
-            this.groupBox29.Controls.Add(this.button27);
+            this.groupBox29.Controls.Add(this.txtValue_Write);
+            this.groupBox29.Controls.Add(this.txtValue_Read);
+            this.groupBox29.Controls.Add(this.txtPoint_Write);
+            this.groupBox29.Controls.Add(this.txtPoint_Read);
+            this.groupBox29.Controls.Add(this.btnWrite);
+            this.groupBox29.Controls.Add(this.btnReadInt32);
             resources.ApplyResources(this.groupBox29, "groupBox29");
             this.groupBox29.Name = "groupBox29";
             this.groupBox29.TabStop = false;
@@ -1531,39 +1532,39 @@ namespace MesDatas
             resources.ApplyResources(this.label98, "label98");
             this.label98.Name = "label98";
             // 
-            // textBox36
+            // txtValue_Write
             // 
-            resources.ApplyResources(this.textBox36, "textBox36");
-            this.textBox36.Name = "textBox36";
+            resources.ApplyResources(this.txtValue_Write, "txtValue_Write");
+            this.txtValue_Write.Name = "txtValue_Write";
             // 
-            // textBox31
+            // txtValue_Read
             // 
-            resources.ApplyResources(this.textBox31, "textBox31");
-            this.textBox31.Name = "textBox31";
+            resources.ApplyResources(this.txtValue_Read, "txtValue_Read");
+            this.txtValue_Read.Name = "txtValue_Read";
             // 
-            // textBox29
+            // txtPoint_Write
             // 
-            resources.ApplyResources(this.textBox29, "textBox29");
-            this.textBox29.Name = "textBox29";
+            resources.ApplyResources(this.txtPoint_Write, "txtPoint_Write");
+            this.txtPoint_Write.Name = "txtPoint_Write";
             // 
-            // textBox23
+            // txtPoint_Read
             // 
-            resources.ApplyResources(this.textBox23, "textBox23");
-            this.textBox23.Name = "textBox23";
+            resources.ApplyResources(this.txtPoint_Read, "txtPoint_Read");
+            this.txtPoint_Read.Name = "txtPoint_Read";
             // 
-            // button28
+            // btnWrite
             // 
-            resources.ApplyResources(this.button28, "button28");
-            this.button28.Name = "button28";
-            this.button28.UseVisualStyleBackColor = true;
-            this.button28.Click += new System.EventHandler(this.button28_Click);
+            resources.ApplyResources(this.btnWrite, "btnWrite");
+            this.btnWrite.Name = "btnWrite";
+            this.btnWrite.UseVisualStyleBackColor = true;
+            this.btnWrite.Click += new System.EventHandler(this.btnWriteValue_Click);
             // 
-            // button27
+            // btnReadInt32
             // 
-            resources.ApplyResources(this.button27, "button27");
-            this.button27.Name = "button27";
-            this.button27.UseVisualStyleBackColor = true;
-            this.button27.Click += new System.EventHandler(this.button27_Click);
+            resources.ApplyResources(this.btnReadInt32, "btnReadInt32");
+            this.btnReadInt32.Name = "btnReadInt32";
+            this.btnReadInt32.UseVisualStyleBackColor = true;
+            this.btnReadInt32.Click += new System.EventHandler(this.btnReadValue_Click);
             // 
             // btnSaveAtSystemSetting
             // 
@@ -3621,12 +3622,12 @@ namespace MesDatas
         private System.Windows.Forms.GroupBox groupBox29;
         private System.Windows.Forms.Label label99;
         private System.Windows.Forms.Label label98;
-        private System.Windows.Forms.TextBox textBox36;
-        private System.Windows.Forms.TextBox textBox31;
-        private System.Windows.Forms.TextBox textBox29;
-        private System.Windows.Forms.TextBox textBox23;
-        private System.Windows.Forms.Button button28;
-        private System.Windows.Forms.Button button27;
+        private System.Windows.Forms.TextBox txtValue_Write;
+        private System.Windows.Forms.TextBox txtValue_Read;
+        private System.Windows.Forms.TextBox txtPoint_Write;
+        private System.Windows.Forms.TextBox txtPoint_Read;
+        private System.Windows.Forms.Button btnWrite;
+        private System.Windows.Forms.Button btnReadInt32;
         private System.Windows.Forms.GroupBox groupBox28;
         private System.Windows.Forms.DataGridView dataGridView5;
         private System.Windows.Forms.Label label7;
