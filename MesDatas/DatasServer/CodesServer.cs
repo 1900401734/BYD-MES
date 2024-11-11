@@ -25,7 +25,7 @@ namespace MesDatas.DatasServer
             }
         }
 
-        //保存Codes 
+        // 保存Codes 
         public static string GetCodesSave(Codes codes)
         {
             try
@@ -48,7 +48,7 @@ namespace MesDatas.DatasServer
             }
         }
 
-        //修改Codes 
+        // 修改Codes 
         public static string GetCodesUpdate(Codes codes)
         {
             try
@@ -64,7 +64,7 @@ namespace MesDatas.DatasServer
             }
         }
 
-        //删除Codes 
+        // 删除Codes 
         public static string GetCodesDelete(Codes codes)
         {
             try
@@ -112,43 +112,10 @@ namespace MesDatas.DatasServer
             }
         }
 
-        //获取Codes列表 
-        ////public static List<Codes> GetCodesList(int LanguageId) 
-        ////{ 
-        ////	try 
-        ////	{ 
-        ////		using (var db = DBConnSugClie.GetDBConn()) 
-        ////		{ 
-        ////			return db.Queryable<Codes>().Where(it=>it.LanguageId == LanguageId).ToList(); 
-        ////		} 
-        ////		} 
-        ////		catch (Exception ex) 
-        ////		{ 
-        ////			LogHelper.WriteLogWarn("[Codes] ", ex); 
-        ////			return null; 
-        ////		} 
-        ////	} 
-        //获取BindingListCodes列表 
+        // 获取BindingListCodes列表 
         public static BindingList<Codes> GetCodesBindingList()
         {
             return new BindingList<Codes>(GetCodesList());
         }
-
-        //// 获取{tableName} 
-        //public static Codes GetLangCodes(int LanguageId) 
-        //{ 
-        //	try 
-        //	{ 
-        //		using (var db = DBConnSugClie.GetDBConn()) 
-        //		{ 
-        //			return db.Queryable<Codes>().Where(it=>it.LanguageId == LanguageId).First(); 
-        //		} 
-        //		} 
-        //		catch (Exception ex) 
-        //		{ 
-        //			LogHelper.WriteLogWarn("[Codes] ", ex); 
-        //			return null; 
-        //		} 
-        //	} 
     }
 }

@@ -661,10 +661,12 @@ namespace BulletinBoard
             // 
             // rtbShowMSG
             // 
-            this.rtbShowMSG.Location = new System.Drawing.Point(638, 11);
+            this.rtbShowMSG.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.rtbShowMSG.Location = new System.Drawing.Point(640, 11);
             this.rtbShowMSG.Margin = new System.Windows.Forms.Padding(4);
             this.rtbShowMSG.Name = "rtbShowMSG";
-            this.rtbShowMSG.Size = new System.Drawing.Size(674, 494);
+            this.rtbShowMSG.Size = new System.Drawing.Size(663, 494);
             this.rtbShowMSG.TabIndex = 64;
             this.rtbShowMSG.Text = "";
             // 

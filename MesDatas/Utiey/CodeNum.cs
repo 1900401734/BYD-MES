@@ -256,44 +256,48 @@ namespace MesDatas.Utiey
         }
 
         /// <summary>
-        /// 处理工位
+        /// 关联目标工位序号与工位名称，生成相应的工位名称列表。
         /// </summary>
-        /// <param name="targetStation"></param>
-        /// <param name="stationName"></param>
-        /// <returns></returns>
-        public static List<string> WorkIDName(string[] targetStation, string[] stationName)
+        /// <param name="targetStationNum">目标工位序号数组</param>
+        /// <param name="stationNames">工位名称集合，索引与序号对应</param>
+        /// <returns>对应序号的工位名称列表</returns>
+        public static List<string> GetStationNameListByID(string[] targetStationNum, string[] stationNames)
         {
-            List<string> workstNamelist = new List<string>();
-            string worName = "  ";
+            List<string> stationNameList = new List<string>();
 
-            for (int i = 0; i < targetStation.Length; i++)
+            // 遍历目标工位序号
+            for (int i = 0; i < targetStationNum.Length; i++)
             {
-                string workID = targetStation[i];
-                if (workID.Contains("+"))
+                string stationName = string.Empty;  // 默认工位名称为空
+                string currentStationNum = targetStationNum[i];
+
+                // 处理带 "+" 的工位序号情况
+                if (currentStationNum.Contains("+"))
                 {
-                    int count = 0;
-                    string newStr = workID.Replace("+", "");
-                    int.TryParse(newStr, out count);
-                    for (int j = 0; j < count; j++)
+                    string numberWithoutPlus = currentStationNum.Replace("+", string.Empty);
+                    int.TryParse(numberWithoutPlus, out int repeatCount);
+
+                    // 添加默认工位名称指定次数（根据重复计数添加空工位名称）
+                    for (int j = 0; j < repeatCount; j++)
                     {
-                        workstNamelist.Add(worName);
+                        stationNameList.Add(stationName);
                     }
                 }
                 else
                 {
-                    int id = 0;
-                    if (int.TryParse(targetStation[i], out id))
+                    // 转换并获取对应工位名称
+                    if (int.TryParse(currentStationNum, out int id))
                     {
-                        id = id - 1;
-                        if (stationName.Length > id)
+                        id = id - 1;     // 序号转换为数组索引（转为零基索引）
+                        if (stationNames.Length > id)
                         {
-                            worName = stationName[id];
+                            stationName = stationNames[id];
                         }
                     }
-                    workstNamelist.Add(worName);
+                    stationNameList.Add(stationName);
                 }
             }
-            return workstNamelist;
+            return stationNameList;
         }
 
         /// <summary>
@@ -302,19 +306,19 @@ namespace MesDatas.Utiey
         /// <param name="workstationId">工位 ID</param>
         /// <param name="stationNames">工位名称数组</param>
         /// <returns>对应的工位名称，如果未找到则返回空字符串</returns>
-        public static string GetWorkstationNameById(string workstID, string[] stationName)
+        public static string GetStationNameByID(string stationNum, string[] stationNames)
         {
-            string worName = "";
-            int id = 0;
-            if (int.TryParse(workstID, out id))
+            string stationName = string.Empty;
+
+            if (int.TryParse(stationNum, out int id))
             {
                 id = id - 1;
-                if (stationName.Length > id)
+                if (stationNames.Length > id)
                 {
-                    worName = stationName[id];
+                    stationName = stationNames[id];
                 }
             }
-            return worName;
+            return stationName;
         }
 
         /*/// <summary>
@@ -396,7 +400,6 @@ namespace MesDatas.Utiey
             }
             return count;
         }*/
-
 
         /// <summary>
         /// 如果输入为空或空白，返回 "NO"，否则返回原始输入。

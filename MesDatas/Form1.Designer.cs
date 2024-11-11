@@ -37,7 +37,7 @@ namespace MesDatas
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.skinEngine1 = new Sunisoft.IrisSkin.SkinEngine(((System.ComponentModel.Component)(this)));
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.tabPage4 = new System.Windows.Forms.TabPage();
@@ -217,7 +217,7 @@ namespace MesDatas
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPage10 = new System.Windows.Forms.TabPage();
             this.groupBox27 = new System.Windows.Forms.GroupBox();
-            this.dataGridView4 = new System.Windows.Forms.DataGridView();
+            this.dgvPLCPointInfo = new System.Windows.Forms.DataGridView();
             this.groupBox18 = new System.Windows.Forms.GroupBox();
             this.label14 = new System.Windows.Forms.Label();
             this.tabPage11 = new System.Windows.Forms.TabPage();
@@ -480,7 +480,7 @@ namespace MesDatas
             this.tabControl2.SuspendLayout();
             this.tabPage10.SuspendLayout();
             this.groupBox27.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView4)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvPLCPointInfo)).BeginInit();
             this.groupBox18.SuspendLayout();
             this.tabPage11.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView6)).BeginInit();
@@ -1236,10 +1236,10 @@ namespace MesDatas
             // Column2
             // 
             this.Column2.DataPropertyName = "用户密码";
-            dataGridViewCellStyle2.Format = "*****";
-            dataGridViewCellStyle2.NullValue = "#";
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.Column2.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle1.Format = "*****";
+            dataGridViewCellStyle1.NullValue = "#";
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.Column2.DefaultCellStyle = dataGridViewCellStyle1;
             resources.ApplyResources(this.Column2, "Column2");
             this.Column2.Name = "Column2";
             this.Column2.ReadOnly = true;
@@ -1769,19 +1769,19 @@ namespace MesDatas
             // 
             // groupBox27
             // 
-            this.groupBox27.Controls.Add(this.dataGridView4);
+            this.groupBox27.Controls.Add(this.dgvPLCPointInfo);
             resources.ApplyResources(this.groupBox27, "groupBox27");
             this.groupBox27.Name = "groupBox27";
             this.groupBox27.TabStop = false;
             // 
-            // dataGridView4
+            // dgvPLCPointInfo
             // 
-            this.dataGridView4.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            resources.ApplyResources(this.dataGridView4, "dataGridView4");
-            this.dataGridView4.Name = "dataGridView4";
-            this.dataGridView4.RowHeadersVisible = false;
-            this.dataGridView4.RowTemplate.Height = 27;
-            this.dataGridView4.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView4_CellContentClick);
+            this.dgvPLCPointInfo.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            resources.ApplyResources(this.dgvPLCPointInfo, "dgvPLCPointInfo");
+            this.dgvPLCPointInfo.Name = "dgvPLCPointInfo";
+            this.dgvPLCPointInfo.RowHeadersVisible = false;
+            this.dgvPLCPointInfo.RowTemplate.Height = 27;
+            this.dgvPLCPointInfo.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView4_CellContentClick);
             // 
             // groupBox18
             // 
@@ -1823,7 +1823,7 @@ namespace MesDatas
             resources.ApplyResources(this.button23, "button23");
             this.button23.Name = "button23";
             this.button23.UseVisualStyleBackColor = true;
-            this.button23.Click += new System.EventHandler(this.button23_Click);
+            this.button23.Click += new System.EventHandler(this.btnRefreshTable_Click);
             // 
             // tabPage14
             // 
@@ -3117,7 +3117,7 @@ namespace MesDatas
             resources.ApplyResources(this.btnRefreshAtBulletin, "btnRefreshAtBulletin");
             this.btnRefreshAtBulletin.Name = "btnRefreshAtBulletin";
             this.btnRefreshAtBulletin.UseVisualStyleBackColor = true;
-            this.btnRefreshAtBulletin.Click += new System.EventHandler(this.BtnRefreshAtBulletin);
+            this.btnRefreshAtBulletin.Click += new System.EventHandler(this.BtnRefreshAtDashboardSetting);
             // 
             // groupBox25
             // 
@@ -3372,7 +3372,7 @@ namespace MesDatas
             this.tabControl2.ResumeLayout(false);
             this.tabPage10.ResumeLayout(false);
             this.groupBox27.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView4)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvPLCPointInfo)).EndInit();
             this.groupBox18.ResumeLayout(false);
             this.groupBox18.PerformLayout();
             this.tabPage11.ResumeLayout(false);
@@ -3595,7 +3595,7 @@ namespace MesDatas
         private System.Windows.Forms.TextBox txtProductName;
         private System.Windows.Forms.Label label93;
         private System.Windows.Forms.Label label95;
-        private System.Windows.Forms.DataGridView dataGridView4;
+        private System.Windows.Forms.DataGridView dgvPLCPointInfo;
         private System.Windows.Forms.Button button23;
         private System.Windows.Forms.Panel panel19;
         private System.Windows.Forms.Label label45;

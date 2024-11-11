@@ -171,7 +171,6 @@ namespace BulletinBoard
             string stationInfo = "";
             foreach (DataRow row in stationTable.Rows)
             {
-                //stationInfo += "{" + row[0] + "}\n";
                 stationInfo += $"[{row[0]}]{Environment.NewLine}";
             }
 
@@ -471,19 +470,6 @@ namespace BulletinBoard
                     // 首先按竖线分割数据块
                     string[] dataBlocks = receivedData.Split('|');
 
-                    // 原本逻辑
-                    /*for (int i = 0; i < dataBlocks.Length; i++)
-                    {
-                        string[] dataArray = dataBlocks[i].Split(new char[] { '+' });
-                        if (dataArray.Length > 0)
-                        {
-                            if (!string.IsNullOrWhiteSpace(dataArray[0]))
-                            {
-                                parsedDataList.Add(dataArray);
-                            }
-                        }
-                    }*/
-
                     foreach (string block in dataBlocks)
                     {
                         // 再按加号分割每个数据块
@@ -544,16 +530,6 @@ namespace BulletinBoard
                     {
                         processedData[i] = processedData[i].Trim();
 
-                        // 原先逻辑：
-                        /*if (string.IsNullOrWhiteSpace(processedData[i]))
-                        {
-                            processedData[i] = "";
-                        }
-                        else if (processedData[i].Equals("null"))
-                        {
-                            processedData[i] = "";
-                        }*/
-
                         if (string.IsNullOrWhiteSpace(processedData[i]) ||
                             processedData[i].Equals("null"))
                         {
@@ -563,7 +539,7 @@ namespace BulletinBoard
                     mdbABC.EnsureConnectionOpened();
 
                     // 根据数据类型进行相应处理
-                    // 0: 新工位配置
+                    // 0: 新工位配置；0+工位名称集合
                     // 1: 故障信息
                     // 1+故障所在工位+机台名称+故障状态+故障的描述+触发故障的开始时间 
                     // 1+故障所在工位+机台名称+故障状态+故障的描述+触发故障的结束时间
@@ -573,7 +549,7 @@ namespace BulletinBoard
                     // 3+工位+工单数量+完成数量+完成率+合格率+整体节拍+生产产品数量（总数）+ 工序时间+利用时间+负荷时间
                     // 4: 易损件信息
                     // 4+易损件所在工位+机台名称+ 易损件所在位置+易损件名称+易损件理论使用次数易损件已使用次数
-                    // 5: 工位状态
+                    // 5: 工位状态；|5+机台名称|
                     // 6: 日志信息
 
                     switch (processedData[0])
@@ -651,7 +627,7 @@ namespace BulletinBoard
         /// </remarks>
         private void ProcessStationConfig(string[] configData)  // 新增方法，原来在case "0"中的逻辑
         {
-            DataRow[] existingStations = stationTable.Select($"Model = '{configData[1]}'");
+            DataRow[] existingStations = stationTable.Select($" Model = '{configData[1]}' ");
             if (existingStations.Length == 0)
             {
                 try
@@ -703,7 +679,7 @@ namespace BulletinBoard
         }
 
         /// <summary>
-        /// 根据客户端IP添加对应的机台名称
+        /// 更新客户端连接信息
         /// </summary>
         /// <param name="sourceIP"></param>
         /// <param name="dataArray"></param>
