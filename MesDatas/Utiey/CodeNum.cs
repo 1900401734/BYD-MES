@@ -493,7 +493,7 @@ namespace MesDatas.Utiey
         /// </summary>
         /// <param name="barcodeAndFixturesInfo">包含条码验证规则和工装编号的字符串</param>
         /// <returns>提取的条码验证规则</returns>
-        public static string ExtractBarcodeValidationRule(string barcodeAndFixturesInfo)
+        public static string ExtractBarcodeVerificationRule(string barcodeAndFixturesInfo)
         {
             string barcodeRule = "";
             string[] array = barcodeAndFixturesInfo.Split('|');

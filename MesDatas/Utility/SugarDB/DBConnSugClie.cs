@@ -55,7 +55,6 @@ namespace MesDatas.Utility.SugarDB
             }
         }
 
-        static NLog.Logger loggerMESData = NLog.LogManager.GetLogger("ParametLog");
         private static SqlSugarClient GetSQLSugarConnStr(string Dbtypele, string ConnnectString, bool Isfile, string DbName)
         {
             if (ConnnectString == null || ConnnectString.Trim() == "")
@@ -75,7 +74,6 @@ namespace MesDatas.Utility.SugarDB
             db.Aop.OnLogExecuting = (sql, pars) =>
             {
                 string log = $"{UtilMethods.GetNativeSql(sql, pars)}\n";
-                loggerMESData.Trace(log);
             };
             //创建数据库库
             if (Isfile)

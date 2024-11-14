@@ -60,7 +60,7 @@ namespace MesDatas.DatasModel
 
         [SugarColumn(ColumnName = "QRcodeVerS", IsNullable = true)]
         [DisplayName("二维码验证")]
-        public bool QRcodeVerS { get; set; }            // 二维码验证 
+        public bool IsEnableQRcodeVerify { get; set; }            // 二维码验证 
 
         public ushort GetBarcodeLength()
         {
@@ -85,7 +85,7 @@ namespace MesDatas.DatasModel
             barcodeVefictn.ErrorPrompt = "条码验证失败";
             barcodeVefictn.MesErrorPrompt = "MES条码验证失败";
             barcodeVefictn.BarcodeVerS = true;  // 条码验证
-            barcodeVefictn.QRcodeVerS = false;  // 二维码验证
+            barcodeVefictn.IsEnableQRcodeVerify = false;  // 二维码验证
             return barcodeVefictn;
         }
 

@@ -39,7 +39,6 @@ namespace MesDatas
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.skinEngine1 = new Sunisoft.IrisSkin.SkinEngine(((System.ComponentModel.Component)(this)));
-            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.tabControl4 = new System.Windows.Forms.TabControl();
             this.tabPage15 = new System.Windows.Forms.TabPage();
@@ -171,12 +170,24 @@ namespace MesDatas
             this.panel19 = new System.Windows.Forms.Panel();
             this.tabControl3 = new System.Windows.Forms.TabControl();
             this.tabPage12 = new System.Windows.Forms.TabPage();
+            this.groupBox43 = new System.Windows.Forms.GroupBox();
+            this.label43 = new System.Windows.Forms.Label();
+            this.txtSN = new System.Windows.Forms.TextBox();
+            this.txtBarcodeNumber = new System.Windows.Forms.TextBox();
+            this.label38 = new System.Windows.Forms.Label();
+            this.lblBarcodeContent = new System.Windows.Forms.Label();
+            this.label50 = new System.Windows.Forms.Label();
+            this.label48 = new System.Windows.Forms.Label();
+            this.label52 = new System.Windows.Forms.Label();
+            this.label41 = new System.Windows.Forms.Label();
             this.groupBox32 = new System.Windows.Forms.GroupBox();
             this.chkBypassBarcodeValidation = new System.Windows.Forms.CheckBox();
+            this.chkGenerateBarcode = new System.Windows.Forms.CheckBox();
             this.chkBanLocalHistoricalData = new System.Windows.Forms.CheckBox();
             this.chkBypassLocalNgHistoricalData = new System.Windows.Forms.CheckBox();
             this.chkBypassFixtureValidation = new System.Windows.Forms.CheckBox();
             this.chkBypassQRcodeValidation = new System.Windows.Forms.CheckBox();
+            this.chkReadBarcodeSecondly = new System.Windows.Forms.CheckBox();
             this.groupBox29 = new System.Windows.Forms.GroupBox();
             this.label99 = new System.Windows.Forms.Label();
             this.label98 = new System.Windows.Forms.Label();
@@ -212,7 +223,6 @@ namespace MesDatas
             this.label5 = new System.Windows.Forms.Label();
             this.txt_port = new System.Windows.Forms.TextBox();
             this.txt_IP = new System.Windows.Forms.TextBox();
-            this.chkReadBarcodeSecondly = new System.Windows.Forms.CheckBox();
             this.tabPage13 = new System.Windows.Forms.TabPage();
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPage10 = new System.Windows.Forms.TabPage();
@@ -315,18 +325,18 @@ namespace MesDatas
             this.textBox16 = new System.Windows.Forms.TextBox();
             this.panel4 = new System.Windows.Forms.Panel();
             this.groupBox16 = new System.Windows.Forms.GroupBox();
-            this.btnRefreshDirectory = new System.Windows.Forms.Button();
+            this.btnRefresh = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.textBox_Code = new System.Windows.Forms.TextBox();
             this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
             this.dateTimePicker2 = new System.Windows.Forms.DateTimePicker();
             this.textBoxPath = new System.Windows.Forms.TextBox();
-            this.buttonSearch = new System.Windows.Forms.Button();
+            this.btnSearch = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
-            this.button13 = new System.Windows.Forms.Button();
+            this.btnExport = new System.Windows.Forms.Button();
             this.label15 = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
             this.数据源 = new System.Windows.Forms.GroupBox();
@@ -443,6 +453,8 @@ namespace MesDatas
             this.dataGridView5 = new System.Windows.Forms.DataGridView();
             this.label7 = new System.Windows.Forms.Label();
             this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
+            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.saveFileDialog2 = new System.Windows.Forms.SaveFileDialog();
             this.tabPage4.SuspendLayout();
             this.tabControl4.SuspendLayout();
             this.tabPage15.SuspendLayout();
@@ -471,6 +483,7 @@ namespace MesDatas
             this.panel19.SuspendLayout();
             this.tabControl3.SuspendLayout();
             this.tabPage12.SuspendLayout();
+            this.groupBox43.SuspendLayout();
             this.groupBox32.SuspendLayout();
             this.groupBox29.SuspendLayout();
             this.groupBox17.SuspendLayout();
@@ -1456,24 +1469,89 @@ namespace MesDatas
             // 
             // tabPage12
             // 
+            this.tabPage12.Controls.Add(this.groupBox43);
             this.tabPage12.Controls.Add(this.groupBox32);
             this.tabPage12.Controls.Add(this.groupBox29);
             this.tabPage12.Controls.Add(this.btnSaveAtSystemSetting);
             this.tabPage12.Controls.Add(this.groupBox17);
             this.tabPage12.Controls.Add(this.groupBox3);
             this.tabPage12.Controls.Add(this.groupBox5);
-            this.tabPage12.Controls.Add(this.chkReadBarcodeSecondly);
             resources.ApplyResources(this.tabPage12, "tabPage12");
             this.tabPage12.Name = "tabPage12";
             this.tabPage12.UseVisualStyleBackColor = true;
             // 
+            // groupBox43
+            // 
+            this.groupBox43.Controls.Add(this.label43);
+            this.groupBox43.Controls.Add(this.txtSN);
+            this.groupBox43.Controls.Add(this.txtBarcodeNumber);
+            this.groupBox43.Controls.Add(this.label38);
+            this.groupBox43.Controls.Add(this.lblBarcodeContent);
+            this.groupBox43.Controls.Add(this.label50);
+            this.groupBox43.Controls.Add(this.label48);
+            this.groupBox43.Controls.Add(this.label52);
+            this.groupBox43.Controls.Add(this.label41);
+            resources.ApplyResources(this.groupBox43, "groupBox43");
+            this.groupBox43.Name = "groupBox43";
+            this.groupBox43.TabStop = false;
+            // 
+            // label43
+            // 
+            resources.ApplyResources(this.label43, "label43");
+            this.label43.ForeColor = System.Drawing.Color.Red;
+            this.label43.Name = "label43";
+            // 
+            // txtSN
+            // 
+            resources.ApplyResources(this.txtSN, "txtSN");
+            this.txtSN.Name = "txtSN";
+            // 
+            // txtBarcodeNumber
+            // 
+            resources.ApplyResources(this.txtBarcodeNumber, "txtBarcodeNumber");
+            this.txtBarcodeNumber.Name = "txtBarcodeNumber";
+            // 
+            // label38
+            // 
+            resources.ApplyResources(this.label38, "label38");
+            this.label38.ForeColor = System.Drawing.Color.Red;
+            this.label38.Name = "label38";
+            // 
+            // lblBarcodeContent
+            // 
+            resources.ApplyResources(this.lblBarcodeContent, "lblBarcodeContent");
+            this.lblBarcodeContent.Name = "lblBarcodeContent";
+            // 
+            // label50
+            // 
+            resources.ApplyResources(this.label50, "label50");
+            this.label50.Name = "label50";
+            // 
+            // label48
+            // 
+            resources.ApplyResources(this.label48, "label48");
+            this.label48.ForeColor = System.Drawing.Color.Red;
+            this.label48.Name = "label48";
+            // 
+            // label52
+            // 
+            resources.ApplyResources(this.label52, "label52");
+            this.label52.Name = "label52";
+            // 
+            // label41
+            // 
+            resources.ApplyResources(this.label41, "label41");
+            this.label41.Name = "label41";
+            // 
             // groupBox32
             // 
             this.groupBox32.Controls.Add(this.chkBypassBarcodeValidation);
+            this.groupBox32.Controls.Add(this.chkGenerateBarcode);
             this.groupBox32.Controls.Add(this.chkBanLocalHistoricalData);
             this.groupBox32.Controls.Add(this.chkBypassLocalNgHistoricalData);
             this.groupBox32.Controls.Add(this.chkBypassFixtureValidation);
             this.groupBox32.Controls.Add(this.chkBypassQRcodeValidation);
+            this.groupBox32.Controls.Add(this.chkReadBarcodeSecondly);
             resources.ApplyResources(this.groupBox32, "groupBox32");
             this.groupBox32.Name = "groupBox32";
             this.groupBox32.TabStop = false;
@@ -1483,6 +1561,12 @@ namespace MesDatas
             resources.ApplyResources(this.chkBypassBarcodeValidation, "chkBypassBarcodeValidation");
             this.chkBypassBarcodeValidation.Name = "chkBypassBarcodeValidation";
             this.chkBypassBarcodeValidation.UseVisualStyleBackColor = true;
+            // 
+            // chkGenerateBarcode
+            // 
+            resources.ApplyResources(this.chkGenerateBarcode, "chkGenerateBarcode");
+            this.chkGenerateBarcode.Name = "chkGenerateBarcode";
+            this.chkGenerateBarcode.UseVisualStyleBackColor = true;
             // 
             // chkBanLocalHistoricalData
             // 
@@ -1507,6 +1591,12 @@ namespace MesDatas
             resources.ApplyResources(this.chkBypassQRcodeValidation, "chkBypassQRcodeValidation");
             this.chkBypassQRcodeValidation.Name = "chkBypassQRcodeValidation";
             this.chkBypassQRcodeValidation.UseVisualStyleBackColor = true;
+            // 
+            // chkReadBarcodeSecondly
+            // 
+            resources.ApplyResources(this.chkReadBarcodeSecondly, "chkReadBarcodeSecondly");
+            this.chkReadBarcodeSecondly.Name = "chkReadBarcodeSecondly";
+            this.chkReadBarcodeSecondly.UseVisualStyleBackColor = true;
             // 
             // groupBox29
             // 
@@ -1736,12 +1826,6 @@ namespace MesDatas
             // 
             resources.ApplyResources(this.txt_IP, "txt_IP");
             this.txt_IP.Name = "txt_IP";
-            // 
-            // chkReadBarcodeSecondly
-            // 
-            resources.ApplyResources(this.chkReadBarcodeSecondly, "chkReadBarcodeSecondly");
-            this.chkReadBarcodeSecondly.Name = "chkReadBarcodeSecondly";
-            this.chkReadBarcodeSecondly.UseVisualStyleBackColor = true;
             // 
             // tabPage13
             // 
@@ -2400,29 +2484,29 @@ namespace MesDatas
             // 
             // groupBox16
             // 
-            this.groupBox16.Controls.Add(this.btnRefreshDirectory);
+            this.groupBox16.Controls.Add(this.btnRefresh);
             this.groupBox16.Controls.Add(this.textBox1);
             this.groupBox16.Controls.Add(this.textBox_Code);
             this.groupBox16.Controls.Add(this.dateTimePicker1);
             this.groupBox16.Controls.Add(this.dateTimePicker2);
             this.groupBox16.Controls.Add(this.textBoxPath);
-            this.groupBox16.Controls.Add(this.buttonSearch);
+            this.groupBox16.Controls.Add(this.btnSearch);
             this.groupBox16.Controls.Add(this.label3);
             this.groupBox16.Controls.Add(this.label4);
             this.groupBox16.Controls.Add(this.label13);
             this.groupBox16.Controls.Add(this.label6);
-            this.groupBox16.Controls.Add(this.button13);
+            this.groupBox16.Controls.Add(this.btnExport);
             this.groupBox16.Controls.Add(this.label15);
             resources.ApplyResources(this.groupBox16, "groupBox16");
             this.groupBox16.Name = "groupBox16";
             this.groupBox16.TabStop = false;
             // 
-            // btnRefreshDirectory
+            // btnRefresh
             // 
-            resources.ApplyResources(this.btnRefreshDirectory, "btnRefreshDirectory");
-            this.btnRefreshDirectory.Name = "btnRefreshDirectory";
-            this.btnRefreshDirectory.UseVisualStyleBackColor = true;
-            this.btnRefreshDirectory.Click += new System.EventHandler(this.BtnRefreshDirectory_Click);
+            resources.ApplyResources(this.btnRefresh, "btnRefresh");
+            this.btnRefresh.Name = "btnRefresh";
+            this.btnRefresh.UseVisualStyleBackColor = true;
+            this.btnRefresh.Click += new System.EventHandler(this.BtnRefreshDirectory_Click);
             // 
             // textBox1
             // 
@@ -2454,13 +2538,13 @@ namespace MesDatas
             resources.ApplyResources(this.textBoxPath, "textBoxPath");
             this.textBoxPath.Name = "textBoxPath";
             // 
-            // buttonSearch
+            // btnSearch
             // 
-            this.buttonSearch.Cursor = System.Windows.Forms.Cursors.Hand;
-            resources.ApplyResources(this.buttonSearch, "buttonSearch");
-            this.buttonSearch.Name = "buttonSearch";
-            this.buttonSearch.UseVisualStyleBackColor = true;
-            this.buttonSearch.Click += new System.EventHandler(this.ButtonSearch_Click);
+            this.btnSearch.Cursor = System.Windows.Forms.Cursors.Hand;
+            resources.ApplyResources(this.btnSearch, "btnSearch");
+            this.btnSearch.Name = "btnSearch";
+            this.btnSearch.UseVisualStyleBackColor = true;
+            this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
             // 
             // label3
             // 
@@ -2482,13 +2566,13 @@ namespace MesDatas
             resources.ApplyResources(this.label6, "label6");
             this.label6.Name = "label6";
             // 
-            // button13
+            // btnExport
             // 
-            this.button13.Cursor = System.Windows.Forms.Cursors.Hand;
-            resources.ApplyResources(this.button13, "button13");
-            this.button13.Name = "button13";
-            this.button13.UseVisualStyleBackColor = true;
-            this.button13.Click += new System.EventHandler(this.ExportProductData);
+            this.btnExport.Cursor = System.Windows.Forms.Cursors.Hand;
+            resources.ApplyResources(this.btnExport, "btnExport");
+            this.btnExport.Name = "btnExport";
+            this.btnExport.UseVisualStyleBackColor = true;
+            this.btnExport.Click += new System.EventHandler(this.ExportProductData);
             // 
             // label15
             // 
@@ -2798,14 +2882,14 @@ namespace MesDatas
             resources.ApplyResources(this.button25, "button25");
             this.button25.Name = "button25";
             this.button25.UseVisualStyleBackColor = true;
-            this.button25.Click += new System.EventHandler(this.button25_Click_1);
+            this.button25.Click += new System.EventHandler(this.btnSendRecipeInfo_Click);
             // 
             // button22
             // 
             resources.ApplyResources(this.button22, "button22");
             this.button22.Name = "button22";
             this.button22.UseVisualStyleBackColor = true;
-            this.button22.Click += new System.EventHandler(this.button22_Click);
+            this.button22.Click += new System.EventHandler(this.btnSaveRecipeInfo_Click);
             // 
             // chkReadRecipeId_PLC
             // 
@@ -3251,7 +3335,7 @@ namespace MesDatas
             resources.ApplyResources(this.btnSaveRecipeConfig, "btnSaveRecipeConfig");
             this.btnSaveRecipeConfig.Name = "btnSaveRecipeConfig";
             this.btnSaveRecipeConfig.UseVisualStyleBackColor = true;
-            this.btnSaveRecipeConfig.Click += new System.EventHandler(this.button29_Click);
+            this.btnSaveRecipeConfig.Click += new System.EventHandler(this.btnSaveRecipeConfig_Click);
             // 
             // txtPointSets
             // 
@@ -3316,7 +3400,6 @@ namespace MesDatas
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Shown += new System.EventHandler(this.Form1_Shown);
-            this.Resize += new System.EventHandler(this.Form1_Resize);
             this.tabPage4.ResumeLayout(false);
             this.tabControl4.ResumeLayout(false);
             this.tabPage15.ResumeLayout(false);
@@ -3357,7 +3440,8 @@ namespace MesDatas
             this.panel19.ResumeLayout(false);
             this.tabControl3.ResumeLayout(false);
             this.tabPage12.ResumeLayout(false);
-            this.tabPage12.PerformLayout();
+            this.groupBox43.ResumeLayout(false);
+            this.groupBox43.PerformLayout();
             this.groupBox32.ResumeLayout(false);
             this.groupBox32.PerformLayout();
             this.groupBox29.ResumeLayout(false);
@@ -3469,7 +3553,6 @@ namespace MesDatas
         #endregion
         private System.Windows.Forms.BindingSource bindingSource1;
         private Sunisoft.IrisSkin.SkinEngine skinEngine1;
-        private System.Windows.Forms.SaveFileDialog saveFileDialog1;
         private System.Windows.Forms.TabPage tabPage4;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.Panel panel1;
@@ -3553,12 +3636,12 @@ namespace MesDatas
         private System.Windows.Forms.DateTimePicker dateTimePicker1;
         private System.Windows.Forms.DateTimePicker dateTimePicker2;
         private System.Windows.Forms.TextBox textBoxPath;
-        private System.Windows.Forms.Button buttonSearch;
+        private System.Windows.Forms.Button btnSearch;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Button button13;
+        private System.Windows.Forms.Button btnExport;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.GroupBox 数据源;
@@ -3858,7 +3941,7 @@ namespace MesDatas
         private System.Windows.Forms.GroupBox groupBox42;
         private System.Windows.Forms.Label lblReaderState;
         private System.Windows.Forms.Label label131;
-        private System.Windows.Forms.Button btnRefreshDirectory;
+        private System.Windows.Forms.Button btnRefresh;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
@@ -3872,6 +3955,19 @@ namespace MesDatas
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox txtPrintCount;
         private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.GroupBox groupBox43;
+        private System.Windows.Forms.CheckBox chkGenerateBarcode;
+        private System.Windows.Forms.Label label38;
+        private System.Windows.Forms.Label label43;
+        private System.Windows.Forms.TextBox txtBarcodeNumber;
+        private System.Windows.Forms.Label label41;
+        private System.Windows.Forms.Label lblBarcodeContent;
+        private System.Windows.Forms.Label label50;
+        private System.Windows.Forms.Label label48;
+        private System.Windows.Forms.TextBox txtSN;
+        private System.Windows.Forms.Label label52;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog1;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog2;
     }
 }
 

@@ -1,5 +1,6 @@
 using MesDatas.DatasServer;
 using SqlSugar;
+using System;
 namespace MesDatas.DatasModel
 {
     [SugarTable("SytemSetDerived")]
@@ -49,6 +50,15 @@ namespace MesDatas.DatasModel
 
         [SugarColumn(ColumnName = "TotalProductPoint", IsNullable = true)]
         public string TotalProductPoint { get; set; }   // 总结果点位
+
+        [SugarColumn(ColumnName = "ISAutoGenerate", IsNullable = true)]
+        public bool ISAutoGenerateBarcode { get; set; }   // 是否自动生成条码
+
+        [SugarColumn(ColumnName = "SerialNumber", IsNullable = true)]
+        public string SerialNumber { get; set; }    // 流水号：5位，每天重置，范围 00000~99999） 
+
+        [SugarColumn(ColumnName = "BarcodeNumber", IsNullable = true)]
+        public string BarcodeNumber { get; set; }   // 码号
 
         public static SytemSetDerived SytemSetDerivedDMESS()
         {

@@ -25,11 +25,11 @@ namespace MesDatas.DatasModel
         [SugarColumn(ColumnName = "PtailBtw", IsNullable = true)]
         public string PModel { get; set; }        // 条码尾 (产品型号)
 
-        [SugarColumn(ColumnName = "TFrontBtw", IsNullable = true)]
-        public string TFrontBtw { get; set; }       // 条码前 
+        [SugarColumn(ColumnName = "BarcodeNumber", IsNullable = true)]
+        public string BarcodeNumber { get; set; }       // 码号
 
-        [SugarColumn(ColumnName = "TmonarchBtw", IsNullable = true)]
-        public string SerialNumber { get; set; }     // 条码后（流水号：5位，每天重置，范围 00000~99999） 
+        [SugarColumn(ColumnName = "SerialNumber", IsNullable = true)]
+        public string SerialNumber { get; set; }     // 流水号：5位，每天重置，范围 00000~99999） 
 
         [SugarColumn(ColumnName = "LastSavedDate", IsNullable = true)]
         public DateTime LastSavedDate { get; set; }     // 流水号最后保存日期
