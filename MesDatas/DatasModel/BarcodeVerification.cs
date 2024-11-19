@@ -42,6 +42,10 @@ namespace MesDatas.DatasModel
         [DisplayName("重复条码提示")]
         public string RepeatcodePrompt { get; set; }    // 重复条码提示
 
+        [SugarColumn(ColumnName = "NoVerificationRulePrompt", DefaultValue = "未选择条码验证规则", IsNullable = true)]
+        [DisplayName("无条码验证规则提示")]
+        public string NoVerificationRulePrompt { get; set; }    // 未选择条码验证规则提示
+
         [SugarColumn(ColumnName = "PassPrompt", DefaultValue = "条码验证通过", IsNullable = true)]
         [DisplayName("验证通过提示")]
         public string PassPrompt { get; set; }          // 验证通过提示 
@@ -81,6 +85,7 @@ namespace MesDatas.DatasModel
             barcodeVefictn.ErrorBarcodeEndPLC = "D1005";
             barcodeVefictn.NoBarcodePrompt = "未读到条码";
             barcodeVefictn.RepeatcodePrompt = "重复条码";
+            barcodeVefictn.NoVerificationRulePrompt = "未选择条码验证规则";
             barcodeVefictn.PassPrompt = "条码验证通过";
             barcodeVefictn.ErrorPrompt = "条码验证失败";
             barcodeVefictn.MesErrorPrompt = "MES条码验证失败";
@@ -98,6 +103,10 @@ namespace MesDatas.DatasModel
             if (string.IsNullOrWhiteSpace(RepeatcodePrompt))
             {
                 RepeatcodePrompt = "重复条码";
+            }
+            if (string.IsNullOrWhiteSpace(NoVerificationRulePrompt))
+            {
+                NoVerificationRulePrompt = "未选择条码验证规则";
             }
             if (string.IsNullOrWhiteSpace(PassPrompt))
             {

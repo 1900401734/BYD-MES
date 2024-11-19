@@ -249,28 +249,28 @@
   <data name="&gt;&gt;chkPlcControlPrint.ZOrder" xml:space="preserve">
     <value>3</value>
   </data>
-  <data name="txtEndPrintPoint.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="txtEndPoint_Print.Location" type="System.Drawing.Point, System.Drawing">
     <value>128, 140</value>
   </data>
-  <data name="txtEndPrintPoint.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+  <data name="txtEndPoint_Print.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 4, 4, 4</value>
   </data>
-  <data name="txtEndPrintPoint.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="txtEndPoint_Print.Size" type="System.Drawing.Size, System.Drawing">
     <value>208, 35</value>
   </data>
-  <data name="txtEndPrintPoint.TabIndex" type="System.Int32, mscorlib">
+  <data name="txtEndPoint_Print.TabIndex" type="System.Int32, mscorlib">
     <value>73</value>
   </data>
-  <data name="&gt;&gt;txtEndPrintPoint.Name" xml:space="preserve">
-    <value>txtEndPrintPoint</value>
+  <data name="&gt;&gt;txtEndPoint_Print.Name" xml:space="preserve">
+    <value>txtEndPoint_Print</value>
   </data>
-  <data name="&gt;&gt;txtEndPrintPoint.Type" xml:space="preserve">
+  <data name="&gt;&gt;txtEndPoint_Print.Type" xml:space="preserve">
     <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;txtEndPrintPoint.Parent" xml:space="preserve">
+  <data name="&gt;&gt;txtEndPoint_Print.Parent" xml:space="preserve">
     <value>groupBox40</value>
   </data>
-  <data name="&gt;&gt;txtEndPrintPoint.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;txtEndPoint_Print.ZOrder" xml:space="preserve">
     <value>4</value>
   </data>
   <data name="label138.AutoSize" type="System.Boolean, mscorlib">
@@ -339,28 +339,28 @@
   <data name="&gt;&gt;label126.ZOrder" xml:space="preserve">
     <value>6</value>
   </data>
-  <data name="txtStartPrintPoint.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="txtStartPoint_print.Location" type="System.Drawing.Point, System.Drawing">
     <value>128, 88</value>
   </data>
-  <data name="txtStartPrintPoint.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+  <data name="txtStartPoint_print.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 4, 4, 4</value>
   </data>
-  <data name="txtStartPrintPoint.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="txtStartPoint_print.Size" type="System.Drawing.Size, System.Drawing">
     <value>208, 35</value>
   </data>
-  <data name="txtStartPrintPoint.TabIndex" type="System.Int32, mscorlib">
+  <data name="txtStartPoint_print.TabIndex" type="System.Int32, mscorlib">
     <value>71</value>
   </data>
-  <data name="&gt;&gt;txtStartPrintPoint.Name" xml:space="preserve">
-    <value>txtStartPrintPoint</value>
+  <data name="&gt;&gt;txtStartPoint_print.Name" xml:space="preserve">
+    <value>txtStartPoint_print</value>
   </data>
-  <data name="&gt;&gt;txtStartPrintPoint.Type" xml:space="preserve">
+  <data name="&gt;&gt;txtStartPoint_print.Type" xml:space="preserve">
     <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;txtStartPrintPoint.Parent" xml:space="preserve">
+  <data name="&gt;&gt;txtStartPoint_print.Parent" xml:space="preserve">
     <value>groupBox40</value>
   </data>
-  <data name="&gt;&gt;txtStartPrintPoint.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;txtStartPoint_print.ZOrder" xml:space="preserve">
     <value>7</value>
   </data>
   <data name="label137.AutoSize" type="System.Boolean, mscorlib">
@@ -456,94 +456,148 @@
   <data name="&gt;&gt;tabPage15.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
-  <data name="button31.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
+  <data name="cmbInstalledPrinters.Location" type="System.Drawing.Point, System.Drawing">
+    <value>911, 616</value>
   </data>
-  <data name="button31.Location" type="System.Drawing.Point, System.Drawing">
-    <value>681, 43</value>
-  </data>
-  <data name="button31.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 4, 4, 4</value>
-  </data>
-  <data name="button31.Size" type="System.Drawing.Size, System.Drawing">
-    <value>151, 80</value>
-  </data>
-  <data name="button31.TabIndex" type="System.Int32, mscorlib">
-    <value>2</value>
-  </data>
-  <data name="button31.Text" xml:space="preserve">
-    <value>连接</value>
-  </data>
-  <data name="&gt;&gt;button31.Name" xml:space="preserve">
-    <value>button31</value>
-  </data>
-  <data name="&gt;&gt;button31.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;button31.Parent" xml:space="preserve">
-    <value>groupBox20</value>
-  </data>
-  <data name="&gt;&gt;button31.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="btnShowFilePath.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="btnShowFilePath.Location" type="System.Drawing.Point, System.Drawing">
-    <value>238, 204</value>
-  </data>
-  <data name="btnShowFilePath.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 4, 4, 4</value>
-  </data>
-  <data name="btnShowFilePath.Size" type="System.Drawing.Size, System.Drawing">
-    <value>170, 60</value>
-  </data>
-  <data name="btnShowFilePath.TabIndex" type="System.Int32, mscorlib">
-    <value>16</value>
-  </data>
-  <data name="btnShowFilePath.Text" xml:space="preserve">
-    <value>查看文件位置</value>
-  </data>
-  <data name="&gt;&gt;btnShowFilePath.Name" xml:space="preserve">
-    <value>btnShowFilePath</value>
-  </data>
-  <data name="&gt;&gt;btnShowFilePath.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;btnShowFilePath.Parent" xml:space="preserve">
-    <value>groupBox26</value>
-  </data>
-  <data name="&gt;&gt;btnShowFilePath.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="button30.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="button30.Location" type="System.Drawing.Point, System.Drawing">
-    <value>659, 204</value>
-  </data>
-  <data name="button30.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+  <data name="cmbInstalledPrinters.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>2, 2, 2, 2</value>
   </data>
-  <data name="button30.Size" type="System.Drawing.Size, System.Drawing">
-    <value>170, 60</value>
+  <data name="cmbInstalledPrinters.Size" type="System.Drawing.Size, System.Drawing">
+    <value>433, 38</value>
   </data>
-  <data name="button30.TabIndex" type="System.Int32, mscorlib">
-    <value>17</value>
+  <data name="cmbInstalledPrinters.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
   </data>
-  <data name="button30.Text" xml:space="preserve">
+  <data name="&gt;&gt;cmbInstalledPrinters.Name" xml:space="preserve">
+    <value>cmbInstalledPrinters</value>
+  </data>
+  <data name="&gt;&gt;cmbInstalledPrinters.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;cmbInstalledPrinters.Parent" xml:space="preserve">
+    <value>tabPage16</value>
+  </data>
+  <data name="&gt;&gt;cmbInstalledPrinters.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="btnPrint_ZebraTest.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="btnPrint_ZebraTest.Location" type="System.Drawing.Point, System.Drawing">
+    <value>1050, 663</value>
+  </data>
+  <data name="btnPrint_ZebraTest.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>2, 2, 2, 2</value>
+  </data>
+  <data name="btnPrint_ZebraTest.Size" type="System.Drawing.Size, System.Drawing">
+    <value>166, 60</value>
+  </data>
+  <data name="btnPrint_ZebraTest.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="btnPrint_ZebraTest.Text" xml:space="preserve">
     <value>打印</value>
   </data>
-  <data name="&gt;&gt;button30.Name" xml:space="preserve">
-    <value>button30</value>
+  <data name="&gt;&gt;btnPrint_ZebraTest.Name" xml:space="preserve">
+    <value>btnPrint_ZebraTest</value>
   </data>
-  <data name="&gt;&gt;button30.Type" xml:space="preserve">
+  <data name="&gt;&gt;btnPrint_ZebraTest.Type" xml:space="preserve">
     <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;button30.Parent" xml:space="preserve">
+  <data name="&gt;&gt;btnPrint_ZebraTest.Parent" xml:space="preserve">
+    <value>tabPage16</value>
+  </data>
+  <data name="&gt;&gt;btnPrint_ZebraTest.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="btnConectPrinter_TCP.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="btnConectPrinter_TCP.Location" type="System.Drawing.Point, System.Drawing">
+    <value>681, 43</value>
+  </data>
+  <data name="btnConectPrinter_TCP.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="btnConectPrinter_TCP.Size" type="System.Drawing.Size, System.Drawing">
+    <value>151, 80</value>
+  </data>
+  <data name="btnConectPrinter_TCP.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="btnConectPrinter_TCP.Text" xml:space="preserve">
+    <value>连接</value>
+  </data>
+  <data name="&gt;&gt;btnConectPrinter_TCP.Name" xml:space="preserve">
+    <value>btnConectPrinter_TCP</value>
+  </data>
+  <data name="&gt;&gt;btnConectPrinter_TCP.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;btnConectPrinter_TCP.Parent" xml:space="preserve">
+    <value>groupBox20</value>
+  </data>
+  <data name="&gt;&gt;btnConectPrinter_TCP.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="btnShowFilePath_TCP.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="btnShowFilePath_TCP.Location" type="System.Drawing.Point, System.Drawing">
+    <value>238, 204</value>
+  </data>
+  <data name="btnShowFilePath_TCP.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 4, 4, 4</value>
+  </data>
+  <data name="btnShowFilePath_TCP.Size" type="System.Drawing.Size, System.Drawing">
+    <value>170, 60</value>
+  </data>
+  <data name="btnShowFilePath_TCP.TabIndex" type="System.Int32, mscorlib">
+    <value>16</value>
+  </data>
+  <data name="btnShowFilePath_TCP.Text" xml:space="preserve">
+    <value>查看文件位置</value>
+  </data>
+  <data name="&gt;&gt;btnShowFilePath_TCP.Name" xml:space="preserve">
+    <value>btnShowFilePath_TCP</value>
+  </data>
+  <data name="&gt;&gt;btnShowFilePath_TCP.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;btnShowFilePath_TCP.Parent" xml:space="preserve">
     <value>groupBox26</value>
   </data>
-  <data name="&gt;&gt;button30.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;btnShowFilePath_TCP.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="btnPrint_TCP.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="btnPrint_TCP.Location" type="System.Drawing.Point, System.Drawing">
+    <value>659, 204</value>
+  </data>
+  <data name="btnPrint_TCP.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>2, 2, 2, 2</value>
+  </data>
+  <data name="btnPrint_TCP.Size" type="System.Drawing.Size, System.Drawing">
+    <value>170, 60</value>
+  </data>
+  <data name="btnPrint_TCP.TabIndex" type="System.Int32, mscorlib">
+    <value>17</value>
+  </data>
+  <data name="btnPrint_TCP.Text" xml:space="preserve">
+    <value>打印</value>
+  </data>
+  <data name="&gt;&gt;btnPrint_TCP.Name" xml:space="preserve">
+    <value>btnPrint_TCP</value>
+  </data>
+  <data name="&gt;&gt;btnPrint_TCP.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;btnPrint_TCP.Parent" xml:space="preserve">
+    <value>groupBox26</value>
+  </data>
+  <data name="&gt;&gt;btnPrint_TCP.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
   <data name="lblPrnFilePath_TCP.AutoSize" type="System.Boolean, mscorlib">
@@ -651,58 +705,58 @@
   <data name="&gt;&gt;label47.ZOrder" xml:space="preserve">
     <value>4</value>
   </data>
-  <data name="button19.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+  <data name="btnSave_TCP.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
   </data>
-  <data name="button19.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="btnSave_TCP.Location" type="System.Drawing.Point, System.Drawing">
     <value>448, 204</value>
   </data>
-  <data name="button19.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+  <data name="btnSave_TCP.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>2, 2, 2, 2</value>
   </data>
-  <data name="button19.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="btnSave_TCP.Size" type="System.Drawing.Size, System.Drawing">
     <value>170, 60</value>
   </data>
-  <data name="button19.TabIndex" type="System.Int32, mscorlib">
+  <data name="btnSave_TCP.TabIndex" type="System.Int32, mscorlib">
     <value>13</value>
   </data>
-  <data name="button19.Text" xml:space="preserve">
+  <data name="btnSave_TCP.Text" xml:space="preserve">
     <value>保存</value>
   </data>
-  <data name="&gt;&gt;button19.Name" xml:space="preserve">
-    <value>button19</value>
+  <data name="&gt;&gt;btnSave_TCP.Name" xml:space="preserve">
+    <value>btnSave_TCP</value>
   </data>
-  <data name="&gt;&gt;button19.Type" xml:space="preserve">
+  <data name="&gt;&gt;btnSave_TCP.Type" xml:space="preserve">
     <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;button19.Parent" xml:space="preserve">
+  <data name="&gt;&gt;btnSave_TCP.Parent" xml:space="preserve">
     <value>groupBox26</value>
   </data>
-  <data name="&gt;&gt;button19.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;btnSave_TCP.ZOrder" xml:space="preserve">
     <value>5</value>
   </data>
-  <data name="comboBox1.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="cboPrintFile_TCP.Location" type="System.Drawing.Point, System.Drawing">
     <value>130, 134</value>
   </data>
-  <data name="comboBox1.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+  <data name="cboPrintFile_TCP.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>2, 2, 2, 2</value>
   </data>
-  <data name="comboBox1.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="cboPrintFile_TCP.Size" type="System.Drawing.Size, System.Drawing">
     <value>700, 38</value>
   </data>
-  <data name="comboBox1.TabIndex" type="System.Int32, mscorlib">
+  <data name="cboPrintFile_TCP.TabIndex" type="System.Int32, mscorlib">
     <value>15</value>
   </data>
-  <data name="&gt;&gt;comboBox1.Name" xml:space="preserve">
-    <value>comboBox1</value>
+  <data name="&gt;&gt;cboPrintFile_TCP.Name" xml:space="preserve">
+    <value>cboPrintFile_TCP</value>
   </data>
-  <data name="&gt;&gt;comboBox1.Type" xml:space="preserve">
+  <data name="&gt;&gt;cboPrintFile_TCP.Type" xml:space="preserve">
     <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;comboBox1.Parent" xml:space="preserve">
+  <data name="&gt;&gt;cboPrintFile_TCP.Parent" xml:space="preserve">
     <value>groupBox26</value>
   </data>
-  <data name="&gt;&gt;comboBox1.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;cboPrintFile_TCP.ZOrder" xml:space="preserve">
     <value>6</value>
   </data>
   <data name="btnChangePath_TCP.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
@@ -946,37 +1000,37 @@
   <data name="&gt;&gt;label81.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
-  <data name="checkBox3.AutoSize" type="System.Boolean, mscorlib">
+  <data name="chkUseFront_TCP.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
-  <data name="checkBox3.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+  <data name="chkUseFront_TCP.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
   </data>
-  <data name="checkBox3.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="chkUseFront_TCP.Location" type="System.Drawing.Point, System.Drawing">
     <value>671, 92</value>
   </data>
-  <data name="checkBox3.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+  <data name="chkUseFront_TCP.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>2, 2, 2, 2</value>
   </data>
-  <data name="checkBox3.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="chkUseFront_TCP.Size" type="System.Drawing.Size, System.Drawing">
     <value>127, 34</value>
   </data>
-  <data name="checkBox3.TabIndex" type="System.Int32, mscorlib">
+  <data name="chkUseFront_TCP.TabIndex" type="System.Int32, mscorlib">
     <value>6</value>
   </data>
-  <data name="checkBox3.Text" xml:space="preserve">
+  <data name="chkUseFront_TCP.Text" xml:space="preserve">
     <value>使用文字</value>
   </data>
-  <data name="&gt;&gt;checkBox3.Name" xml:space="preserve">
-    <value>checkBox3</value>
+  <data name="&gt;&gt;chkUseFront_TCP.Name" xml:space="preserve">
+    <value>chkUseFront_TCP</value>
   </data>
-  <data name="&gt;&gt;checkBox3.Type" xml:space="preserve">
+  <data name="&gt;&gt;chkUseFront_TCP.Type" xml:space="preserve">
     <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;checkBox3.Parent" xml:space="preserve">
+  <data name="&gt;&gt;chkUseFront_TCP.Parent" xml:space="preserve">
     <value>groupBox24</value>
   </data>
-  <data name="&gt;&gt;checkBox3.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;chkUseFront_TCP.ZOrder" xml:space="preserve">
     <value>2</value>
   </data>
   <data name="txtPModel_TCP.Location" type="System.Drawing.Point, System.Drawing">
@@ -1003,28 +1057,28 @@
   <data name="&gt;&gt;txtPModel_TCP.ZOrder" xml:space="preserve">
     <value>3</value>
   </data>
-  <data name="textBox27.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="txtAfter_TCP.Location" type="System.Drawing.Point, System.Drawing">
     <value>86, 90</value>
   </data>
-  <data name="textBox27.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+  <data name="txtAfter_TCP.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>2, 2, 2, 2</value>
   </data>
-  <data name="textBox27.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="txtAfter_TCP.Size" type="System.Drawing.Size, System.Drawing">
     <value>569, 35</value>
   </data>
-  <data name="textBox27.TabIndex" type="System.Int32, mscorlib">
+  <data name="txtAfter_TCP.TabIndex" type="System.Int32, mscorlib">
     <value>4</value>
   </data>
-  <data name="&gt;&gt;textBox27.Name" xml:space="preserve">
-    <value>textBox27</value>
+  <data name="&gt;&gt;txtAfter_TCP.Name" xml:space="preserve">
+    <value>txtAfter_TCP</value>
   </data>
-  <data name="&gt;&gt;textBox27.Type" xml:space="preserve">
+  <data name="&gt;&gt;txtAfter_TCP.Type" xml:space="preserve">
     <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;textBox27.Parent" xml:space="preserve">
+  <data name="&gt;&gt;txtAfter_TCP.Parent" xml:space="preserve">
     <value>groupBox24</value>
   </data>
-  <data name="&gt;&gt;textBox27.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;txtAfter_TCP.ZOrder" xml:space="preserve">
     <value>4</value>
   </data>
   <data name="label76.AutoSize" type="System.Boolean, mscorlib">
@@ -1093,28 +1147,28 @@
   <data name="&gt;&gt;label68.ZOrder" xml:space="preserve">
     <value>6</value>
   </data>
-  <data name="textBox20.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="txtBefore_TCP.Location" type="System.Drawing.Point, System.Drawing">
     <value>86, 37</value>
   </data>
-  <data name="textBox20.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+  <data name="txtBefore_TCP.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>2, 2, 2, 2</value>
   </data>
-  <data name="textBox20.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="txtBefore_TCP.Size" type="System.Drawing.Size, System.Drawing">
     <value>569, 35</value>
   </data>
-  <data name="textBox20.TabIndex" type="System.Int32, mscorlib">
+  <data name="txtBefore_TCP.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
   </data>
-  <data name="&gt;&gt;textBox20.Name" xml:space="preserve">
-    <value>textBox20</value>
+  <data name="&gt;&gt;txtBefore_TCP.Name" xml:space="preserve">
+    <value>txtBefore_TCP</value>
   </data>
-  <data name="&gt;&gt;textBox20.Type" xml:space="preserve">
+  <data name="&gt;&gt;txtBefore_TCP.Type" xml:space="preserve">
     <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;textBox20.Parent" xml:space="preserve">
+  <data name="&gt;&gt;txtBefore_TCP.Parent" xml:space="preserve">
     <value>groupBox24</value>
   </data>
-  <data name="&gt;&gt;textBox20.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;txtBefore_TCP.ZOrder" xml:space="preserve">
     <value>7</value>
   </data>
   <data name="label67.AutoSize" type="System.Boolean, mscorlib">
@@ -1249,31 +1303,31 @@
   <data name="&gt;&gt;label79.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
-  <data name="textBox21.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="txtPrintCount_TCP.Location" type="System.Drawing.Point, System.Drawing">
     <value>122, 140</value>
   </data>
-  <data name="textBox21.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+  <data name="txtPrintCount_TCP.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>2, 2, 2, 2</value>
   </data>
-  <data name="textBox21.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="txtPrintCount_TCP.Size" type="System.Drawing.Size, System.Drawing">
     <value>533, 35</value>
   </data>
-  <data name="textBox21.TabIndex" type="System.Int32, mscorlib">
+  <data name="txtPrintCount_TCP.TabIndex" type="System.Int32, mscorlib">
     <value>11</value>
   </data>
-  <data name="textBox21.Text" xml:space="preserve">
+  <data name="txtPrintCount_TCP.Text" xml:space="preserve">
     <value>1</value>
   </data>
-  <data name="&gt;&gt;textBox21.Name" xml:space="preserve">
-    <value>textBox21</value>
+  <data name="&gt;&gt;txtPrintCount_TCP.Name" xml:space="preserve">
+    <value>txtPrintCount_TCP</value>
   </data>
-  <data name="&gt;&gt;textBox21.Type" xml:space="preserve">
+  <data name="&gt;&gt;txtPrintCount_TCP.Type" xml:space="preserve">
     <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;textBox21.Parent" xml:space="preserve">
+  <data name="&gt;&gt;txtPrintCount_TCP.Parent" xml:space="preserve">
     <value>groupBox23</value>
   </data>
-  <data name="&gt;&gt;textBox21.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;txtPrintCount_TCP.ZOrder" xml:space="preserve">
     <value>2</value>
   </data>
   <data name="label65.AutoSize" type="System.Boolean, mscorlib">
@@ -1309,37 +1363,37 @@
   <data name="&gt;&gt;label65.ZOrder" xml:space="preserve">
     <value>3</value>
   </data>
-  <data name="label62.AutoSize" type="System.Boolean, mscorlib">
+  <data name="lblContent_TCP.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
-  <data name="label62.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+  <data name="lblContent_TCP.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
   </data>
-  <data name="label62.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="lblContent_TCP.Location" type="System.Drawing.Point, System.Drawing">
     <value>130, 188</value>
   </data>
-  <data name="label62.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+  <data name="lblContent_TCP.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>2, 0, 2, 0</value>
   </data>
-  <data name="label62.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="lblContent_TCP.Size" type="System.Drawing.Size, System.Drawing">
     <value>35, 30</value>
   </data>
-  <data name="label62.TabIndex" type="System.Int32, mscorlib">
+  <data name="lblContent_TCP.TabIndex" type="System.Int32, mscorlib">
     <value>9</value>
   </data>
-  <data name="label62.Text" xml:space="preserve">
+  <data name="lblContent_TCP.Text" xml:space="preserve">
     <value>无</value>
   </data>
-  <data name="&gt;&gt;label62.Name" xml:space="preserve">
-    <value>label62</value>
+  <data name="&gt;&gt;lblContent_TCP.Name" xml:space="preserve">
+    <value>lblContent_TCP</value>
   </data>
-  <data name="&gt;&gt;label62.Type" xml:space="preserve">
+  <data name="&gt;&gt;lblContent_TCP.Type" xml:space="preserve">
     <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;label62.Parent" xml:space="preserve">
+  <data name="&gt;&gt;lblContent_TCP.Parent" xml:space="preserve">
     <value>groupBox23</value>
   </data>
-  <data name="&gt;&gt;label62.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;lblContent_TCP.ZOrder" xml:space="preserve">
     <value>4</value>
   </data>
   <data name="label53.AutoSize" type="System.Boolean, mscorlib">
@@ -1375,28 +1429,28 @@
   <data name="&gt;&gt;label53.ZOrder" xml:space="preserve">
     <value>5</value>
   </data>
-  <data name="textBox26.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="txtSN_TCP.Location" type="System.Drawing.Point, System.Drawing">
     <value>122, 86</value>
   </data>
-  <data name="textBox26.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+  <data name="txtSN_TCP.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>2, 2, 2, 2</value>
   </data>
-  <data name="textBox26.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="txtSN_TCP.Size" type="System.Drawing.Size, System.Drawing">
     <value>533, 35</value>
   </data>
-  <data name="textBox26.TabIndex" type="System.Int32, mscorlib">
+  <data name="txtSN_TCP.TabIndex" type="System.Int32, mscorlib">
     <value>6</value>
   </data>
-  <data name="&gt;&gt;textBox26.Name" xml:space="preserve">
-    <value>textBox26</value>
+  <data name="&gt;&gt;txtSN_TCP.Name" xml:space="preserve">
+    <value>txtSN_TCP</value>
   </data>
-  <data name="&gt;&gt;textBox26.Type" xml:space="preserve">
+  <data name="&gt;&gt;txtSN_TCP.Type" xml:space="preserve">
     <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;textBox26.Parent" xml:space="preserve">
+  <data name="&gt;&gt;txtSN_TCP.Parent" xml:space="preserve">
     <value>groupBox23</value>
   </data>
-  <data name="&gt;&gt;textBox26.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;txtSN_TCP.ZOrder" xml:space="preserve">
     <value>6</value>
   </data>
   <data name="label61.AutoSize" type="System.Boolean, mscorlib">
@@ -1432,28 +1486,28 @@
   <data name="&gt;&gt;label61.ZOrder" xml:space="preserve">
     <value>7</value>
   </data>
-  <data name="textBox25.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="txtCodeNum_TCP.Location" type="System.Drawing.Point, System.Drawing">
     <value>122, 34</value>
   </data>
-  <data name="textBox25.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+  <data name="txtCodeNum_TCP.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>2, 2, 2, 2</value>
   </data>
-  <data name="textBox25.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="txtCodeNum_TCP.Size" type="System.Drawing.Size, System.Drawing">
     <value>533, 35</value>
   </data>
-  <data name="textBox25.TabIndex" type="System.Int32, mscorlib">
+  <data name="txtCodeNum_TCP.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
   </data>
-  <data name="&gt;&gt;textBox25.Name" xml:space="preserve">
-    <value>textBox25</value>
+  <data name="&gt;&gt;txtCodeNum_TCP.Name" xml:space="preserve">
+    <value>txtCodeNum_TCP</value>
   </data>
-  <data name="&gt;&gt;textBox25.Type" xml:space="preserve">
+  <data name="&gt;&gt;txtCodeNum_TCP.Type" xml:space="preserve">
     <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;textBox25.Parent" xml:space="preserve">
+  <data name="&gt;&gt;txtCodeNum_TCP.Parent" xml:space="preserve">
     <value>groupBox23</value>
   </data>
-  <data name="&gt;&gt;textBox25.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;txtCodeNum_TCP.ZOrder" xml:space="preserve">
     <value>8</value>
   </data>
   <data name="label63.AutoSize" type="System.Boolean, mscorlib">
@@ -1583,40 +1637,19 @@
     <value>tabPage16</value>
   </data>
   <data name="&gt;&gt;groupBox20.ZOrder" xml:space="preserve">
-    <value>0</value>
+    <value>2</value>
   </data>
-  <data name="cmbInstalledPrinters.Location" type="System.Drawing.Point, System.Drawing">
-    <value>7, 34</value>
-  </data>
-  <data name="cmbInstalledPrinters.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>2, 2, 2, 2</value>
-  </data>
-  <data name="cmbInstalledPrinters.Size" type="System.Drawing.Size, System.Drawing">
-    <value>422, 38</value>
-  </data>
-  <data name="cmbInstalledPrinters.TabIndex" type="System.Int32, mscorlib">
-    <value>4</value>
-  </data>
-  <data name="&gt;&gt;cmbInstalledPrinters.Name" xml:space="preserve">
-    <value>cmbInstalledPrinters</value>
-  </data>
-  <data name="&gt;&gt;cmbInstalledPrinters.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;cmbInstalledPrinters.Parent" xml:space="preserve">
-    <value>groupBox22</value>
-  </data>
-  <data name="&gt;&gt;cmbInstalledPrinters.ZOrder" xml:space="preserve">
-    <value>0</value>
+  <data name="richTextBox2.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
   </data>
   <data name="richTextBox2.Location" type="System.Drawing.Point, System.Drawing">
-    <value>7, 85</value>
+    <value>2, 30</value>
   </data>
   <data name="richTextBox2.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>2, 2, 2, 2</value>
   </data>
   <data name="richTextBox2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>430, 555</value>
+    <value>433, 571</value>
   </data>
   <data name="richTextBox2.TabIndex" type="System.Int32, mscorlib">
     <value>5</value>
@@ -1659,10 +1692,10 @@
     <value>groupBox22</value>
   </data>
   <data name="&gt;&gt;richTextBox2.ZOrder" xml:space="preserve">
-    <value>1</value>
+    <value>0</value>
   </data>
   <data name="groupBox22.Location" type="System.Drawing.Point, System.Drawing">
-    <value>911, 23</value>
+    <value>911, 4</value>
   </data>
   <data name="groupBox22.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>2, 2, 2, 2</value>
@@ -1671,7 +1704,7 @@
     <value>2, 2, 2, 2</value>
   </data>
   <data name="groupBox22.Size" type="System.Drawing.Size, System.Drawing">
-    <value>437, 559</value>
+    <value>437, 603</value>
   </data>
   <data name="groupBox22.TabIndex" type="System.Int32, mscorlib">
     <value>8</value>
@@ -1689,37 +1722,7 @@
     <value>tabPage16</value>
   </data>
   <data name="&gt;&gt;groupBox22.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="button8.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="button8.Location" type="System.Drawing.Point, System.Drawing">
-    <value>1040, 603</value>
-  </data>
-  <data name="button8.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>2, 2, 2, 2</value>
-  </data>
-  <data name="button8.Size" type="System.Drawing.Size, System.Drawing">
-    <value>166, 60</value>
-  </data>
-  <data name="button8.TabIndex" type="System.Int32, mscorlib">
-    <value>2</value>
-  </data>
-  <data name="button8.Text" xml:space="preserve">
-    <value>打印</value>
-  </data>
-  <data name="&gt;&gt;button8.Name" xml:space="preserve">
-    <value>button8</value>
-  </data>
-  <data name="&gt;&gt;button8.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;button8.Parent" xml:space="preserve">
-    <value>tabPage16</value>
-  </data>
-  <data name="&gt;&gt;button8.ZOrder" xml:space="preserve">
-    <value>2</value>
+    <value>3</value>
   </data>
   <data name="tabPage16.Location" type="System.Drawing.Point, System.Drawing">
     <value>4, 39</value>
@@ -8728,17 +8731,470 @@ H: short；  I: Int32；  F: float；  J: Int32, ÷100 (0.00 )；  N: Int32，OK
   <data name="&gt;&gt;panel5.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
+  <data name="button1.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="button1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>1426, 135</value>
+  </data>
+  <data name="button1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>178, 42</value>
+  </data>
+  <data name="button1.TabIndex" type="System.Int32, mscorlib">
+    <value>32</value>
+  </data>
+  <data name="button1.Text" xml:space="preserve">
+    <value>重置MES计数</value>
+  </data>
+  <data name="button1.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;button1.Name" xml:space="preserve">
+    <value>button1</value>
+  </data>
+  <data name="&gt;&gt;button1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;button1.Parent" xml:space="preserve">
+    <value>panel4</value>
+  </data>
+  <data name="&gt;&gt;button1.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="btnResetBarcodeCount.Location" type="System.Drawing.Point, System.Drawing">
+    <value>1115, 138</value>
+  </data>
+  <data name="btnResetBarcodeCount.Size" type="System.Drawing.Size, System.Drawing">
+    <value>178, 42</value>
+  </data>
+  <data name="btnResetBarcodeCount.TabIndex" type="System.Int32, mscorlib">
+    <value>32</value>
+  </data>
+  <data name="btnResetBarcodeCount.Text" xml:space="preserve">
+    <value>重置条码计数</value>
+  </data>
+  <data name="btnResetBarcodeCount.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;btnResetBarcodeCount.Name" xml:space="preserve">
+    <value>btnResetBarcodeCount</value>
+  </data>
+  <data name="&gt;&gt;btnResetBarcodeCount.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;btnResetBarcodeCount.Parent" xml:space="preserve">
+    <value>panel4</value>
+  </data>
+  <data name="&gt;&gt;btnResetBarcodeCount.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="lblMESOKCount.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="lblMESOKCount.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="lblMESOKCount.Location" type="System.Drawing.Point, System.Drawing">
+    <value>1590, 98</value>
+  </data>
+  <data name="lblMESOKCount.Size" type="System.Drawing.Size, System.Drawing">
+    <value>64, 30</value>
+  </data>
+  <data name="lblMESOKCount.TabIndex" type="System.Int32, mscorlib">
+    <value>31</value>
+  </data>
+  <data name="lblMESOKCount.Text" xml:space="preserve">
+    <value>NAN</value>
+  </data>
+  <data name="lblMESOKCount.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;lblMESOKCount.Name" xml:space="preserve">
+    <value>lblMESOKCount</value>
+  </data>
+  <data name="&gt;&gt;lblMESOKCount.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblMESOKCount.Parent" xml:space="preserve">
+    <value>panel4</value>
+  </data>
+  <data name="&gt;&gt;lblMESOKCount.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="lblBarcodeOKCount.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="lblBarcodeOKCount.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="lblBarcodeOKCount.Location" type="System.Drawing.Point, System.Drawing">
+    <value>1279, 98</value>
+  </data>
+  <data name="lblBarcodeOKCount.Size" type="System.Drawing.Size, System.Drawing">
+    <value>64, 30</value>
+  </data>
+  <data name="lblBarcodeOKCount.TabIndex" type="System.Int32, mscorlib">
+    <value>31</value>
+  </data>
+  <data name="lblBarcodeOKCount.Text" xml:space="preserve">
+    <value>NAN</value>
+  </data>
+  <data name="lblBarcodeOKCount.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;lblBarcodeOKCount.Name" xml:space="preserve">
+    <value>lblBarcodeOKCount</value>
+  </data>
+  <data name="&gt;&gt;lblBarcodeOKCount.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblBarcodeOKCount.Parent" xml:space="preserve">
+    <value>panel4</value>
+  </data>
+  <data name="&gt;&gt;lblBarcodeOKCount.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="lblMESNGCount.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="lblMESNGCount.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="lblMESNGCount.Location" type="System.Drawing.Point, System.Drawing">
+    <value>1588, 57</value>
+  </data>
+  <data name="lblMESNGCount.Size" type="System.Drawing.Size, System.Drawing">
+    <value>64, 30</value>
+  </data>
+  <data name="lblMESNGCount.TabIndex" type="System.Int32, mscorlib">
+    <value>31</value>
+  </data>
+  <data name="lblMESNGCount.Text" xml:space="preserve">
+    <value>NAN</value>
+  </data>
+  <data name="lblMESNGCount.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;lblMESNGCount.Name" xml:space="preserve">
+    <value>lblMESNGCount</value>
+  </data>
+  <data name="&gt;&gt;lblMESNGCount.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblMESNGCount.Parent" xml:space="preserve">
+    <value>panel4</value>
+  </data>
+  <data name="&gt;&gt;lblMESNGCount.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="lblBarcodeNGCount.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="lblBarcodeNGCount.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="lblBarcodeNGCount.Location" type="System.Drawing.Point, System.Drawing">
+    <value>1279, 57</value>
+  </data>
+  <data name="lblBarcodeNGCount.Size" type="System.Drawing.Size, System.Drawing">
+    <value>64, 30</value>
+  </data>
+  <data name="lblBarcodeNGCount.TabIndex" type="System.Int32, mscorlib">
+    <value>31</value>
+  </data>
+  <data name="lblBarcodeNGCount.Text" xml:space="preserve">
+    <value>NAN</value>
+  </data>
+  <data name="lblBarcodeNGCount.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;lblBarcodeNGCount.Name" xml:space="preserve">
+    <value>lblBarcodeNGCount</value>
+  </data>
+  <data name="&gt;&gt;lblBarcodeNGCount.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblBarcodeNGCount.Parent" xml:space="preserve">
+    <value>panel4</value>
+  </data>
+  <data name="&gt;&gt;lblBarcodeNGCount.ZOrder" xml:space="preserve">
+    <value>5</value>
+  </data>
+  <data name="lblTotalMESCount.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="lblTotalMESCount.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="lblTotalMESCount.Location" type="System.Drawing.Point, System.Drawing">
+    <value>1590, 16</value>
+  </data>
+  <data name="lblTotalMESCount.Size" type="System.Drawing.Size, System.Drawing">
+    <value>64, 30</value>
+  </data>
+  <data name="lblTotalMESCount.TabIndex" type="System.Int32, mscorlib">
+    <value>31</value>
+  </data>
+  <data name="lblTotalMESCount.Text" xml:space="preserve">
+    <value>NAN</value>
+  </data>
+  <data name="lblTotalMESCount.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;lblTotalMESCount.Name" xml:space="preserve">
+    <value>lblTotalMESCount</value>
+  </data>
+  <data name="&gt;&gt;lblTotalMESCount.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblTotalMESCount.Parent" xml:space="preserve">
+    <value>panel4</value>
+  </data>
+  <data name="&gt;&gt;lblTotalMESCount.ZOrder" xml:space="preserve">
+    <value>6</value>
+  </data>
+  <data name="lblTotalBarcodesCount.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="lblTotalBarcodesCount.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="lblTotalBarcodesCount.Location" type="System.Drawing.Point, System.Drawing">
+    <value>1279, 16</value>
+  </data>
+  <data name="lblTotalBarcodesCount.Size" type="System.Drawing.Size, System.Drawing">
+    <value>64, 30</value>
+  </data>
+  <data name="lblTotalBarcodesCount.TabIndex" type="System.Int32, mscorlib">
+    <value>31</value>
+  </data>
+  <data name="lblTotalBarcodesCount.Text" xml:space="preserve">
+    <value>NAN</value>
+  </data>
+  <data name="lblTotalBarcodesCount.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;lblTotalBarcodesCount.Name" xml:space="preserve">
+    <value>lblTotalBarcodesCount</value>
+  </data>
+  <data name="&gt;&gt;lblTotalBarcodesCount.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblTotalBarcodesCount.Parent" xml:space="preserve">
+    <value>panel4</value>
+  </data>
+  <data name="&gt;&gt;lblTotalBarcodesCount.ZOrder" xml:space="preserve">
+    <value>7</value>
+  </data>
+  <data name="label62.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="label62.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="label62.Location" type="System.Drawing.Point, System.Drawing">
+    <value>1421, 16</value>
+  </data>
+  <data name="label62.Size" type="System.Drawing.Size, System.Drawing">
+    <value>175, 30</value>
+  </data>
+  <data name="label62.TabIndex" type="System.Int32, mscorlib">
+    <value>30</value>
+  </data>
+  <data name="label62.Text" xml:space="preserve">
+    <value>MES验证总数量:</value>
+  </data>
+  <data name="label62.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;label62.Name" xml:space="preserve">
+    <value>label62</value>
+  </data>
+  <data name="&gt;&gt;label62.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;label62.Parent" xml:space="preserve">
+    <value>panel4</value>
+  </data>
+  <data name="&gt;&gt;label62.ZOrder" xml:space="preserve">
+    <value>8</value>
+  </data>
+  <data name="label58.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="label58.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="label58.Location" type="System.Drawing.Point, System.Drawing">
+    <value>1411, 98</value>
+  </data>
+  <data name="label58.Size" type="System.Drawing.Size, System.Drawing">
+    <value>185, 30</value>
+  </data>
+  <data name="label58.TabIndex" type="System.Int32, mscorlib">
+    <value>30</value>
+  </data>
+  <data name="label58.Text" xml:space="preserve">
+    <value>MES验证OK数量:</value>
+  </data>
+  <data name="label58.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;label58.Name" xml:space="preserve">
+    <value>label58</value>
+  </data>
+  <data name="&gt;&gt;label58.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;label58.Parent" xml:space="preserve">
+    <value>panel4</value>
+  </data>
+  <data name="&gt;&gt;label58.ZOrder" xml:space="preserve">
+    <value>9</value>
+  </data>
+  <data name="label56.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="label56.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="label56.Location" type="System.Drawing.Point, System.Drawing">
+    <value>1110, 16</value>
+  </data>
+  <data name="label56.Size" type="System.Drawing.Size, System.Drawing">
+    <value>172, 30</value>
+  </data>
+  <data name="label56.TabIndex" type="System.Int32, mscorlib">
+    <value>30</value>
+  </data>
+  <data name="label56.Text" xml:space="preserve">
+    <value>条码验证总数量:</value>
+  </data>
+  <data name="label56.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;label56.Name" xml:space="preserve">
+    <value>label56</value>
+  </data>
+  <data name="&gt;&gt;label56.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;label56.Parent" xml:space="preserve">
+    <value>panel4</value>
+  </data>
+  <data name="&gt;&gt;label56.ZOrder" xml:space="preserve">
+    <value>10</value>
+  </data>
+  <data name="label57.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="label57.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="label57.Location" type="System.Drawing.Point, System.Drawing">
+    <value>1409, 57</value>
+  </data>
+  <data name="label57.Size" type="System.Drawing.Size, System.Drawing">
+    <value>187, 30</value>
+  </data>
+  <data name="label57.TabIndex" type="System.Int32, mscorlib">
+    <value>30</value>
+  </data>
+  <data name="label57.Text" xml:space="preserve">
+    <value>MES验证NG数量:</value>
+  </data>
+  <data name="label57.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;label57.Name" xml:space="preserve">
+    <value>label57</value>
+  </data>
+  <data name="&gt;&gt;label57.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;label57.Parent" xml:space="preserve">
+    <value>panel4</value>
+  </data>
+  <data name="&gt;&gt;label57.ZOrder" xml:space="preserve">
+    <value>11</value>
+  </data>
+  <data name="label71.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="label71.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="label71.Location" type="System.Drawing.Point, System.Drawing">
+    <value>1100, 98</value>
+  </data>
+  <data name="label71.Size" type="System.Drawing.Size, System.Drawing">
+    <value>182, 30</value>
+  </data>
+  <data name="label71.TabIndex" type="System.Int32, mscorlib">
+    <value>30</value>
+  </data>
+  <data name="label71.Text" xml:space="preserve">
+    <value>条码验证OK数量:</value>
+  </data>
+  <data name="label71.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;label71.Name" xml:space="preserve">
+    <value>label71</value>
+  </data>
+  <data name="&gt;&gt;label71.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;label71.Parent" xml:space="preserve">
+    <value>panel4</value>
+  </data>
+  <data name="&gt;&gt;label71.ZOrder" xml:space="preserve">
+    <value>12</value>
+  </data>
+  <data name="label54.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="label54.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="label54.Location" type="System.Drawing.Point, System.Drawing">
+    <value>1100, 57</value>
+  </data>
+  <data name="label54.Size" type="System.Drawing.Size, System.Drawing">
+    <value>184, 30</value>
+  </data>
+  <data name="label54.TabIndex" type="System.Int32, mscorlib">
+    <value>30</value>
+  </data>
+  <data name="label54.Text" xml:space="preserve">
+    <value>条码验证NG数量:</value>
+  </data>
+  <data name="label54.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;label54.Name" xml:space="preserve">
+    <value>label54</value>
+  </data>
+  <data name="&gt;&gt;label54.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;label54.Parent" xml:space="preserve">
+    <value>panel4</value>
+  </data>
+  <data name="&gt;&gt;label54.ZOrder" xml:space="preserve">
+    <value>13</value>
+  </data>
   <data name="btnRefresh.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
   </data>
   <data name="btnRefresh.Location" type="System.Drawing.Point, System.Drawing">
-    <value>1301, 83</value>
+    <value>955, 132</value>
   </data>
   <data name="btnRefresh.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 4, 4, 4</value>
   </data>
   <data name="btnRefresh.Size" type="System.Drawing.Size, System.Drawing">
-    <value>148, 89</value>
+    <value>115, 50</value>
   </data>
   <data name="btnRefresh.TabIndex" type="System.Int32, mscorlib">
     <value>27</value>
@@ -8888,13 +9344,13 @@ H: short；  I: Int32；  F: float；  J: Int32, ÷100 (0.00 )；  N: Int32，OK
     <value>NoControl</value>
   </data>
   <data name="btnSearch.Location" type="System.Drawing.Point, System.Drawing">
-    <value>979, 82</value>
+    <value>955, 20</value>
   </data>
   <data name="btnSearch.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>5, 6, 5, 6</value>
   </data>
   <data name="btnSearch.Size" type="System.Drawing.Size, System.Drawing">
-    <value>154, 90</value>
+    <value>115, 50</value>
   </data>
   <data name="btnSearch.TabIndex" type="System.Int32, mscorlib">
     <value>17</value>
@@ -9065,13 +9521,13 @@ H: short；  I: Int32；  F: float；  J: Int32, ÷100 (0.00 )；  N: Int32，OK
     <value>NoControl</value>
   </data>
   <data name="btnExport.Location" type="System.Drawing.Point, System.Drawing">
-    <value>1140, 83</value>
+    <value>955, 75</value>
   </data>
   <data name="btnExport.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>2, 2, 2, 2</value>
   </data>
   <data name="btnExport.Size" type="System.Drawing.Size, System.Drawing">
-    <value>154, 89</value>
+    <value>115, 50</value>
   </data>
   <data name="btnExport.TabIndex" type="System.Int32, mscorlib">
     <value>26</value>
@@ -9137,7 +9593,7 @@ H: short；  I: Int32；  F: float；  J: Int32, ÷100 (0.00 )；  N: Int32，OK
     <value>2, 2, 2, 2</value>
   </data>
   <data name="groupBox16.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1466, 182</value>
+    <value>1085, 182</value>
   </data>
   <data name="groupBox16.TabIndex" type="System.Int32, mscorlib">
     <value>29</value>
@@ -9155,7 +9611,7 @@ H: short；  I: Int32；  F: float；  J: Int32, ÷100 (0.00 )；  N: Int32，OK
     <value>panel4</value>
   </data>
   <data name="&gt;&gt;groupBox16.ZOrder" xml:space="preserve">
-    <value>0</value>
+    <value>14</value>
   </data>
   <data name="panel4.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Top</value>

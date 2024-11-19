@@ -60,6 +60,25 @@ namespace MesDatas.DatasModel
         [SugarColumn(ColumnName = "BarcodeNumber", IsNullable = true)]
         public string BarcodeNumber { get; set; }   // 码号
 
+        [SugarColumn(ColumnName = "TotalBarcodeCount", IsNullable = true)]
+        public int TotalBarcodeCount { get; set; }   // 读取的条码总数
+
+        [SugarColumn(ColumnName = "BarcodeNGCount", IsNullable = true)]
+        public int BarcodeNGCount { get; set; }   // 条码验证NG数量
+
+        [SugarColumn(ColumnName = "BarcodeOKCount", IsNullable = true)]
+        public int BarcodeOKCount { get; set; }   // 条码验证OK数量
+
+        [SugarColumn(ColumnName = "TotalMESCount", IsNullable = true)]
+        public int TotalMESCount { get; set; }   // 读取的条码总数
+
+        [SugarColumn(ColumnName = "MESNGCount", IsNullable = true)]
+        public int MESNGCount { get; set; }   // 条码验证NG数量
+
+        [SugarColumn(ColumnName = "MESOKCount", IsNullable = true)]
+        public int MESOKCount { get; set; }   // 条码验证OK数量
+
+
         public static SytemSetDerived SytemSetDerivedDMESS()
         {
             SytemSetDerived sytemSetDerived = new SytemSetDerived();

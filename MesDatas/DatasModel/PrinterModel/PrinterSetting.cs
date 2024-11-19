@@ -11,11 +11,11 @@ namespace MesDatas.DatasModel
         [SugarColumn(ColumnName = "LanguageId", DefaultValue = "0")]
         public int LanguageId { get; set; }             // 语言ID 
 
-        [SugarColumn(ColumnName = "PrinterStep", IsNullable = true)]
-        public string PrinterStep { get; set; }         // 打印机步骤 
+        [SugarColumn(ColumnName = "PrintStep", IsNullable = true)]
+        public string PrintStep { get; set; }         // 打印机步骤 
 
-        [SugarColumn(ColumnName = "PrinteSendResult", IsNullable = true)]
-        public string PrinteSendResult { get; set; }    // 打印机发送结果 
+        [SugarColumn(ColumnName = "PrintResult", IsNullable = true)]
+        public string PrintResult { get; set; }    // 打印机发送结果 
 
         [SugarColumn(ColumnName = "ControlledByPLC", IsNullable = true)]
         public bool ControlledByPLC { get; set; }       // PLC控制打印
@@ -29,21 +29,21 @@ namespace MesDatas.DatasModel
             PrinterSetting printerSetting = new PrinterSetting();
             printerSetting.ID = 1;
             printerSetting.LanguageId = 0;
-            printerSetting.PrinterStep = "D1012";
-            printerSetting.PrinteSendResult = "D1014";
+            printerSetting.PrintStep = "D1012";
+            printerSetting.PrintResult = "D1014";
 
             return printerSetting;
         }
 
         public string Save()
         {
-            if (string.IsNullOrWhiteSpace(PrinterStep))
+            if (string.IsNullOrWhiteSpace(PrintStep))
             {
-                PrinterStep = "D1012";
+                PrintStep = "D1012";
             }
-            if (string.IsNullOrWhiteSpace(PrinteSendResult))
+            if (string.IsNullOrWhiteSpace(PrintResult))
             {
-                PrinteSendResult = "D1014";
+                PrintResult = "D1014";
             }
 
             return PrinterSettingServer.GetPrinterSettingSave(this);

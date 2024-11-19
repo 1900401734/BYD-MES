@@ -255,10 +255,10 @@ namespace MesDatas
         /// </summary>
         public string[] MES_Result = new string[10000];
         string[] Value = new string[10000];
-        public bool isProductOK;
-        public string WorkOrder;
+        public string workOrder;
         public string appVersion;
         public string fileVersion;
+        public bool isProductOK;        // 产品测试总结果
 
         // 存储测试项目对应的PLC点位数据
         string[] targetStationNum = new string[] { };   // 目标工位序号
@@ -305,9 +305,9 @@ namespace MesDatas
         string recipeId = string.Empty; // 配方号
 
         // 字典用于存储每个CheckBox的初始状态
-
         Logger loggerConfig = LogManager.GetLogger("ArgumentConfigLog");
         Logger loggerAccount = LogManager.GetLogger("AccountManageLog");
+        Logger logProduction = LogManager.GetLogger("ProductionLog");
 
         public Form1()
         {
@@ -379,7 +379,7 @@ namespace MesDatas
 
             btnRefreshUser_Click(null, null);  // 用户管理刷新按钮
 
-            GetPrinter();               // 加载打印机
+            GetPrinterName();           // 加载打印机
 
             LoadPrinterConfig();        // 加载打印信息
 
@@ -670,7 +670,7 @@ namespace MesDatas
                         checkBoxStates[cbx] = cbx.Checked;
                         chkBindWorkOrder.CheckedChanged += CheckBox_CheckedChanged;             // 勾选绑定工单
                         chkReadPName.CheckedChanged += CheckBox_CheckedChanged;                 // 读取PLC
-                        checkBox3.CheckedChanged += CheckBox_CheckedChanged;                    // 使用文字
+                        chkUseFront_TCP.CheckedChanged += CheckBox_CheckedChanged;                    // 使用文字
                         chkLoadModel_TCP.CheckedChanged += CheckBox_CheckedChanged;                    // 读取PLC型号
                         chkEnableDashboard.CheckedChanged += CheckBox_CheckedChanged;           // 启用看板
                         chkPlcControlPrint.CheckedChanged += CheckBox_CheckedChanged;           // PLC控制打印
@@ -783,7 +783,6 @@ namespace MesDatas
         bool isReadData_PLC = true;     // 开始读取生产数据
         bool isReadMaxMin_PLC = true;   // 读取、绑定上下限
         bool IsUpdateStatus_PLC = true; // 更新PLC连接状态
-        bool IsRunningPZL = true;
 
         public static string path4 = System.AppDomain.CurrentDomain.BaseDirectory + "SystemDateBase.mdb";
         public static string pathText = System.AppDomain.CurrentDomain.BaseDirectory + "logfault.txt";
@@ -1026,11 +1025,9 @@ namespace MesDatas
             dbHelper.CloseConnection();
         }
 
-        //BarcodeVerification bv = null;
-        //List<BarcodeVerification> bvlist = new List<BarcodeVerification>();
-        private bool isProcessCompletly = true; // 产品信息是处理完成（读取、上传、保存等步骤）
-        string barcodeData = string.Empty;      // 实时读取的或自动生成的条码，用于本地验证、MES验证
-        public string barcodeInfo = null;       // 存储二次读取过后的条码，同时用于数据上传、保存
+        private bool isProcessSuccessfully = true;      // 自动生成条码时使用
+        private string barcodeData = string.Empty;      // 实时读取的或自动生成的条码，用于本地验证、MES验证
+        private string barcodeInfo = null;              // 存储二次读取过后的条码，同时用于数据上传、保存
 
         /// <summary>
         /// 读条码 -> 条码有效性判断 -> 本地条码验证 -> 本地二维码验证 -> MES条码验证
@@ -1043,7 +1040,6 @@ namespace MesDatas
             if (isPlcConnected)
             {
                 var bvlist = BarcodeVefictnServer.GetBarcodeVefictnList(LanguageId);
-                //bvlist = BarcodeVefictnServer.GetBarcodeVefictnList(LanguageId);
                 BarcodeVerification bv = null;
 
                 for (int i = 0; i < bvlist.Count; i++)
@@ -1060,8 +1056,6 @@ namespace MesDatas
                 }
 
                 if (bv == null) return;
-                // 判断数据有没有上传并保存完成
-                if (!isProcessCompletly) return;
 
                 Invoke(new Action(async () =>
                 {
@@ -1081,7 +1075,10 @@ namespace MesDatas
                     // 自动生成条码
                     if (chkGenerateBarcode.Checked)
                     {
-                        DisplayMessage("准备生成条码...");
+                        if (!isProcessSuccessfully)
+                        {
+                            return;
+                        }
                         string barcodeNum = txtBarcodeNumber.Text;
                         barcodeData = AutoGenerateBarcode(barcodeNum);
                         barcodeInfo = barcodeData;
@@ -1089,20 +1086,26 @@ namespace MesDatas
                         txtBarcodeNumber.Enabled = false;
                         txtSN.Enabled = false;
                         DisplayMessage($"生成的条码为：{barcodeData} ");
-                        isProcessCompletly = false;
+                        isProcessSuccessfully = false;
+
+                        // 更新获取条码计数器
+                        sytemSetDerivedsd.TotalBarcodeCount++;
+                        lblTotalBarcodesCount.Text = sytemSetDerivedsd.TotalBarcodeCount.ToString();
                     }
                     // 实时读取条码
                     else
                     {
                         // 读取条码 (D1100)
-                        DisplayMessage("准备读取条码....");
                         ushort barcodeLength = bv.GetBarcodeLength();
                         string rawBarcode = KeyenceMcNet.ReadString(bv.BarcodePositionPLC, barcodeLength).Content;
                         barcodeData = CodeNum.CleanString(rawBarcode);
                         txtShowBarcode.Text = barcodeData;
                         barcodeInfo = barcodeData;
-                        isProcessCompletly = false;
-                        DisplayMessage($"条码【D1100】 = {barcodeData} ");
+                        DisplayMessage($"读取{bv.BarcodePositionPLC} = {barcodeData} ");
+
+                        // 更新获取条码计数器
+                        sytemSetDerivedsd.TotalBarcodeCount++;
+                        lblTotalBarcodesCount.Text = sytemSetDerivedsd.TotalBarcodeCount.ToString();
                     }
 
                     // 条码有效性验证（空引用、空字符或仅空格）
@@ -1110,17 +1113,21 @@ namespace MesDatas
                     {
                         lblScanBarcodeStatus.ForeColor = Color.Red;
                         txtShowBarcode.Text = bv.NoBarcodePrompt;
-                        DisplayMessage($" 未读到条码，条码为NULL或EMPTY ");
+                        DisplayMessage($"未读到条码，条码为NULL或为EMPTY ");
+
+                        // 更新条码NG计数器
+                        sytemSetDerivedsd.BarcodeNGCount++;
+                        lblBarcodeNGCount.Text = sytemSetDerivedsd.BarcodeNGCount.ToString();
 
                         try
                         {
                             // 验证失败结束点位
                             KeyenceMcNet.Write(bv.ErrorBarcodeEndPLC, 1);
-                            DisplayMessage(" 条码验证失败【D1005】 = 1 ");
+                            DisplayMessage("条码验证失败【D1005】= 1");
                         }
                         catch (Exception ex)
                         {
-                            //DisplayMessage($"2.2 反馈条码验证出错：{ex}");
+                            //DisplayMessage($"反馈条码验证出错：{ex}");
                         }
                         return;
                     }
@@ -1191,6 +1198,11 @@ namespace MesDatas
                                     lblRunningStatus.Text = resources.GetString("Fixture_NG");
                                     lblValidationStatus.ForeColor = Color.Red;
                                     //DisplayMessage("工装编号验证失败！");
+
+                                    // 更新条码NG计数器
+                                    sytemSetDerivedsd.BarcodeNGCount++;
+                                    lblBarcodeNGCount.Text = sytemSetDerivedsd.BarcodeNGCount.ToString();
+
                                     try
                                     {
                                         // 验证失败结束
@@ -1231,13 +1243,17 @@ namespace MesDatas
                                     lblRunningStatus.Text = bv.RepeatcodePrompt;
                                     lblValidationStatus.ForeColor = Color.Red;
                                     DisplayMessage("条码重复扫过，请重新扫描！");
+
+                                    // 更新条码NG计数器
+                                    sytemSetDerivedsd.BarcodeNGCount++;
+                                    lblBarcodeNGCount.Text = sytemSetDerivedsd.BarcodeNGCount.ToString();
                                 });
 
                                 try
                                 {
                                     // 条码重复性验证失败，反馈条码验证失败信号
                                     KeyenceMcNet.Write(bv.ErrorBarcodeEndPLC, 1);
-                                    DisplayMessage("条码验证失败【D1005】 = 1");
+                                    DisplayMessage("反馈条码验证【D1005】= 1");
                                 }
                                 catch (Exception ex)
                                 {
@@ -1294,8 +1310,8 @@ namespace MesDatas
                         // 绑定工单
                         if (chkBindWorkOrder.Checked == true)
                         {
-                            WorkOrder = txtWorkOrder.Text;
-                            MesIntegrationService.BindWorkOrder(WorkOrder, out bool bindingResult, out string MESFeedback, out string XML);
+                            workOrder = txtWorkOrder.Text;
+                            MesIntegrationService.BindWorkOrder(workOrder, out bool bindingResult, out string MESFeedback, out string XML);
                         }
 
                         // 上传MES进行条码验证
@@ -1341,6 +1357,10 @@ namespace MesDatas
 
                     lblOperatePrompt.Text = resources.GetString("ScanBarCode_OK");  // 扫码完成
                     DisplayMessage("条码读取完成!");
+
+                    // 更新条码验证OK计数器
+                    sytemSetDerivedsd.BarcodeOKCount++;
+                    lblBarcodeOKCount.Text = sytemSetDerivedsd.BarcodeOKCount.ToString();
                 }));
 
                 // 扫物料，置3
@@ -1416,6 +1436,57 @@ namespace MesDatas
         }
 
         /// <summary>
+        /// 自动生成条码内容
+        /// </summary>
+        /// <param name="codeNumber">10位字符串码号</param>
+        /// <returns>18位的条码字符串</returns>
+        private string AutoGenerateBarcode(string codeNumber)
+        {
+            DateTime currentDate = DateTime.Now.Date;
+
+            if (ShouldResetSerialNumber())
+            {
+                ResetSerialNumber();
+                SaveLastSavedDate(DateTime.Now.Date);
+            }
+            else
+            {
+                SaveLastSavedDate(currentDate);
+            }
+
+            // 获取当前流水号
+            if (!int.TryParse(txtSN.Text, out int serialNumber))
+            {
+                serialNumber = 0;
+            }
+            // 计算新的流水号
+            int newSerialNumber = serialNumber + 1;
+
+            // 更新流水号并保存
+            string formattedSerialNumber = newSerialNumber.ToString("D5");
+            sytemSetDerivedsd.SerialNumber = formattedSerialNumber;
+            txtSN.Text = formattedSerialNumber;
+            sytemSetDerivedsd.Save();
+
+            string month = DateTime.Now.Month.ToString();
+            string day = DateTime.Now.Day.ToString("D2");
+
+            /*if (month == "10" || month == "11" || month == "12")
+            {
+                switch (month)
+                {
+                    case "10": month = "0"; break;
+                    case "11": month = "A"; break;
+                    case "12": month = "B"; break;
+                }
+            }*/
+
+            codeNumber = codeNumber += month + day;
+            string barcodeInfo = codeNumber + txtSN.Text;
+            return barcodeInfo;
+        }
+
+        /// <summary>
         /// 本地条码验证（条码规则验证）
         /// </summary>
         /// <param name="barcodeVerification"></param>
@@ -1429,7 +1500,7 @@ namespace MesDatas
                 InvokeOnUIThreadAsync(() =>
                 {
                     lblRunningStatus.ForeColor = Color.Red;
-                    lblRunningStatus.Text = barcodeVerification.ErrorPrompt;
+                    lblRunningStatus.Text = barcodeVerification.NoVerificationRulePrompt;
                     lblValidationStatus.ForeColor = Color.Red;
                     DisplayMessage("没有选择条码验证规则！");
                 });
@@ -1473,6 +1544,10 @@ namespace MesDatas
                         lblRunningStatus.Text = barcodeVerification.ErrorPrompt;
                         lblValidationStatus.ForeColor = Color.Red;
                         DisplayMessage("实际条码前缀与条码验证规则不匹配！");
+
+                        // 更新条码NG计数器
+                        sytemSetDerivedsd.BarcodeNGCount++;
+                        lblBarcodeNGCount.Text = sytemSetDerivedsd.BarcodeNGCount.ToString();
                     });
 
                     try
@@ -1504,7 +1579,7 @@ namespace MesDatas
         }
 
         /// <summary>
-        /// 读测试结果 -> 
+        /// 读测试结果 -> 上传测试结果 -> 上传看板 -> UI显示 -> 本地保存
         /// </summary>
         /// <returns></returns>
         private async Task ProcessProductionData()
@@ -1512,41 +1587,11 @@ namespace MesDatas
             InvokeOnUIThreadAsync(() =>
             {
                 lblOperatePrompt.Text = resources.GetString("begin_read_data");  // 开始读取数据
-                DisplayMessage("准备读取测试结果");
+                //DisplayMessage("准备读取测试结果");
             });
 
-            // 读取测试结果
-            await ReadProductionData();
-
-            await UpdateProductResultUI();
-
-            // 上传条码及相应测试结果到MES
-            await UploadDataToMES();
-
-            // 上传看板
-            SendToDashboardIfConnected();
-
-            await SaveDataLocally();
-
-            await FinalizeProductionCycle();
-
-            isProcessCompletly = true;
-        }
-
-        /// <summary>
-        /// 读取测试结果
-        /// </summary>
-        /// <returns></returns>
-        private async Task ReadProductionData()
-        {
             await Task.Run(() =>
             {
-                actualValueList = new List<string>();
-                beatList = new List<string>();
-                maxList = new List<string>();
-                minList = new List<string>();
-                resultList = new List<string>();
-
                 if (chkReadBarcodeSecondly.Checked)
                 {
                     ReadBarcodeSecondly();
@@ -1556,14 +1601,30 @@ namespace MesDatas
                 MES_Result[3688] = KeyenceMcNet.ReadInt32(sytemSetDerivedsd.TotalProductPoint).Content.ToString();  // TotalProductPoint: D1078
             });
 
+            // 读取测试结果
             await ReadTestResult();
+
+            await UpdateProductResultUI();
+
+            isProcessSuccessfully = true;
+
+            // 上传条码及相应测试结果到MES
+            await UploadDataToMES();
+
+            // 上传看板
+            SendToDashboardIfConnected();
+
+            // 本地保存
+            await SaveDataLocally();
+
+            await FinalizeProductionCycle();
+
         }
 
         private void ReadBarcodeSecondly()
         {
             // 二次读条码：D1050
-            ushort secondProductLength = 10;
-            ushort.TryParse(sytemSetDerivedsd.SecondProductLength, out secondProductLength);
+            ushort.TryParse(sytemSetDerivedsd.SecondProductLength, out ushort secondProductLength);
             string rawBarcode = KeyenceMcNet.ReadString(sytemSetDerivedsd.SecondProductPoint, secondProductLength).Content;
             barcodeInfo = CodeNum.CleanString(rawBarcode);
         }
@@ -1573,6 +1634,12 @@ namespace MesDatas
         /// </summary>
         private async Task ReadTestResult()
         {
+            actualValueList = new List<string>();
+            beatList = new List<string>();
+            maxList = new List<string>();
+            minList = new List<string>();
+            resultList = new List<string>();
+
             if (PLCPointInfoTable.Rows.Count > 0)
             {
                 var tasks = PLCPointInfoTable.AsEnumerable().Select(row => Task.Run(() =>
@@ -1640,7 +1707,7 @@ namespace MesDatas
 
             isProductOK = Value[9999] == "OK";
 
-            // 联机结果上传
+            // 联机上传条码测试数据
             await Task.Run(() => UploadResult_MES(barcodeInfo));
 
             InvokeOnUIThreadAsync(() =>
@@ -1649,12 +1716,17 @@ namespace MesDatas
                 {
                     lblRunningStatus.Text = resources.GetString("Mes_upload_OK");   // 联机数据上传成功
                     lblUploadStatus.ForeColor = Color.Green;
+
+                    // 
+
                 }
                 else if (MES_Result[2008] == "1")
                 {
                     lblRunningStatus.Text = resources.GetString("Mes_upload_NG");   // 联机数据上传失败
                     lblUploadStatus.ForeColor = Color.Red;
                     lblOperatePrompt.Text = resources.GetString("Re_upload");       // 请重新上传
+
+
                 }
             });
         }
@@ -1672,20 +1744,20 @@ namespace MesDatas
             await InvokeOnUIThreadAsync(() =>
             {
                 Num++;
-                lblRunningStatus.Text = resources.GetString("Read_data");
-                lblOperatePrompt.Text = resources.GetString("Wait");
+                lblRunningStatus.Text = resources.GetString("Read_data");   // 本地数据保存中
+                lblOperatePrompt.Text = resources.GetString("Wait");        // 请等待
             });
 
-            Task.Run(显示结果_Left);
+            Task.Run(ShowResult);
 
             Task.Run(SaveProductionDataAsync);
 
             InvokeOnUIThreadAsync(() =>
             {
-                lblRunningStatus.Text = resources.GetString("Read_data_OK");
-                lblOperatePrompt.Text = resources.GetString("Continue_production");
-                DisplayMessage("数据读取完成");
-                DisplayMessage("生产结果读取完成...");
+                lblRunningStatus.Text = resources.GetString("Read_data_OK");        // 本地数据保存完成
+                lblOperatePrompt.Text = resources.GetString("Continue_production"); // 请取下产品继续生产
+                //DisplayMessage("数据读取完成");
+                //DisplayMessage("生产结果读取完成...");
             });
         }
 
@@ -1694,11 +1766,11 @@ namespace MesDatas
             try
             {
                 await Task.Run(() => KeyenceMcNet.Write(sytemSetDerivedsd.EndProductPoint, 1));
-                DisplayMessage("生产结果读取反馈【D1202】 = 1");
+                //DisplayMessage("生产结果读取反馈【D1202】 = 1");
             }
             catch (Exception ex)
             {
-                DisplayMessage(ex.ToString());
+                //DisplayMessage(ex.ToString());
             }
 
             await Task.Delay(200);
@@ -1712,7 +1784,7 @@ namespace MesDatas
 
         #endregion
 
-        private void DisplayMessage(string msg)
+        private async void DisplayMessage(string msg)
         {
             this.Invoke(new Action(() =>
             {
@@ -1723,7 +1795,10 @@ namespace MesDatas
                 rtbProductLog.AppendText($"{DateTime.Now.ToString("HH:mm:ss_fff")}:{msg}\r\n");
                 rtbProductLog.ScrollToCaret();
             }));
-            //SaveLogToCSV(msg);
+
+            //await Task.Run(() => SaveLogToCSV(msg));
+            //Task.Run(() => logProduction.Trace($"{msg}"));
+            logProduction.Trace($"{msg}");
         }
 
         public async Task SaveLogToCSV(string log)
@@ -1771,9 +1846,9 @@ namespace MesDatas
 
         #region ------------ MES上传 ------------
 
-        NLog.Logger loggerMESBarCoode = NLog.LogManager.GetLogger("MESBarCoodeLog");
-        NLog.Logger loggerMESData = NLog.LogManager.GetLogger("MESDataLog");
-        bool isMesLoginSuccessful = false;    // 用户联机验证结果
+        NLog.Logger loggerMESBarCoode = NLog.LogManager.GetLogger("MESBarCoodeLog");    // 记录上传条码后的MES反馈
+        NLog.Logger loggerMESData = NLog.LogManager.GetLogger("MESDataLog");            // 记录上传测试结果的后MES反馈
+        private bool isMesLoginSuccessful = false;  // 用户联机验证结果
 
         #region ----- 从文本框获取MES配置参数 -----
         private string ip => textBox_ip.Text;
@@ -1952,11 +2027,17 @@ namespace MesDatas
         /// <summary>
         /// MES交互3：条码上传
         /// </summary>
+        /// <remarks>
+        /// <para>验证成功，MES_Result[2006] = "1";
+        /// </para>
+        /// <para>验证失败，MES_Result[2008] = "1";
+        /// </para>
+        /// </remarks>
         private void UploadResult_MES(string barcode)
         {
             MES_Result[2006] = "0";
             MES_Result[2008] = "0";
-            DisplayMessage("结果联机上传");
+            //DisplayMessage("结果联机上传");
 
             bool productResult = isProductOK;
             string productBarcode = barcode;
@@ -1973,7 +2054,6 @@ namespace MesDatas
                 {
                     if (!string.IsNullOrWhiteSpace(fixtureInfo[i]))
                     {
-                        //sb.Append("!工装编号" + (i + 1) + ",工装," + fixtureInfo[i]);
                         sb.Append($"!工装编号{i + 1},工装,{fixtureInfo[i]}");
                     }
                 }
@@ -1987,7 +2067,6 @@ namespace MesDatas
                 {
                     if (!string.IsNullOrWhiteSpace(productCode[i]))
                     {
-                        //sb.Append("!产品物料号" + (i + 1) + ",物料," + frdeMafrMes[i]);
                         sb.Append($"!产品物料号{i + 1},物料,{productCode[i]}");
                     }
                 }
@@ -2004,16 +2083,12 @@ namespace MesDatas
                         {
                             if (resultList[i] != "null")
                             {
-                                //sb.Append("!" + testItems[i] + "," + maxList[i] + "~" + minList[i] + "," + list[i] + "");
-                                //sb.Append("!" + testItems[i] + "测试结果,结果," + resultList[i]);
-
                                 sb.Append($"!{testItemsName[i]},{maxList[i]}~{minList[i]},{actualValueList[i]}");
                                 sb.Append($"!{testItemsName[i]}测试结果,结果,{resultList[i]}");
                             }
                         }
                         else
                         {
-                            //sb.Append("!" + testItems[i] + ",测试项值," + list[i] + "");
                             sb.Append($"!{testItemsName[i]},测试项值,{actualValueList[i]}");
                         }
                     }
@@ -2038,11 +2113,11 @@ namespace MesDatas
             }
             else
             {
-                DisplayMessage(MES反馈);
+                //DisplayMessage(MES反馈);
                 MES_Result[2008] = "1";
             }
 
-            DisplayMessage("联机结果上传完成");
+            //DisplayMessage("联机结果上传完成");
         }
 
         #endregion
@@ -2148,6 +2223,14 @@ namespace MesDatas
             sytemSetDerivedsd.SerialNumber = txtSN.Text;                                // 流水号
             sytemSetDerivedsd.BarcodeNumber = txtBarcodeNumber.Text;                    // 码号
 
+            sytemSetDerivedsd.TotalBarcodeCount = int.Parse(lblTotalBarcodesCount.Text);// 条码验证总数量
+            sytemSetDerivedsd.BarcodeNGCount = int.Parse(lblBarcodeNGCount.Text);       // 条码验证失败的数量
+            sytemSetDerivedsd.BarcodeOKCount = int.Parse(lblBarcodeOKCount.Text);       // 条码验证通过的数量
+
+            sytemSetDerivedsd.TotalMESCount = int.Parse(lblTotalMESCount.Text);         // MES验证总数量
+            sytemSetDerivedsd.MESNGCount = int.Parse(lblMESNGCount.Text);               // MES验证失败的数量
+            sytemSetDerivedsd.MESOKCount = int.Parse(lblMESOKCount.Text);               // MES验证通过的数量
+
             sytemSetDerivedsd.SytemSetnullCoden = txtDefaultStyle.Text;                 // 默认数据显示样式
             sytemSetDerivedsd.CurrentPLCType = cboConnectType.Text;                     // PLC连接类型
 
@@ -2231,6 +2314,14 @@ namespace MesDatas
             chkGenerateBarcode.Checked = sytemSetDerivedsd.ISAutoGenerateBarcode;           // 自动生成条码
             txtSN.Text = sytemSetDerivedsd.SerialNumber;                                    // 流水号
             txtBarcodeNumber.Text = sytemSetDerivedsd.BarcodeNumber;                        // 码号
+
+            lblTotalBarcodesCount.Text = sytemSetDerivedsd.TotalBarcodeCount.ToString();    // 条码验证总数量
+            lblBarcodeNGCount.Text = sytemSetDerivedsd.BarcodeNGCount.ToString();           // 条码验证失败的数量
+            lblBarcodeOKCount.Text = sytemSetDerivedsd.BarcodeOKCount.ToString();           // 条码验证通过的数量    
+
+            lblTotalMESCount.Text = sytemSetDerivedsd.TotalMESCount.ToString();             // MES验证总数量
+            lblMESNGCount.Text = sytemSetDerivedsd.MESNGCount.ToString();                   // MES验证失败的数量
+            lblMESOKCount.Text = sytemSetDerivedsd.MESOKCount.ToString();                   // MES验证通过的数量   
 
             cboConnectType.Text = sytemSetDerivedsd.CurrentPLCType;                         // 当前PLC连接类型
             txtDefaultStyle.Text = sytemSetDerivedsd.SytemSetnullCoden;                     // 默认数据显示样式
@@ -3153,7 +3244,7 @@ namespace MesDatas
 
         }
 
-        private void 显示结果_Left()
+        private void ShowResult()
         {
             Invoke(new Action(() =>
             {
@@ -3220,27 +3311,13 @@ namespace MesDatas
                         }
                     }
                 }
+                if (Value[9999] == "NG")
+                {
+                    dgvRow.DefaultCellStyle.BackColor = Color.Red;
+                }
+
                 this.dataGridViewDynamic2.Rows.Insert(0, dgvRow);
             }));
-
-            /*this.dataGridViewDynamic2.Rows.Insert(index, dataGridViewDynamic2.Rows[index]);
-            //每台机定制参数
-            this.dataGridViewDynamic2.Rows[index].Cells[2].Value = Parameter_txt[3692];
-            this.dataGridViewDynamic2.Rows[index].Cells[3].Value = Parameter_txt[3694];
-            this.dataGridViewDynamic2.Rows[index].Cells[4].Value = Parameter_txt[3696];
-            this.dataGridViewDynamic2.Rows[index].Cells[5].Value = Parameter_txt[3698];
-            //每台机定制参数
-
-            this.dataGridViewDynamic2.Rows[index].Cells[4].Value = Parameter_txt[1032];
-            this.dataGridViewDynamic2.Rows[index].Cells[5].Value = Parameter_txt[1034];
-            this.dataGridViewDynamic2.Rows[index].Cells[6].Value = Value[1036];
-            this.dataGridViewDynamic2.Rows[index].Cells[7].Value = Parameter_Model[17000];
-
-            this.dataGridViewDynamic2.Rows[index].Cells[8].Value = Parameter_Model[17500];
-            this.dataGridViewDynamic2.Rows[index].Cells[9].Value = Parameter_Model[17800];
-            this.dataGridViewDynamic2.Rows[index].Cells[10].Value = Parameter_Model[18000];
-            this.dataGridViewDynamic2.Rows[index].Cells[11].Value = Parameter_Model[18500];
-            dataGridViewDynamic2.FirstDisplayedScrollingRowIndex = dataGridViewDynamic2.Rows.Count - 1;*/
         }
 
         #endregion
@@ -3259,12 +3336,12 @@ namespace MesDatas
             {
                 try
                 {
-                    DisplayMessage("生产数据本地保存中...");
+                    //DisplayMessage("生产数据本地保存中...");
 
                     InitializeDatabaseOperations();
                     SaveHistoricalData($@"{lblDataPath.Text}\{DateTime.Now:Y}生产数据.mdb");
 
-                    DisplayMessage("生产数据本地保存完成");
+                    //DisplayMessage("生产数据本地保存完成");
                 }
                 catch (Exception ex)
                 {
@@ -3592,6 +3669,23 @@ namespace MesDatas
             {
 
             }
+        }
+
+        /// <summary>
+        /// 重置条码计数
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnResetBarcodeCount_Click(object sender, EventArgs e)
+        {
+            sytemSetDerivedsd.TotalBarcodeCount = 0;
+            sytemSetDerivedsd.BarcodeOKCount = 0;
+            sytemSetDerivedsd.BarcodeNGCount = 0;
+            sytemSetDerivedsd.Save();
+
+            lblTotalBarcodesCount.Text = sytemSetDerivedsd.TotalBarcodeCount.ToString();
+            lblBarcodeOKCount.Text = sytemSetDerivedsd.BarcodeOKCount.ToString();
+            lblBarcodeNGCount.Text = sytemSetDerivedsd.BarcodeNGCount.ToString();
         }
 
         #endregion
@@ -4859,7 +4953,7 @@ namespace MesDatas
                     }
                     catch (Exception ex)
                     {
-                        DisplayMessage(ex.ToString());
+                        //DisplayMessage(ex.ToString());
                         Send("6+" + lblDeviceName.Text + "配方切换失败");
                     }
                     break;
@@ -4908,11 +5002,18 @@ namespace MesDatas
 
         DatasModel.Printers printers = new DatasModel.Printers();
         DatasModel.PrintersBtw printersBtw = new PrintersBtw();
+        DatasModel.PrinterSetting printerConfig = new DatasModel.PrinterSetting();
+        private static BarTender.Application btApp = null;
+        private static BarTender.Format btFormat;
+        bool prinBoolOK = false;
+        private Socket clientSocket = null;     // 连接打印机
+
+        #region ------ 打印机基本配置 ------
 
         /// <summary>
-        /// 选择打印机
+        /// 获取可用的打印机
         /// </summary>
-        private void GetPrinter()
+        private void GetPrinterName()
         {
             foreach (string pkInstalledPrinters in System.Drawing.Printing.PrinterSettings.InstalledPrinters)
             {
@@ -4930,22 +5031,7 @@ namespace MesDatas
         }
 
         /// <summary>
-        /// 保存打印配置
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void SavePrinterConfig_Click(object sender, EventArgs e)
-        {
-            printerConfig.PrinterStep = txtStartPrintPoint.Text;
-            printerConfig.PrinteSendResult = txtEndPrintPoint.Text;
-            printerConfig.ControlledByPLC = chkPlcControlPrint.Checked;
-            printerConfig.PrintMode = cboPrintMode.Text;
-            var result = printerConfig.Save();
-            MessageBox.Show(result);
-        }
-
-        /// <summary>
-        /// 加载打印信息
+        /// 加载打印机配置信息
         /// </summary>
         private void LoadPrinterConfig()
         {
@@ -4954,8 +5040,8 @@ namespace MesDatas
                 #region ------ 加载打印机基本配置 ------
 
                 printerConfig = DatasServer.PrinterSettingServer.GetPrinterSetting(1);
-                txtStartPrintPoint.Text = printerConfig.PrinterStep;
-                txtEndPrintPoint.Text = printerConfig.PrinteSendResult;
+                txtStartPoint_print.Text = printerConfig.PrintStep;
+                txtEndPoint_Print.Text = printerConfig.PrintResult;
                 chkPlcControlPrint.Checked = printerConfig.ControlledByPLC;
                 cboPrintMode.Text = printerConfig.PrintMode;
 
@@ -4968,26 +5054,23 @@ namespace MesDatas
                 // 打印机网络配置
                 txtPrinter_IP.Text = printers.ip;       // IP
                 txtPrinter_Port.Text = printers.prot;   // 端口
-
                 // 动态码
-                textBox25.Text = printers.Ptime;        // 码号
-                textBox26.Text = printers.Ptail;        // 条码数字（流水号）
-
+                txtCodeNum_TCP.Text = printers.Ptime;   // 码号
+                txtSN_TCP.Text = printers.Ptail;        // 条码数字（流水号）
                 // 文本
-                textBox20.Text = printers.TFront;       // 条码前端
-                textBox27.Text = printers.Tmonarch;     // 条码后端
+                txtBefore_TCP.Text = printers.TFront;       // 条码前端
+                txtAfter_TCP.Text = printers.Tmonarch;     // 条码后端
                 txtPModel_TCP.Text = printers.Tlow;         // 条码型号
-
                 // 配置prn文件
                 lblPrnFilePath_TCP.Text = printers.Method;
                 LoadPrnFiles(lblPrnFilePath_TCP.Text);
 
-                for (int n = 0; n < comboBox1.Items.Count; n++)
+                for (int n = 0; n < cboPrintFile_TCP.Items.Count; n++)
                 {
-                    if (comboBox1.GetItemText(comboBox1.Items[n]).Equals(printers.Ptype))
+                    if (cboPrintFile_TCP.GetItemText(cboPrintFile_TCP.Items[n]).Equals(printers.Ptype))
                     {
                         // 将每个选项转换为文本并存入数组
-                        comboBox1.SelectedItem = printers.Ptype;
+                        cboPrintFile_TCP.SelectedItem = printers.Ptype;
                         break;
                     }
                 }
@@ -4995,11 +5078,10 @@ namespace MesDatas
                 string txttow = printers.Txttow;        // 是否打印文字
                 string plcmodel = printers.Plcmodel;    // 是否读取PLC型号
                 string phead = printers.Phead;          // 是否由PLC控制
-
-                if (txttow == "True") checkBox3.Checked = true;
+                if (txttow == "True") chkUseFront_TCP.Checked = true;
                 if (plcmodel == "True") chkLoadModel_TCP.Checked = true;
                 //if (phead == "True") checkBox7.Checked = true;    
-                label62.Text = Pfunime() + textBox26.Text;  // 条码内容
+                lblContent_TCP.Text = Pfunime() + txtSN_TCP.Text;  // 条码内容
 
                 #endregion
 
@@ -5009,21 +5091,18 @@ namespace MesDatas
 
                 // 打印配置
                 cboPrinterType.Text = printersBtw.PtypeBtw;             // 打印机类型
-
                 // 文本
                 textBox54.Text = printersBtw.PheadBtw;                  // 条码前端
                 textBox53.Text = printersBtw.PtimeBtw;                  // 条码后端
                 txtPModel_COM.Text = printersBtw.PModel;                // 条码型号
                 chkLoadModel_COM.Checked = printersBtw.IsLoadModel_PLC; // 是否读取PLC型号
                 chkUseFont.Checked = printersBtw.MethodBtw;             // 使用文字
-
                 // 动态码
                 txtCodeNumber.Text = printersBtw.BarcodeNumber;         // 码号
                 txtSerialNumber.Text = printersBtw.SerialNumber;        // 流水号
                 txtSerialSpan.Text = printersBtw.TlowBtw;               // 打印数量
                 chkAutoAddDate.Checked = printersBtw.PrintNowDateTime;  // 自动添加日期
                 chkPlus2Print.Checked = printersBtw.PrintCodeTwoBool;   // +2打印
-
                 // 配置prn文件
                 lblPrnFilePath_COM.Text = printersBtw.PertowBtw;        // prn文件路径
                 cboPrintFormat_COM.Text = printersBtw.TxttowBtw;        // 打印文件格式
@@ -5037,179 +5116,31 @@ namespace MesDatas
         }
 
         /// <summary>
-        /// 保存驱动打印设置
+        /// 保存打印基本配置
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void btnSave_COM_Click(object sender, EventArgs e)
+        private void SavePrinterConfig_Click(object sender, EventArgs e)
         {
-            printersBtw.PtypeBtw = cboPrinterType.Text;             // 打印机类型
-            printersBtw.PheadBtw = textBox54.Text;                  // 条码前端
-            printersBtw.PtimeBtw = textBox53.Text;                  // 条码后端
-            printersBtw.PModel = txtPModel_COM.Text;                // 条码型号
-            printersBtw.IsLoadModel_PLC = chkLoadModel_COM.Checked; // 是否读取PLC型号
-            printersBtw.MethodBtw = chkUseFont.Checked;             // 使用文字
-
-            printersBtw.BarcodeNumber = txtCodeNumber.Text;         // 码号
-            printersBtw.SerialNumber = txtSerialNumber.Text;        // 流水号
-            printersBtw.TlowBtw = txtSerialSpan.Text;               // 打印数量
-            printersBtw.PertowBtw = lblPrnFilePath_COM.Text;        // prn文件路径
-            printersBtw.TxttowBtw = cboPrintFormat_COM.Text;        // 打印文件格式
-            printersBtw.PrintNowDateTime = chkAutoAddDate.Checked;  // 自动添加日期
-            printersBtw.PrintSerialNumber = false;                  // 打印机打印条码
-            printersBtw.PrintCodeTwoBool = chkPlus2Print.Checked;   // +2打印
-
-            var result = printersBtw.Save();
+            printerConfig.PrintStep = txtStartPoint_print.Text;        // 开始点位
+            printerConfig.PrintResult = txtEndPoint_Print.Text;     // 结束点位
+            printerConfig.ControlledByPLC = chkPlcControlPrint.Checked; // 是否启用PLC控制打印
+            printerConfig.PrintMode = cboPrintMode.Text;                // 打印模式
+            var result = printerConfig.Save();
             MessageBox.Show(result);
         }
 
-        DatasModel.PrinterSetting printerConfig = new DatasModel.PrinterSetting();
+        #endregion
+
+        #region ------ 打印格式 ------
 
         /// <summary>
-        /// 修改打印信息
+        /// BTW 文件打印
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void button19_Click_1(object sender, EventArgs e)
-        {
-            if (textBox25.Text == String.Empty)
-            {
-                MessageBox.Show("当前界面内容均为必填项、请先填写完善");
-                return;
-            }
-            try
-            {
-                printers.Ptype = comboBox1.Text;
-                printers.Ptime = textBox25.Text;// table1.Rows[i]["Ptime"].ToString();//条码时间格式
-                printers.Ptail = textBox26.Text;//条码数字
-                printers.TFront = textBox20.Text;//字体前端
-                printers.Tmonarch = textBox27.Text;//字体后端
-                printers.Tlow = txtPModel_TCP.Text;//字体下面
-                printers.Txttow = checkBox3.Checked.ToString();
-                printers.Plcmodel = chkLoadModel_TCP.Checked.ToString();
-                printers.Method = lblPrnFilePath_TCP.Text;
-                printers.Phead = "False";
-                printers.ip = txtPrinter_IP.Text;
-                printers.prot = txtPrinter_Port.Text;
-                var result = printers.Save();
-                MessageBox.Show(result);
-                /* PatPZLhead();
-                 //FileInfo myFile1 = new FileInfo(pathtxtPZL1);
-                 File.WriteAllText(pathtxtPZL1, richTextBox5.Text, Encoding.UTF8);//第二种
-                 PatPZLtail();
-                 File.WriteAllText(pathtxtPZL2, richTextBox6.Text, Encoding.UTF8);//第二种*/
-                string method = "  ";
-                //mdb = new mdbDatas(path4);
-                //DataTable table1 = mdb.Find("select * from Printers where ID = 1");
-                //if (table1.Rows.Count > 0)
-                //{//TFront Tmonarch Tlow Pertow Method Phead
-
-                //    string sql = "update [Printers] set [Ptype]='" + comboBox1.Text + "'" +
-                //                  ",[Ptime]='" + textBox25.Text + "',[Ptail]='" + textBox26.Text + "'" +
-                //                  ",[TFront]='" + textBox20.Text + "',[Tmonarch]='" + textBox27.Text + "'" +
-                //                  ",[Tlow]='" + textBox28.Text + "'" +
-                //                  ",[Txttow]='" + checkBox3.Checked + "',[Plcmodel]='" + checkBox4.Checked + "'" +
-                //                  ",[Method]='" + label48.Text + "',[Phead]='" + "False" + "'" +
-                //                  ",[ip]='" + textBox10.Text + "',[prot]='" + textBox11.Text + "'" +
-                //                  " where [ID] = 1";
-                //    var result = mdb.Change(sql);
-                //    if (result == true)
-                //    {
-                //        MessageBox.Show("保存成功");
-                //    }
-                //}
-                label62.Text = Pfunime() + textBox26.Text;
-                //  mdb.CloseConnection();
-            }
-            catch (Exception ex)
-            {
-                Console.Write(ex.Message);
-            }
-        }
-
-        /// <summary>
-        /// 发送打印
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void button8_Click_1(object sender, EventArgs e)
-        {
-            if (!string.IsNullOrEmpty(cmbInstalledPrinters.Text))
-            {
-                // Send a printer-specific to the printer.
-                RawPrinterHelper.SendStringToPrinter(cmbInstalledPrinters.Text, this.richTextBox2.Text);
-            }
-        }
-
-        #region ----------- 驱动打印 -----------
-
-        bool prinBoolOK = false;
-
-        /// <summary>
-        /// 驱动打印
-        /// </summary>
-        private void BtnDriverPrint_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                // 判断是否选中打印机
-                if (!string.IsNullOrEmpty(cboPrinterType.Text))
-                {
-                    GenerateBarcode();  // 生成条码内容
-                    GoToPrint();        // 打印条码
-
-                    lblPrintPrompt.Text = "OK";
-                    lblPrintPrompt.ForeColor = Color.Green;
-                }
-            }
-            catch (Exception ex)
-            {
-                PrinPromptNG();
-            }
-            if (prinBoolOK == false)
-            {
-                PrinPromptNG();
-            }
-        }
-
-        private void PrinPromptNG()
-        {
-            lblPrintPrompt.Text = "NG";
-            lblPrintPrompt.ForeColor = Color.Red;
-        }
-
-        /// <summary>
-        /// 打印条码
-        /// </summary>
-        /// <returns>18为条码字符串</returns>
-        private string GoToPrint()
-        {
-            string printAgo = textBox54.Text;        // 条码前端
-            string printAfter = textBox53.Text;      // 条码后端
-            string pModel = txtPModel_COM.Text;      // 产品型号
-            //string printSerial = txtSerialNumber.Text;// 流水号
-            string barcodeInfo = lblCodeContent.Text;   // 条码内容
-
-            // 获取打印数量
-            if (!int.TryParse(txtPrintCount.Text, out int printCount))
-            {
-                // 默认数量为1
-                printCount = 1;
-            }
-
-            // 判断打印格式
-            switch (cboPrintFormat_COM.SelectedIndex)
-            {
-                case 0: // BTW 文件打印
-                    BTW_PrintersCodes(barcodeInfo, printAgo, printAfter, pModel, printCount);
-                    break;
-                case 1: // PRN 文件打印
-                    PrinteWithPrn(printCount, barcodeInfo, printAgo, printAfter, pModel);
-                    break;
-            }
-            return barcodeInfo;
-        }
-
+        /// <param name="printCode"></param>
+        /// <param name="printAgo"></param>
+        /// <param name="printAfter"></param>
+        /// <param name="printType"></param>
+        /// <param name="printNum"></param>
+        /// <exception cref="Exception"></exception>
         private async void BTW_PrintersCodes(string printCode, string printAgo, string printAfter, string printType, int printNum)
         {
             try
@@ -5270,25 +5201,6 @@ namespace MesDatas
             }
         }
 
-        private static BarTender.Application btApp = null;
-        private static BarTender.Format btFormat;
-
-        public static void Init_Bartender()
-        {
-            try
-            {
-                if (btApp == null)
-                {
-                    btApp = new BarTender.Application();
-                }
-            }
-            catch (Exception ex)
-            {
-                ex.Message.ToString();
-                return;
-            }
-        }
-
         /// <summary>
         /// .prn文件格式打印
         /// </summary>
@@ -5296,7 +5208,7 @@ namespace MesDatas
         /// <param name="printAgo"></param>
         /// <param name="printAfter"></param>
         /// <param name="pModel"></param>
-        private void PrinteWithPrn(int printCount, string barcodeInfo, string printAgo, string printAfter, string pModel)
+        private void PrinteWithPrn(string barcodeInfo, string printAgo, string printAfter, string pModel, int printCount)
         {
             /*try
             {
@@ -5339,7 +5251,7 @@ namespace MesDatas
             try
             {
                 string fileContent = File.ReadAllText(lblPrnFilePath_COM.Text);
-                int copiesPerBarcode = chkPlus2Print.Checked ? 2 : 1; // 每个条码打印的份数
+                int copiesPerBarcode = chkPlus2Print.Checked ? 2 : 1;           // 每个条码打印的份数
 
                 for (int i = 0; i < printCount; i++)
                 {
@@ -5375,6 +5287,112 @@ namespace MesDatas
                 // 记录异常并重新抛出
                 Console.WriteLine($"打印过程中发生错误：{ex.Message}");
                 throw;
+            }
+        }
+
+        public static void Init_Bartender()
+        {
+            try
+            {
+                if (btApp == null)
+                {
+                    btApp = new BarTender.Application();
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+                return;
+            }
+        }
+
+        #endregion
+
+        #region ------ 驱动打印 ------
+
+        /// <summary>
+        /// 驱动打印 > 更改prn文件所在位置
+        /// </summary>
+        private void ChangePath_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            if (string.IsNullOrEmpty(cboPrintFormat_COM.Text))
+            {
+                MessageBox.Show("请选择打印文件格式");
+                return;
+            }
+            openFileDialog.Filter = "PRN files " + cboPrintFormat_COM.Text;
+            openFileDialog.Title = "选择打印文件";
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                // 获取选中的PRN文件路径
+                string prnFilePath = openFileDialog.FileName;
+                lblPrnFilePath_COM.Text = prnFilePath;
+                // 在这里添加代码以处理PRN文件
+            }
+        }
+
+        /// <summary>
+        /// 驱动打印 > 查看文件所在位置
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ShowPath_COM_Click(object sender, EventArgs e)
+        {
+            string filePath = lblPrnFilePath_COM.Text;
+            Direc_Troy_Path_Position(filePath);
+        }
+
+        /// <summary>
+        /// 驱动打印设置 -> 保存
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnSaveCOM_Click(object sender, EventArgs e)
+        {
+            printersBtw.PtypeBtw = cboPrinterType.Text;             // 打印机类型
+            printersBtw.PheadBtw = textBox54.Text;                  // 条码前端
+            printersBtw.PtimeBtw = textBox53.Text;                  // 条码后端
+            printersBtw.PModel = txtPModel_COM.Text;                // 条码型号
+            printersBtw.IsLoadModel_PLC = chkLoadModel_COM.Checked; // 是否读取PLC型号
+            printersBtw.MethodBtw = chkUseFont.Checked;             // 使用文字
+
+            printersBtw.BarcodeNumber = txtCodeNumber.Text;         // 码号
+            printersBtw.SerialNumber = txtSerialNumber.Text;        // 流水号
+            printersBtw.TlowBtw = txtSerialSpan.Text;               // 打印数量
+            printersBtw.PertowBtw = lblPrnFilePath_COM.Text;        // prn文件路径
+            printersBtw.TxttowBtw = cboPrintFormat_COM.Text;        // 打印文件格式
+            printersBtw.PrintNowDateTime = chkAutoAddDate.Checked;  // 自动添加日期
+            printersBtw.PrintSerialNumber = false;                  // 打印机打印条码
+            printersBtw.PrintCodeTwoBool = chkPlus2Print.Checked;   // +2打印
+
+            var result = printersBtw.Save();
+            MessageBox.Show(result);
+        }
+
+        /// <summary>
+        /// 驱动打印
+        /// </summary>
+        private void BtnDriverPrint_Click(object sender, EventArgs e)
+        {
+            // 判断是否选中打印机
+            if (string.IsNullOrWhiteSpace(cboPrinterType.Text)) return;
+            try
+            {
+                GenerateBarcode();  // 生成条码内容
+                GoToPrint();        // 打印条码
+
+                lblPrintPrompt.Text = "OK";
+                lblPrintPrompt.ForeColor = Color.Green;
+            }
+            catch (Exception)
+            {
+                PrintNGPrompt();
+            }
+            if (prinBoolOK == false)
+            {
+                PrintNGPrompt();
             }
         }
 
@@ -5445,54 +5463,40 @@ namespace MesDatas
         }
 
         /// <summary>
-        /// 自动生成条码内容
+        /// 打印条码
         /// </summary>
-        /// <param name="codeNumber">10位字符串码号</param>
-        /// <returns>18位的条码字符串</returns>
-        private string AutoGenerateBarcode(string codeNumber)
+        /// <returns>18为条码字符串</returns>
+        private void GoToPrint()
         {
-            DateTime currentDate = DateTime.Now.Date;
+            string printAgo = textBox54.Text;        // 条码前端
+            string printAfter = textBox53.Text;      // 条码后端
+            string pModel = txtPModel_COM.Text;      // 产品型号
+            string barcodeInfo = lblCodeContent.Text;   // 条码内容
+            //string printSerial = txtSerialNumber.Text;// 流水号
 
-            if (ShouldResetSerialNumber())
+            // 获取打印数量
+            if (!int.TryParse(txtPrintCount.Text, out int printCount))
             {
-                ResetSerialNumber();
-                SaveLastSavedDate(DateTime.Now.Date);
+                // 默认数量为1
+                printCount = 1;
             }
-            else
+
+            // 判断打印格式
+            switch (cboPrintFormat_COM.SelectedIndex)
             {
-                SaveLastSavedDate(currentDate);
+                case 0: // BTW 文件打印
+                    BTW_PrintersCodes(barcodeInfo, printAgo, printAfter, pModel, printCount);
+                    break;
+                case 1: // PRN 文件打印
+                    PrinteWithPrn(barcodeInfo, printAgo, printAfter, pModel, printCount);
+                    break;
             }
+        }
 
-            // 获取当前流水号
-            if (!int.TryParse(txtSN.Text, out int serialNumber))
-            {
-                serialNumber = 0;
-            }
-            // 计算新的流水号
-            int newSerialNumber = serialNumber + 1;
-
-            // 更新流水号并保存
-            string formattedSerialNumber = newSerialNumber.ToString("D5");
-            sytemSetDerivedsd.SerialNumber = formattedSerialNumber;
-            txtSN.Text = formattedSerialNumber;
-            sytemSetDerivedsd.Save();
-
-            string month = DateTime.Now.Month.ToString();
-            string day = DateTime.Now.Day.ToString("D2");
-
-            /*if (month == "10" || month == "11" || month == "12")
-            {
-                switch (month)
-                {
-                    case "10": month = "0"; break;
-                    case "11": month = "A"; break;
-                    case "12": month = "B"; break;
-                }
-            }*/
-
-            codeNumber = codeNumber += month + day;
-            string barcodeInfo = codeNumber + txtSN.Text;
-            return barcodeInfo;
+        private void PrintNGPrompt()
+        {
+            lblPrintPrompt.Text = "NG";
+            lblPrintPrompt.ForeColor = Color.Red;
         }
 
         /// <summary>
@@ -5579,127 +5583,66 @@ namespace MesDatas
         public async Task SaveSerialNumberAsync()
         {
             await Task.Run(() =>
-             {
-                 printersBtw.Save();
-                 Console.WriteLine("All changes saved");
-             });
+            {
+                printersBtw.Save();
+                Console.WriteLine("All changes saved");
+            });
         }
 
         #endregion
 
-        #region ----------- 打印机 -----------
+        #region ------ 网络打印 ------
 
         /// <summary>
-        /// 打印机
+        /// 网络打印设置 -> 打印按钮
         /// </summary>
-        private void PlcControlPrint()
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnTCPPrint_Click(object sender, EventArgs e)
         {
-            Task.Run(() =>
+            if (string.IsNullOrEmpty(cboPrintFile_TCP.Text))
             {
-                while (IsRunningPZL)
+                MessageBox.Show("请选择打印文件！！!");
+                return;
+            }
+
+            try
+            {
+                Serialnumber();         // 将流水号+1
+                string instrctis = "";
+                string fileContent = File.ReadAllText(cboPrintFile_TCP.Text);
+
+                // 使用文字
+                if (chkUseFront_TCP.Checked)
                 {
-                    // 触发通讯读
-                    if (isPlcConnected == true)
-                    {
-                        // D1014
-                        var Read_data1 = KeyenceMcNet.ReadInt16(printerConfig.PrinteSendResult).Content;
-                        // D1012
-                        var read_data2 = KeyenceMcNet.ReadInt32(printerConfig.PrinterStep).Content; // 1=新打  2=重打
-
-                        // 新打印一个标签
-                        if (read_data2 == 1 && Read_data1 == 0)
-                        {
-                            Invoke(new Action(() =>
-                            {
-                                try
-                                {
-                                    switch (cboPrintMode.SelectedIndex)
-                                    {
-                                        case 0:     // 网络打印
-                                            button30_Click(null, null); // 发送打印机指令
-                                            break;
-                                        case 1:     // 驱动打印
-                                            BtnDriverPrint_Click(null, null);
-                                            break;
-                                    }
-
-                                    //D1014
-                                    KeyenceMcNet.Write(printerConfig.PrinteSendResult, 1);
-                                }
-                                catch (Exception ex)
-                                {
-                                    // MessageBox.Show("发送打印机指令异常：" + ex.Message);
-                                    // D1014
-                                    KeyenceMcNet.Write(printerConfig.PrinteSendResult, 2);
-                                }
-                            }));
-                            Thread.Sleep(250);
-                            Application.DoEvents();
-                        }
-                        // 重打标签
-                        else if (read_data2 == 2)
-                        {
-                            Invoke(new Action(() =>
-                            {
-                                try
-                                {
-                                    // Send a printer-specific to the printer.
-
-                                    switch (cboPrintMode.SelectedIndex)
-                                    {
-                                        case 0:
-                                            repeatBarCode();// 发送打印机指令
-                                            break;
-                                        case 1:
-                                            GoToPrint();    // 重新打印
-                                            break;
-                                    }
-                                    //D1014
-                                    KeyenceMcNet.Write(printerConfig.PrinteSendResult, 1);
-                                }
-                                catch (Exception ex)
-                                {
-                                    //MessageBox.Show("发送打印机指令异常：" + ex.Message);
-                                    //D1014
-                                    KeyenceMcNet.Write(printerConfig.PrinteSendResult, 2);
-                                }
-                            }));
-                            Thread.Sleep(250);
-                            Application.DoEvents();
-                        }
-                    }
+                    instrctis = string.Format(fileContent, lblContent_TCP.Text, txtBefore_TCP.Text, txtAfter_TCP.Text, txtPModel_TCP.Text);
                 }
-            });
+                else
+                {
+                    instrctis = string.Format(fileContent, lblContent_TCP.Text);
+                }
+
+                byte[] heartbeatData = System.Text.Encoding.UTF8.GetBytes(instrctis.ToString());
+                Send(heartbeatData);
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
 
         /// <summary>
-        /// 条码前部分+日期处理
+        /// 网络打印设置 -> 斑马测试打印
         /// </summary>
-        /// <returns></returns>
-        private string Pfunime()
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnPrintZebraTest_Click(object sender, EventArgs e)
         {
-            string Ptime = textBox25.Text;
-            DateTime times_Month = DateTime.Now;
-            string times_Month_string0 = times_Month.Year.ToString();
-            string times_Month_string1 = times_Month.Month.ToString();
-            switch (times_Month_string1)
+            if (!string.IsNullOrEmpty(cmbInstalledPrinters.Text))
             {
-                case "1": Ptime += 1; break;
-                case "2": Ptime += 2; break;
-                case "3": Ptime += 3; break;
-                case "4": Ptime += 4; break;
-                case "5": Ptime += 5; break;
-                case "6": Ptime += 6; break;
-                case "7": Ptime += 7; break;
-                case "8": Ptime += 8; break;
-                case "9": Ptime += 9; break;
-                case "10": Ptime += 0; break;
-                case "11": Ptime += "A"; break;
-                case "12": Ptime += "B"; break;
+                // Send a printer-specific to the printer.
+                RawPrinterHelper.SendStringToPrinter(cmbInstalledPrinters.Text, this.richTextBox2.Text);
             }
-            string times_Month_string2 = times_Month.ToString("dd");
-            Ptime += times_Month_string2;
-            return Ptime;
         }
 
         /// <summary>
@@ -5707,13 +5650,12 @@ namespace MesDatas
         /// </summary>
         private void Serialnumber()
         {
-            string serialunm = textBox26.Text;
-            int num;//发送一条加一
+            string serialunm = txtSN_TCP.Text;
+            int num;        // 发送一条加一
             if (int.TryParse(serialunm, out num))
             {
                 SeriaPtail(num);
             }
-
         }
 
         /// <summary>
@@ -5737,21 +5679,93 @@ namespace MesDatas
             {
                 for (int j = 0; j < table2.Columns.Count; j++)
                 {
-                    textBox26.Text = table2.Rows[i]["Ptail"].ToString();
+                    txtSN_TCP.Text = table2.Rows[i]["Ptail"].ToString();
                 }
             }
             dbHelper.CloseConnection();
-            label62.Text = Pfunime() + textBox26.Text;
+            lblContent_TCP.Text = Pfunime() + txtSN_TCP.Text;
         }
 
-        private Socket clientSocket = null;
-
-        private void button31_Click(object sender, EventArgs e)
+        /// <summary>
+        /// 网络打印设置 > 查看文件所在位置
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ShowPath_TCP_Click(object sender, EventArgs e)
         {
-            ConnPrintServer();
+            string filePath = cboPrintFile_TCP.Text;
+            Direc_Troy_Path_Position(filePath);
         }
 
-        public Boolean ConnPrintServer()
+        /// <summary>
+        /// 网络打印设置 -> 保存
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnSaveAtTCP_Click(object sender, EventArgs e)
+        {
+            if (txtCodeNum_TCP.Text == String.Empty)
+            {
+                MessageBox.Show("当前界面内容均为必填项、请先填写完善");
+                return;
+            }
+            try
+            {
+                printers.Ptype = cboPrintFile_TCP.Text;
+                printers.Ptime = txtCodeNum_TCP.Text;// table1.Rows[i]["Ptime"].ToString();//条码时间格式
+                printers.Ptail = txtSN_TCP.Text;//条码数字
+                printers.TFront = txtBefore_TCP.Text;//字体前端
+                printers.Tmonarch = txtAfter_TCP.Text;//字体后端
+                printers.Tlow = txtPModel_TCP.Text;//字体下面
+                printers.Txttow = chkUseFront_TCP.Checked.ToString();
+                printers.Plcmodel = chkLoadModel_TCP.Checked.ToString();
+                printers.Method = lblPrnFilePath_TCP.Text;
+                printers.Phead = "False";
+                printers.ip = txtPrinter_IP.Text;
+                printers.prot = txtPrinter_Port.Text;
+                var result = printers.Save();
+                MessageBox.Show(result);
+
+                string method = "  ";
+
+                lblContent_TCP.Text = Pfunime() + txtSN_TCP.Text;
+            }
+            catch (Exception ex)
+            {
+                Console.Write(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// 网络打印设置 >　更改prn文件所在位置
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ChangePath_TCP_Click(object sender, EventArgs e)
+        {
+            using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
+            {
+                if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+                {
+                    string folderPath = folderBrowserDialog.SelectedPath;
+                    this.lblPrnFilePath_TCP.Text = folderPath;
+                    LoadPrnFiles(folderPath);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 网络打印设置 -> 连接按钮
+        /// </summary>
+        /// <remarks>
+        /// 用于连接打印机
+        /// </remarks>
+        private void btnConnectPrinter_Click(object sender, EventArgs e)
+        {
+            ConnectPrintServer();
+        }
+
+        public Boolean ConnectPrintServer()
         {
             IPAddress ipAddress;
             if (!IPAddress.TryParse(txtPrinter_IP.Text.ToString(), out ipAddress))
@@ -5785,50 +5799,133 @@ namespace MesDatas
         }
 
         /// <summary>
-        /// 发送新的条码（斑马测试打印按钮）
+        /// 条码前部分+日期处理
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void button30_Click(object sender, EventArgs e)
+        /// <returns></returns>
+        private string Pfunime()
         {
-            if (string.IsNullOrEmpty(comboBox1.Text))
+            string Ptime = txtCodeNum_TCP.Text;
+            DateTime times_Month = DateTime.Now;
+            string times_Month_string0 = times_Month.Year.ToString();
+            string times_Month_string1 = times_Month.Month.ToString();
+            switch (times_Month_string1)
             {
-                MessageBox.Show("请选择打印文件！！!");
-                return;
+                case "1": Ptime += 1; break;
+                case "2": Ptime += 2; break;
+                case "3": Ptime += 3; break;
+                case "4": Ptime += 4; break;
+                case "5": Ptime += 5; break;
+                case "6": Ptime += 6; break;
+                case "7": Ptime += 7; break;
+                case "8": Ptime += 8; break;
+                case "9": Ptime += 9; break;
+                case "10": Ptime += 0; break;
+                case "11": Ptime += "A"; break;
+                case "12": Ptime += "B"; break;
             }
+            string times_Month_string2 = times_Month.ToString("dd");
+            Ptime += times_Month_string2;
+            return Ptime;
+        }
+
+        private void LoadPrnFiles(string folderPath)
+        {
             try
             {
-                Serialnumber();     // 将流水号+1
-                string instrctis = "";
-                string fileContent = File.ReadAllText(comboBox1.Text);
+                cboPrintFile_TCP.Items.Clear();
+                List<string> listprn = PRNchDPrnFiles.LoadAllPrnFilesFromDisk(folderPath);
 
-                // 使用文字
-                if (checkBox3.Checked)
+                foreach (string file in listprn)
                 {
-                    instrctis = string.Format(fileContent, label62.Text, textBox20.Text, textBox27.Text, txtPModel_TCP.Text);
+                    // 在这里处理PRN文件
+                    // 例如：打开文件、读取内容、显示在界面等
+                    cboPrintFile_TCP.Items.Add(file);
                 }
-                else
-                {
-                    instrctis = string.Format(fileContent, label62.Text);
-                }
-                /*StringBuilder str = new StringBuilder();
-                str.Append("RUN \"YC.BAS\"");
-                str.Append("\r\n");
-                str.Append(label62.Text);
-                str.Append("\r\n");
-                str.Append(textBox27.Text);
-                str.Append("\r\n");
-                str.Append(textBox20.Text);
-               str.Append("\r\n");
-              str.Append(textBox28.Text);
-               str.Append("\r\n");*/
-                byte[] heartbeatData = System.Text.Encoding.UTF8.GetBytes(instrctis.ToString());
-                Send(heartbeatData);
             }
             catch (Exception ex)
             {
 
             }
+        }
+
+        #endregion
+
+        /// <summary>
+        /// PCL控制打印
+        /// </summary>
+        private void PlcControlPrint()
+        {
+            Task.Run(() =>
+            {
+                // 触发通讯读
+                if (isPlcConnected)
+                {
+                    var printResult = KeyenceMcNet.ReadInt16(printerConfig.PrintResult).Content;    // D1014
+                    var printStep = KeyenceMcNet.ReadInt32(printerConfig.PrintStep).Content;        // D1012
+
+                    // 打印成功：反馈PrintResult = 1;   新打：printStep = 1；
+                    // 打印失败：反馈PrintResult = 2；  重打：printStep = 2；
+
+                    // 新打印：
+                    if (printStep == 1 && printResult == 0)
+                    {
+                        Invoke(new Action(() =>
+                        {
+                            try
+                            {
+                                switch (cboPrintMode.SelectedIndex)
+                                {
+                                    case 0:     // 网络打印
+                                        btnTCPPrint_Click(null, null);
+                                        break;
+                                    case 1:     // 驱动打印
+                                        BtnDriverPrint_Click(null, null);
+                                        break;
+                                }
+
+                                // 反馈打印结果：成功
+                                KeyenceMcNet.Write(printerConfig.PrintResult, 1);
+                            }
+                            catch (Exception ex)
+                            {
+                                // 反馈打印结果：失败
+                                KeyenceMcNet.Write(printerConfig.PrintResult, 2);
+                            }
+                        }));
+
+                        Thread.Sleep(250);
+                        Application.DoEvents();
+                    }
+                    else if (printStep == 2)
+                    {
+                        Invoke(new Action(() =>
+                        {
+                            try
+                            {
+                                switch (cboPrintMode.SelectedIndex)
+                                {
+                                    case 0:
+                                        repeatBarCode();// 发送打印机指令
+                                        break;
+                                    case 1:
+                                        GoToPrint();    // 驱动打印 -> 打印条码
+                                        break;
+                                }
+                                //D1014
+                                KeyenceMcNet.Write(printerConfig.PrintResult, 1);
+                            }
+                            catch (Exception ex)
+                            {
+                                //D1014
+                                KeyenceMcNet.Write(printerConfig.PrintResult, 2);
+                            }
+                        }));
+
+                        Thread.Sleep(250);
+                        Application.DoEvents();
+                    }
+                }
+            });
         }
 
         /// <summary>
@@ -5838,28 +5935,23 @@ namespace MesDatas
         {
             try
             {
-                /*StringBuilder str = new StringBuilder();
-                str.Append("RUN \"YC.BAS\"");
-                str.Append("\r\n");
-                str.Append(label62.Text);
-                str.Append("\r\n");
-                str.Append(textBox27.Text);
-                str.Append("\r\n");
-                str.Append(textBox20.Text);
-                str.Append("\r\n");
-                str.Append(textBox28.Text);
-                str.Append("\r\n");*/
-                string instrctis = "";
-                string fileContent = File.ReadAllText(comboBox1.Text);
-                if (checkBox3.Checked)
+                string construction = "";
+                // 读取 .prn文件内容
+                string fileContent = File.ReadAllText(cboPrintFile_TCP.Text);
+
+                // 是否使用文字
+                if (chkUseFront_TCP.Checked)
                 {
-                    instrctis = string.Format(fileContent, label62.Text, textBox20.Text, textBox27.Text, txtPModel_TCP.Text);
+                    // .prn文件, 码内容, 码前端, 码后端, 型号;
+                    construction = string.Format(fileContent, lblContent_TCP.Text, txtBefore_TCP.Text, txtAfter_TCP.Text, txtPModel_TCP.Text);
                 }
                 else
                 {
-                    instrctis = string.Format(fileContent, label62.Text);
+                    // .prn文件, 码内容
+                    construction = string.Format(fileContent, lblContent_TCP.Text);
                 }
-                byte[] heartbeatData = System.Text.Encoding.UTF8.GetBytes(instrctis.ToString());
+
+                byte[] heartbeatData = System.Text.Encoding.UTF8.GetBytes(construction.ToString());
                 Send(heartbeatData);
             }
             catch (Exception ex)
@@ -5879,7 +5971,8 @@ namespace MesDatas
             {
                 try
                 {
-                    if (clientSocket is null || !clientSocket.Connected) while (!ConnPrintServer()) ;   // 如果未连接，就连接上
+                    if (clientSocket is null || !clientSocket.Connected)
+                        while (!ConnectPrintServer()) ;   // 如果未连接，就连接上
                     clientSocket.Send(msg);    //把字节数组发送到服务器端
                     Console.WriteLine("发送成功！");
                 }
@@ -5888,98 +5981,6 @@ namespace MesDatas
                     throw new Exception();
                 }
             });
-            //  return 1;
-        }
-
-        #endregion
-
-        private void LoadPrnFiles(string folderPath)
-        {
-            try
-            {
-                comboBox1.Items.Clear();
-                List<string> listprn = PRNchDPrnFiles.LoadAllPrnFilesFromDisk(folderPath);
-                //string[] prnFiles = Directory.GetFiles(folderPath, "*.prn", SearchOption.AllDirectories);
-                // string[] prnFiles = Directory.GetFiles(folderPath, "*.prn");
-                foreach (string file in listprn)
-                {
-                    // 在这里处理PRN文件
-                    // 例如：打开文件、读取内容、显示在界面等
-                    comboBox1.Items.Add(file);
-                    //Console.WriteLine(file);
-                }
-            }
-            catch (Exception ex)
-            {
-
-            }
-        }
-
-        /// <summary>
-        /// 网络打印 >　更改prn文件所在位置
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ChangePath_TCP_Click(object sender, EventArgs e)
-        {
-            // PrintDialog path = new PrintDialog();
-            // OpenFileDialog path = new OpenFileDialog() { Filter = "Files (*.prn)|*.prn" };
-            // path.ShowDialog();
-
-            using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
-            {
-                if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
-                {
-                    string folderPath = folderBrowserDialog.SelectedPath;
-                    this.lblPrnFilePath_TCP.Text = folderPath;
-                    LoadPrnFiles(folderPath);
-                }
-            }
-        }
-
-        /// <summary>
-        /// 网络打印 > 查看文件所在位置
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ShowPath_TCP_Click(object sender, EventArgs e)
-        {
-            string filePath = comboBox1.Text;
-            Direc_Troy_Path_Position(filePath);
-        }
-
-        /// <summary>
-        /// 驱动打印 > 更改prn文件所在位置
-        /// </summary>
-        private void ChangePath_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            if (string.IsNullOrEmpty(cboPrintFormat_COM.Text))
-            {
-                MessageBox.Show("请选择打印文件格式");
-                return;
-            }
-            openFileDialog.Filter = "PRN files " + cboPrintFormat_COM.Text;
-            openFileDialog.Title = "选择打印文件";
-
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                // 获取选中的PRN文件路径
-                string prnFilePath = openFileDialog.FileName;
-                lblPrnFilePath_COM.Text = prnFilePath;
-                // 在这里添加代码以处理PRN文件
-            }
-        }
-
-        /// <summary>
-        /// 驱动打印 > 查看文件所在位置
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ShowPath_COM_Click(object sender, EventArgs e)
-        {
-            string filePath = lblPrnFilePath_COM.Text;
-            Direc_Troy_Path_Position(filePath);
         }
 
         private static void Direc_Troy_Path_Position(string filePath)

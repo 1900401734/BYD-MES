@@ -42,10 +42,8 @@ public class DatabaseOperations
     {
         await Task.Run(() =>
         {
-
             CreateDatabaseAndTable(conn);
             InsertData(conn, barcodeInfo, Value, codesTable, list, maxList, minList, resultList);
-
         });
     }
 
