@@ -193,7 +193,7 @@
   <data name="Fixture_OK" xml:space="preserve">
     <value>工装编号验证通过</value>
   </data>
-  <data name="label_Value" xml:space="preserve">
+  <data name="Standby" xml:space="preserve">
     <value>待机</value>
   </data>
   <data name="material_NG" xml:space="preserve">
@@ -232,10 +232,10 @@
   <data name="ScanBarCode_OK" xml:space="preserve">
     <value>扫码完成</value>
   </data>
-  <data name="scanning" xml:space="preserve">
+  <data name="WaittingScanBarcode" xml:space="preserve">
     <value>等待扫描条码</value>
   </data>
-  <data name="UserCheck" xml:space="preserve">
+  <data name="OfflineUser_OK" xml:space="preserve">
     <value>单机用户验证成功</value>
   </data>
   <data name="user_yzz" xml:space="preserve">
@@ -244,7 +244,7 @@
   <data name="Wait" xml:space="preserve">
     <value>请等待</value>
   </data>
-  <data name="Wait_scan_Jig" xml:space="preserve">
+  <data name="WaittingSacnFixtures" xml:space="preserve">
     <value>等待扫工装</value>
   </data>
   <data name="readCard_Close" xml:space="preserve">

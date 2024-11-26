@@ -17,15 +17,14 @@ namespace MesDatas.Utility.SugarDB
 
         static string Dbtypele = "Access";
         static string path4 = System.AppDomain.CurrentDomain.BaseDirectory + "SystemDateBase.mdb";
-        static string ConnnectString = " Provider = Microsoft.Jet.OLEDB.4.0 ; Data Source ={0};Persist Security Info=True;Jet OLEDB:Database Password=byd;User Id=admin";
-
+        static string ConnnectString = " Provider = Microsoft.Jet.OLEDB.4.0; Data Source ={0}; Persist Security Info=True; Jet OLEDB:Database Password=byd; User Id=admin ";
         static bool Isfile = true;
 
         /// <summary>
         /// 获取通用数据库连接
         /// </summary>
         /// <returns></returns>
-        public static SqlSugarClient GetDBConn()
+        public static SqlSugarClient GetDBConnection()
         {
             string conn = string.Format(ConnnectString, path4);
             using (var db = GetSQLSugarConnStr(Dbtypele, conn, Isfile, path4))
@@ -103,7 +102,7 @@ namespace MesDatas.Utility.SugarDB
         {
             try
             {
-                using (var db = GetDBConn())
+                using (var db = GetDBConnection())
                 {
                     var type = TypeSugarClass.GetListType(db, tableName, columns);
                     // if (db.DbMaintenance.IsAnyTable(tableName))
@@ -124,7 +123,7 @@ namespace MesDatas.Utility.SugarDB
         {
             try
             {
-                using (var db = GetDBConn())
+                using (var db = GetDBConnection())
                 {
                     return db.Ado.GetDataTable(sql);
                 }
@@ -144,7 +143,7 @@ namespace MesDatas.Utility.SugarDB
         {
             try
             {
-                using (var db = GetDBConn())
+                using (var db = GetDBConnection())
                 {
                     return db.Ado.GetDataSetAll(sql);
                 }
@@ -164,7 +163,7 @@ namespace MesDatas.Utility.SugarDB
         {
             try
             {
-                using (var db = GetDBConn())
+                using (var db = GetDBConnection())
                 {
                     return db.Ado.ExecuteCommand(sql);
                 }
@@ -217,7 +216,7 @@ namespace MesDatas.Utility.SugarDB
         {
             try
             {
-                using (var db = GetDBConn())
+                using (var db = GetDBConnection())
                 {
                     return InsertListSqlSuk(tableName, listHead, listTail, db);
                 }
@@ -263,7 +262,7 @@ namespace MesDatas.Utility.SugarDB
         {
             try
             {
-                using (var db = GetDBConn())
+                using (var db = GetDBConnection())
                 {
                     return db.Ado.GetInt(sql);
                 }

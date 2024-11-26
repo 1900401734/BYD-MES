@@ -24,6 +24,7 @@ using NLog;
 using NPOI.SS.Formula;
 using NPOI.SS.Formula.Functions;
 using NPOI.SS.UserModel;
+using Org.BouncyCastle.Utilities.Net;
 using Seagull.BarTender.Print;
 using SqlSugar;
 using System;
@@ -69,12 +70,9 @@ namespace MesDatas
         }
 
         /// <summary>
-        /// 登录模式（联机或单机）
+        /// 登录模式 (联机或单机) 0=联机  1=单机
         /// </summary>
         public string LoginMode { get; private set; }
-        /// <summary>
-        /// 0=联机  1=单机
-        /// </summary>
         private int isOffLine { get; set; }
         public void SetoffLineType(int strText)
         {
@@ -82,6 +80,9 @@ namespace MesDatas
             LoginMode = isOffLine == 0 ? "联机" : "单机";
         }
 
+        /// <summary>
+        /// 登录方式(刷卡或密码)
+        /// </summary>
         public string LoginMethod { get; private set; }
         private int CheckCard { get; set; }
         public void Setcheckcard(int strText)
@@ -105,6 +106,7 @@ namespace MesDatas
             Access = strText;
             GetAccessName(Access);
         }
+
         /// <summary>
         /// 权限名
         /// </summary>
@@ -178,67 +180,67 @@ namespace MesDatas
         /// <summary>
         ///产品型号 = 产品名称 = 产品编号
         /// </summary>
-        private string productModel = " ";
+        private string productModel;
         /// <summary>
         /// 生产总数
         /// </summary>
-        private string D1080 = " ";
+        private string D1080;
         /// <summary>
         /// 工单数量
         /// </summary>
-        private string D1084 = " ";
+        private string D1084;
         /// <summary>
         /// 完成数量
         /// </summary>
-        private string D1086 = " ";
+        private string D1086;
         /// <summary>
         /// 合格数量
         /// </summary>
-        private string D1088 = " ";
+        private string D1088;
         /// <summary>
         /// 生产节拍
         /// </summary>
-        private string D1090 = " ";
+        private string D1090;
         /// <summary>
         /// 保养计数
         /// </summary>
-        private string D1082 = " ";
+        private string D1082;
         /// <summary>
         /// NG数量
         /// </summary>
-        private string D1076 = " ";
+        private string D1076;
         /// <summary>
         /// 完成率
         /// </summary>
-        string completeRate = "  ";
+        private string completeRate;
         /// <summary>
         /// 合格率
         /// </summary>
-        string passRate = "  ";
+        private string passRate;
         /// <summary>
         /// 工序时间
         /// </summary>
-        string processTime = "   ";
+        private string processTime;
         /// <summary>
         /// 利用时间
         /// </summary>
-        string usingTime = "  ";
+        private string usingTime;
         /// <summary>
         /// 负荷时间
         /// </summary>
-        string loadTime = "  ";
+        private string loadTime;
         /// <summary>
         /// 直通率 FPY：First-pass yield = TPY：ThroughPut Yield
         /// </summary>
-        string FPY = "  ";
+        private string FPY;
         /// <summary>
         /// 设备状态
         /// </summary>
-        private string deviceState = null;
+        private string deviceState;
         /// <summary>
         /// 成品名称
         /// </summary>
-        string productName = " ";
+        private string productName;
 
         #endregion
 
@@ -258,7 +260,7 @@ namespace MesDatas
         public string workOrder;
         public string appVersion;
         public string fileVersion;
-        public bool isProductOK;        // 产品测试总结果
+        public bool isProductOK;    // 产品测试总结果
 
         // 存储测试项目对应的PLC点位数据
         string[] targetStationNum = new string[] { };   // 目标工位序号
@@ -284,7 +286,6 @@ namespace MesDatas
         string[] kpisNameSets = new string[] { };   // 生产指标名称集合
 
         MDBHelper dbHelper = null;
-
         Assembly assembly = Assembly.GetExecutingAssembly();
         ResourceManager resources = null;
         int LanguageId = 0;
@@ -295,7 +296,7 @@ namespace MesDatas
 
         private static HslCommunication.Core.Net.NetworkDeviceBase KeyenceMcNet;
 
-        private bool isPlcConnected = false;
+        private bool isPLCConnected = false;
 
         private Dictionary<System.Windows.Forms.CheckBox, bool> checkBoxStates = new Dictionary<System.Windows.Forms.CheckBox, bool>();
         Dictionary<string, string> faultsMap = new Dictionary<string, string>();    // 故障映射
@@ -398,7 +399,7 @@ namespace MesDatas
         // 窗体加载后触发
         private void Form1_Shown(object sender, EventArgs e)
         {
-            AssignUI();     // 根据登入信息  分配主界面菜单
+            AssignUI(); // 根据用户权限分配主界面菜单
 
             InitializeCheckBoxStates(this.Controls);
 
@@ -416,7 +417,10 @@ namespace MesDatas
                     faultsMap = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonStr);
                 }
             }
-            catch { }
+            catch
+            {
+
+            }
             if (faultsMap == null)
             {
                 faultsMap = new Dictionary<string, string>();
@@ -432,8 +436,8 @@ namespace MesDatas
                 InvokeOnUIThreadAsync(() =>
                 {
                     lblRunningStatus.ForeColor = Color.Green;
-                    lblRunningStatus.Text = resources.GetString("UserCheck");    // 单机用户验证成功
-                    lblOperatePrompt.Text = resources.GetString("scanning");     // 等待扫描条码
+                    lblRunningStatus.Text = resources.GetString("OfflineUser_OK");    // 单机用户验证成功
+                    lblOperatePrompt.Text = resources.GetString("WaittingScanBarcode");     // 等待扫描条码
                 });
             }
 
@@ -443,16 +447,21 @@ namespace MesDatas
             taskUpdateStatus.Start();
             InitializeModelReadAsync();                 // 读取生产指标
             Process_Offline();                          // 根据状态写模式
+            InvokeOnUIThreadAsync(() =>
+            {
+                lblProductResult.ForeColor = Color.Black;
+                lblProductResult.BackColor = Color.White;
+                lblProductResult.Text = resources.GetString("Standby"); // 待机
+            });           // 初始状态为待机
+            InsertTable(null, null);
+            rtbProductLog.Clear();
+            UTYPE.SelectedIndex = 0;
 
             stationNameList = new List<string>();
             if (targetStationNum.Length > 0)
             {
                 stationNameList = CodeNum.GetStationNameListByID(targetStationNum, stationNameSets);
             }
-
-            InsertTable(null, null);
-            rtbProductLog.Clear();
-            UTYPE.SelectedIndex = 0;
 
             // 为 ADM 权限增加定时器
             if (Access == 3)
@@ -463,14 +472,6 @@ namespace MesDatas
                 timer.Interval = 1800000;
                 timer.Start();
             }
-
-            // 初始状态为待机
-            InvokeOnUIThreadAsync(() =>
-            {
-                lblProductResult.Text = resources.GetString("label_Value");
-                lblProductResult.ForeColor = Color.Black;
-                lblProductResult.BackColor = Color.White;
-            });
 
             // 联机用户验证失败,直接返回
             if (isOffLine == 0 && isMesLoginSuccessful == false)
@@ -503,7 +504,9 @@ namespace MesDatas
                 }
             }
 
+            barcodeData = "0";
             barcodeInfo = "1";
+            isAllowSwitchWorkOrder = true;
 
             taskReadBar = new Task(ProcessPlc_ReadBarcode); // 读取条码
             taskReadBar.Start();
@@ -520,8 +523,6 @@ namespace MesDatas
                 taskProcess_ZPL = new Task(PlcControlPrint);// PLC控制打印
                 taskProcess_ZPL.Start();
             }
-
-            sedbool = true;
         }
 
         // 在窗体关闭时调用此方法
@@ -550,6 +551,8 @@ namespace MesDatas
                 MessageBox.Show("An error occurred while closing the application: " + ex.Message);
             }
         }
+
+        #region ------------ 杂项 ------------
 
         private void InitializeTimer()
         {
@@ -771,6 +774,8 @@ namespace MesDatas
             }
         }
 
+        #endregion
+
         #region  ------------ 主业务逻辑 ------------
 
         Task taskReadBar = null;
@@ -783,10 +788,856 @@ namespace MesDatas
         bool isReadData_PLC = true;     // 开始读取生产数据
         bool isReadMaxMin_PLC = true;   // 读取、绑定上下限
         bool IsUpdateStatus_PLC = true; // 更新PLC连接状态
-
+        //private bool isBarcodeVerifySuccessfully = false;
+        //List<BarcodeVerification> bvlist;
+        //BarcodeVerification bv = null;
+        private bool isProcessSuccessfully = true;  // 自动生成条码时使用
+        private bool isSaveDataSuccessfully = true;
+        private string barcodeData = string.Empty;  // 实时读取或自动生成的条码，用于本地验证、MES验证
+        private string barcodeInfo = null;          // 存储二次读取过后的条码，同时用于测试结果上传、上传看板、保存本地、测试结果UI显示
         public static string path4 = System.AppDomain.CurrentDomain.BaseDirectory + "SystemDateBase.mdb";
         public static string pathText = System.AppDomain.CurrentDomain.BaseDirectory + "logfault.txt";
         public static string userFileuRL = "D:\\BYD_Users\\Users_Data.MDB";
+        //Logger singleLog = LogManager.GetLogger("InteractionSingle");
+
+        #region ------ 条码读取与验证 ------
+
+        /// <summary>
+        /// 读取条码
+        /// </summary>
+        private void ProcessPlc_ReadBarcode()
+        {
+            while (isReadBar_PLC)
+            {
+                ReadBarcode();
+            }
+            Thread.Sleep(50);
+            Application.DoEvents();
+        }
+
+        /// <summary>
+        /// 读条码/生成条码 -> 条码有效性验证 -> 本地条码验证 -> MES条码验证
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// 本地条码验证：工装验证 -> 条码重复性验证 -> 条码规则验证 -> 二维码验证
+        /// </para>
+        /// <para>
+        /// 条码规则验证：条码规则有效性验证 -> 条码规范性验证 -> 条码规则验证
+        /// </para>
+        /// </remarks>
+        private void ReadBarcode()
+        {
+            if (!isPLCConnected) return;
+            if (chkAutoBarcodeWithoutVerify.Checked) return;    // 自动生成条码但不进行MES条码验证，适用于气缸机；
+
+            List<BarcodeVerification> bvlist = BarcodeVefictnServer.GetBarcodeVefictnList(LanguageId);
+            BarcodeVerification bv = null;
+
+            // 判断是否需要开始条码验证流程
+            for (int i = 0; i < bvlist.Count; i++)
+            {
+                var D1000 = KeyenceMcNet.ReadInt32(bvlist[i].BarcodeStartPLC).Content;
+                //var D1000 = KeyenceMcNet.ReadInt32("D1000").Content;
+                if (D1000 != 1) return;
+
+                bv = bvlist[i];
+                if (bv == null) return;
+            }
+
+            // 进行条码验证和二维码验证
+            Invoke(new Action(async () =>
+            {
+                // 初始化UI状态
+                InvokeOnUIThreadAsync(() =>
+                {
+                    // 初始化状态指示灯
+                    lblScanBarcodeStatus.ForeColor = Color.Black; // 扫码状态指示灯
+                    lblValidationStatus.ForeColor = Color.Black;  // 验证状态指示灯
+                    lblUploadStatus.ForeColor = Color.Black;      // 上传状态指示灯
+
+                    lblProductResult.ForeColor = Color.Black;
+                    lblProductResult.BackColor = Color.White;
+                    lblProductResult.Text = resources.GetString("Standby"); // 待机
+                });
+
+                // 是否自动生成条码
+                IsAutoGenerateBarcode(bv);
+
+                // 条码有效性验证：判断是否为空引用、空字符或仅空格
+                if (string.IsNullOrWhiteSpace(barcodeData))
+                {
+                    // 更新UI
+                    lblScanBarcodeStatus.ForeColor = Color.Red;
+                    txtShowBarcode.ForeColor = Color.Red;
+                    txtShowBarcode.Text = bv.BarcodeIsNullOrWhiteSpace;
+
+                    // 向PLC反馈条码状态
+                    try
+                    {
+                        KeyenceMcNet.Write(bv.ErrorBarcodeEndPLC, 1);
+                        DisplayMessage($"条码有效性验证：条码为空引用、空字符或仅空白，反馈(条码验证{bv.ErrorBarcodeEndPLC} = 1)成功");
+                    }
+                    catch (Exception ex)
+                    {
+                        DisplayMessage($"条码有效性验证：条码为空引用、空字符或仅空白，反馈(条码验证{bv.ErrorBarcodeEndPLC} = 1)失败：{ex}");
+                    }
+
+                    return;
+                }
+
+                // 本地条码验证（工装验证 -> 重复性验证 -> 条码规则验证 -> 二维码验证）
+                if (!chkBanBarcodeVerificationLocally.Checked)
+                {
+                    // 工装验证
+                    if (!chkBypassFixtureValidation.Checked)
+                    {
+                        string[] expectedFixtures = CodeNum.ExtractFixturesInfo(cboBarcodeRuleAndFixtures.Text);
+                        string[] frockB = (txtFixtureBinding.Text).Split('+');
+
+                        // 判断工装是否相等
+                        if (!CodeNum.CompareArray(expectedFixtures, frockB))
+                        {
+                            // 判断条码是否在工装里面
+                            if (expectedFixtures.Contains(barcodeData))
+                            {
+                                if (string.IsNullOrWhiteSpace(txtFixtureBinding.Text))
+                                {
+                                    txtFixtureBinding.Text = barcodeData;
+                                }
+                                else
+                                {
+                                    if (!frockB.Contains(barcodeData))
+                                    {
+                                        txtFixtureBinding.Text = $"{txtFixtureBinding.Text}+{barcodeData}";
+                                    }
+                                }
+
+                                string[] frockC = txtFixtureBinding.Text.Split('+');
+
+                                // 验证条码则保存到数据库
+                                if (CodeNum.CompareArray(expectedFixtures, frockC))
+                                {
+                                    dbHelper = new MDBHelper(path4);
+                                    DataTable table1 = dbHelper.Find("select * from SytemSet where ID = '1'");
+                                    if (table1.Rows.Count > 0)
+                                    {
+                                        string sql = "update [SytemSet] set [BoardBeat]='" + txtFixtureBinding.Text + "' where [ID] = '1'";
+                                        var result = dbHelper.Change(sql);
+                                    }
+                                    dbHelper.CloseConnection();
+                                    lblOperatePrompt.Text = resources.GetString("WaittingScanBarcode");    // 等待扫描条码
+                                }
+
+                                lblScanBarcodeStatus.ForeColor = Color.Green;
+                                lblRunningStatus.ForeColor = Color.Green;
+                                lblRunningStatus.Text = resources.GetString("Fixture_OK");      // 工装编号验证通过
+
+                                try
+                                {
+                                    KeyenceMcNet.Write(bv.PassBarcodeEndPLC, 2);
+                                    DisplayMessage($"工装编号验证：工装编号验证通过，反馈(条码验证{bv.PassBarcodeEndPLC} = 2)成功");
+                                }
+                                catch (Exception ex)
+                                {
+                                    DisplayMessage($"工装编号验证：工装编号验证通过，反馈(条码验证{bv.PassBarcodeEndPLC} = 2)失败：{ex}");
+                                }
+
+                                return;
+                            }
+                            else
+                            {
+                                lblRunningStatus.ForeColor = Color.Red;
+                                lblRunningStatus.Text = resources.GetString("Fixture_NG");
+                                lblValidationStatus.ForeColor = Color.Red;
+
+                                try
+                                {
+                                    KeyenceMcNet.Write(bv.ErrorBarcodeEndPLC, 2);
+                                    DisplayMessage($"工装编号验证：工装编号验证未通过，反馈(条码验证{bv.ErrorBarcodeEndPLC} = 2)成功");
+                                }
+                                catch (Exception ex)
+                                {
+                                    DisplayMessage($"工装编号验证：工装编号验证未通过，反馈(条码验证{bv.ErrorBarcodeEndPLC} = 2)失败：{ex}");
+                                }
+                                return;
+                            }
+                        }
+                    }
+
+                    // 条码重复性验证：只要产品已经做过并且数据被成功保存在本地，不论产品结果是OK还是NG都会被判定为重复
+                    if (!chkBanLocalHistoricalData.Checked)
+                    {
+                        string dataPath = $"{lblDataPath.Text}\\{DateTime.Now:Y}生产数据.mdb";
+                        string selectSql = $" SELECT * FROM [Sheet1] WHERE 条码 = '{barcodeData}' ";
+
+                        // 屏蔽本地NG数据：仅保留OK数据参与验证
+                        if (chkBypassLocalNgHistoricalData.Checked)
+                        {
+                            selectSql += " AND 测试结果 = 'OK' ";
+                        }
+
+                        dbHelper = new MDBHelper(dataPath);
+                        bool isDataExist = dbHelper.DoesDataExist(selectSql);
+                        if (isDataExist)
+                        {
+                            InvokeOnUIThreadAsync(() =>
+                            {
+                                // 更新UI
+                                lblValidationStatus.ForeColor = Color.Red;
+                                lblRunningStatus.ForeColor = Color.Red;
+                                lblRunningStatus.Text = bv.BarcodeIsRepeatdly;
+                            });
+
+                            try
+                            {
+                                KeyenceMcNet.Write(bv.ErrorBarcodeEndPLC, 1);
+                                DisplayMessage($"条码重复性验证：条码重复扫过，反馈(条码验证{bv.ErrorBarcodeEndPLC} = 1)成功");
+                            }
+                            catch (Exception ex)
+                            {
+                                DisplayMessage($"条码重复性验证：条码重复扫过，反馈(条码验证{bv.ErrorBarcodeEndPLC} = 1)失败：{ex}");
+                            }
+
+                            return;
+                        }
+                    }
+
+                    // 条码规则验证
+                    if (!chkBypassBarcodeValidation.Checked)
+                    {
+                        // 条码规则验证：若实际获取的条码前缀与设定的条码验证规则的长度和字符都相同 => 通过验证
+                        string verificationRule = CodeNum.ExtractBarcodeVerificationRule(cboBarcodeRuleAndFixtures.Text);
+                        bool isVerifySuccessfully = VerifyBarcodeLocally(bv, verificationRule);
+                        if (!isVerifySuccessfully) return;
+                    }
+
+                    // 二维码验证：当前未启用，IsEnableQRcodeVerify = false;
+                    if (bv.IsEnableQRcodeVerify)
+                    {
+                        // 验证二维码前缀
+                        if (!chkBypassQRcodeValidation.Checked)
+                        {
+                            string verificationRule = CodeNum.GetQRCodeVerification(cboBarcodeRuleAndFixtures.Text, codesTable);
+
+                            if (!VerifyBarcodeLocally(bv, verificationRule))
+                            {
+                                return;
+                            }
+                        }
+                    }
+                }
+
+                // MES条码验证
+                VerifyBarcode_MES(bv);
+                if (MES_Result[2004] == "1") return;
+
+                // 提示"条码已生成"或"扫码完成"
+                /*if (chkGenerateBarcode.Checked || chkAutoBarcodeWithoutVerify.Checked)
+                {
+                    lblRunningStatus.ForeColor = Color.Green;
+                    lblRunningStatus.Text = $"条码已生成";
+                    lblOperatePrompt.ForeColor = Color.Black;
+                    lblOperatePrompt.Text = "等待测试数据上传";
+                }*/
+
+                DisplayMessage($"条码验证完成{Environment.NewLine}\r\n--------------------条码验证流程结束--------------------");
+            }));
+
+            // 进行物料验证，PLC置3
+            var Read_data = KeyenceMcNet.ReadInt32(bvlist[0].BarcodeStartPLC).Content;
+            if (Read_data == 3)
+            {
+                Invoke(new Action(() =>
+                {
+                    bv = bvlist[0];
+                    ushort barcodeLength = bv.GetBarcodeLength();
+                    string rawBarcode = KeyenceMcNet.ReadString(bv.BarcodePositionPLC, barcodeLength).Content;
+                    barcodeData = CodeNum.CleanString(rawBarcode);
+                    txtShowBarcode.Text = barcodeData;
+                    //DisplayMessage($"条码【D1100】 = {barcodeData}");
+
+                    if (string.IsNullOrEmpty(this.barcodeData))
+                    {
+                        lblScanBarcodeStatus.ForeColor = Color.Red;
+                        txtShowBarcode.Text = resources.GetString("barCode_State");
+                        //DisplayMessage("未获取到条码，请重新扫描！");
+                        try
+                        {
+                            //KeyenceMcNet.Write("D1005", 1);
+                            KeyenceMcNet.Write(bv.ErrorBarcodeEndPLC, 1);
+                            //DisplayMessage("反馈条码验证【D1005】 = 1");
+                        }
+                        catch (Exception ex)
+                        {
+                            //DisplayMessage(ex.ToString());
+                        }
+                        return;
+                    }
+                    string[] frockA = textBox42.Text.ToString().Split('+');
+                    if (frockA.Contains(this.barcodeData))
+                    {
+                        lblScanBarcodeStatus.ForeColor = Color.Green;
+                        lblRunningStatus.ForeColor = Color.Green;
+                        lblRunningStatus.Text = resources.GetString("material_OK");
+                        try
+                        {
+
+                            //KeyenceMcNet.Write("D1003", 3);
+                            KeyenceMcNet.Write(bv.PassBarcodeEndPLC, 3);
+                        }
+                        catch (Exception ex)
+                        {
+                            //DisplayMessage(ex.ToString());
+                        }
+                        //DisplayMessage("反馈条码验证【D1003】 =3");
+                        return;
+                    }
+                    else
+                    {
+                        lblRunningStatus.ForeColor = Color.Red;
+                        lblRunningStatus.Text = resources.GetString("material_NG");
+                        lblValidationStatus.ForeColor = Color.Red;
+                        //DisplayMessage("物料验证失败，请重新扫描！");
+                        try
+                        {
+                            //KeyenceMcNet.Write("D1005", 3);
+                            KeyenceMcNet.Write(bv.ErrorBarcodeEndPLC, 3);
+                            //DisplayMessage("反馈条码验证【D1005】 =3");
+                        }
+                        catch (Exception ex)
+                        {
+                            //DisplayMessage(ex.ToString());
+                        }
+                        return;
+                    }
+                }));
+            }
+        }
+
+        private void IsAutoGenerateBarcode(BarcodeVerification bv)
+        {
+            // 自动生成条码或实时读取条码
+            if (chkGenerateBarcode.Checked)
+            {
+                // 确保数据未上传完成无法生成条码
+                if (!isProcessSuccessfully) return;
+                // 生成条码
+                barcodeData = AutoGenerateBarcode(txtBarcodeNumber.Text);
+                DisplayMessage($"【条码验证流程开始】{Environment.NewLine}\r\n生成的条码为：{barcodeData} ");
+                // 更新UI及相关控件可用性
+                txtShowBarcode.ForeColor = Color.Black;
+                txtShowBarcode.Text = lblBarcodeContent.Text = barcodeData;
+                txtBarcodeNumber.Enabled = false;
+                txtSN.Enabled = false;
+                // 更新字段
+                barcodeInfo = barcodeData;
+                isProcessSuccessfully = false;
+            }
+            else
+            {
+                // 读取条码 (D1100)
+                ushort barcodeLength = bv.GetBarcodeLength();
+                string rawBarcode = KeyenceMcNet.ReadString(bv.BarcodePositionPLC, barcodeLength).Content;
+                // 清理条码
+                barcodeData = CodeNum.CleanString(rawBarcode);
+                DisplayMessage($"【条码验证流程开始】{Environment.NewLine}\r\n读取的条码为：{barcodeData} ");
+                // 更新UI
+                txtShowBarcode.ForeColor = Color.Black;
+                txtShowBarcode.Text = barcodeData;
+                // 更新字段
+                barcodeInfo = barcodeData;
+            }
+        }
+
+        /// <summary>
+        /// 本地条码验证（）
+        /// </summary>
+        /// <param name="bv"></param>
+        private void VerifyBarcodeLocally(BarcodeVerification bv)
+        {
+
+        }
+
+        /// <summary>
+        /// 条码上传MES验证，单机直接通过
+        /// </summary>
+        /// <param name="bv"></param>
+        private void VerifyBarcode_MES(BarcodeVerification bv)
+        {
+            if (isOffLine == 1)
+            {
+                lblScanBarcodeStatus.ForeColor = Color.Green;
+                lblValidationStatus.ForeColor = Color.Green;
+                lblRunningStatus.ForeColor = Color.Green;
+                lblRunningStatus.Text = bv.PassPrompt;
+                lblOperatePrompt.ForeColor = Color.Black;
+                lblOperatePrompt.Text = "请开始生产！";
+
+                try
+                {
+                    KeyenceMcNet.Write(bv.PassBarcodeEndPLC, 1);
+                    DisplayMessage($"MES条码验证：单机模式条码验证通过，反馈(条码验证{bv.PassBarcodeEndPLC} = 1)成功");
+                }
+                catch (Exception ex)
+                {
+                    DisplayMessage($"MES条码验证：单机模式条码验证通过，反馈(条码验证{bv.PassBarcodeEndPLC} = 1)失败：{ex}");
+                }
+            }
+            else
+            {
+                // 绑定工单
+                if (chkBindWorkOrder.Checked == true)
+                {
+                    workOrder = txtWorkOrder.Text;
+                    MesIntegrationService.BindWorkOrder(workOrder, out bool bindingResult, out string MESFeedback, out string XML);
+                }
+
+                // 上传MES进行条码验证
+                VarifyBarcode_MES(barcodeData);
+
+                // 更新验证结果并反馈给PLC
+                if (MES_Result[2002] == "1")
+                {
+                    lblScanBarcodeStatus.ForeColor = Color.Green;
+                    lblValidationStatus.ForeColor = Color.Green;
+                    lblRunningStatus.ForeColor = Color.Green;
+                    lblRunningStatus.Text = bv.PassPrompt;
+                    lblOperatePrompt.ForeColor = Color.Black;
+                    lblOperatePrompt.Text = "请开始生产！";
+
+                    try
+                    {
+                        KeyenceMcNet.Write(bv.PassBarcodeEndPLC, 1);
+                        DisplayMessage($"MES条码验证：MES条码验证通过，反馈(条码验证{bv.PassBarcodeEndPLC} = 1)成功");
+                    }
+                    catch (Exception ex)
+                    {
+                        DisplayMessage($"MES条码验证：MES条码验证通过，反馈(条码验证{bv.PassBarcodeEndPLC} = 1)失败：{ex}");
+                    }
+
+                }
+                else if (MES_Result[2004] == "1")
+                {
+                    lblScanBarcodeStatus.ForeColor = Color.Green;
+                    lblValidationStatus.ForeColor = Color.Red;
+                    lblRunningStatus.ForeColor = Color.Red;
+                    lblRunningStatus.Text = bv.MesErrorPrompt;
+
+                    try
+                    {
+                        KeyenceMcNet.Write(bv.ErrorBarcodeEndPLC, 1);
+                        DisplayMessage($"MES条码验证：MES条码验证未通过，反馈(条码验证{bv.ErrorBarcodeEndPLC} = 1)成功");
+                    }
+                    catch (Exception ex)
+                    {
+                        DisplayMessage($"MES条码验证：MES条码验证未通过，反馈(条码验证{bv.ErrorBarcodeEndPLC} = 1)失败：{ex}");
+                    }
+                }
+                else
+                {
+                    lblScanBarcodeStatus.ForeColor = Color.Green;
+                    lblValidationStatus.ForeColor = Color.Red;
+                    lblRunningStatus.ForeColor = Color.Red;
+                    lblRunningStatus.Text = $"MES条码验证出错";
+
+                    try
+                    {
+                        KeyenceMcNet.Write(bv.ErrorBarcodeEndPLC, 1);
+                        DisplayMessage($"MES条码验证：MES条码验证出错(2002 = {MES_Result[2002]}|2004 = {MES_Result[2004]})，反馈(条码验证D1005 = 1)成功");
+                    }
+                    catch (Exception ex)
+                    {
+                        DisplayMessage($"MES条码验证：MES条码验证出错(2002 = {MES_Result[2002]}|2004 = {MES_Result[2004]})，反馈(条码验证D1005 = 1)失败：{ex}");
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 自动生成条码内容
+        /// </summary>
+        /// <param name="codeNumber">10位字符串码号</param>
+        /// <returns>18位的条码字符串</returns>
+        private string AutoGenerateBarcode(string codeNumber)
+        {
+            DateTime currentDate = DateTime.Now.Date;
+
+            if (ShouldResetSerialNumber())
+            {
+                ResetSerialNumber();
+                SaveLastSavedDate(DateTime.Now.Date);
+            }
+            else
+            {
+                SaveLastSavedDate(currentDate);
+            }
+
+            // 获取当前流水号
+            if (!int.TryParse(txtSN.Text, out int serialNumber))
+            {
+                serialNumber = 0;
+            }
+            // 计算新的流水号
+            int newSerialNumber = serialNumber + 1;
+
+            // 更新流水号并保存
+            string formattedSerialNumber = newSerialNumber.ToString("D5");
+            sytemSetDerivedsd.SerialNumber = formattedSerialNumber;
+            txtSN.Text = formattedSerialNumber;
+            sytemSetDerivedsd.Save();
+
+            string month = DateTime.Now.Month.ToString();
+            string day = DateTime.Now.Day.ToString("D2");
+
+            /*if (month == "10" || month == "11" || month == "12")
+            {
+                switch (month)
+                {
+                    case "10": month = "0"; break;
+                    case "11": month = "A"; break;
+                    case "12": month = "B"; break;
+                }
+            }*/
+
+            codeNumber = codeNumber += month + day;
+            string barcodeInfo = codeNumber + txtSN.Text;
+            return barcodeInfo;
+        }
+
+        /// <summary>
+        /// 条码规则验证（条码规则有效性验证 -> 条码规范性验证 -> 条码规则验证）
+        /// </summary>
+        /// <param name="bv"></param>
+        /// <param name="verificationRule">条码验证规则</param>
+        /// <returns>验证成功返回True，否则为False</returns>
+        private bool VerifyBarcodeLocally(BarcodeVerification bv, string verificationRule)
+        {
+            // 条码规则有效性验证：判断是否为空引用、空字符或空白
+            if (string.IsNullOrWhiteSpace(verificationRule))
+            {
+                InvokeOnUIThreadAsync(() =>
+                {
+                    // 更新UI
+                    lblValidationStatus.ForeColor = Color.Red;
+                    lblRunningStatus.ForeColor = Color.Red;
+                    lblRunningStatus.Text = bv.NoVerificationRule;
+                });
+
+                try
+                {
+                    KeyenceMcNet.Write(bv.ErrorBarcodeEndPLC, 1);
+                    DisplayMessage($"条码规则有效性验证：未选择条码验证规则，反馈(条码验证{bv.ErrorBarcodeEndPLC} = 1)成功");
+                }
+                catch (Exception ex)
+                {
+                    DisplayMessage($"条码规则有效性验证：未选择条码验证规则，反馈(条码验证{bv.ErrorBarcodeEndPLC} = 1)失败：{ex}");
+                }
+
+                return false;
+            }
+            else
+            {
+                // 从实际读取到的条码中提取条码前缀
+                int ruleLength = verificationRule.Length;
+                string actualBarcodePrefix = barcodeData.Substring(0, ruleLength);
+                string[] validationRule = verificationRule.Split('|');
+
+                // 条码规范性验证：判断条码内容长度是否有误
+                if (barcodeData.Length <= 12 || barcodeData.Length <= ruleLength)
+                {
+                    InvokeOnUIThreadAsync(() =>
+                    {
+                        lblValidationStatus.ForeColor = Color.Red;
+                        lblRunningStatus.ForeColor = Color.Red;
+                        lblRunningStatus.Text = bv.BarcodeIsFault;
+                    });
+
+                    try
+                    {
+                        KeyenceMcNet.WaitAsync(bv.ErrorBarcodeEndPLC, 1);
+                        DisplayMessage($"条码规范性验证：条码内容不符合规范，反馈(条码验证{bv.ErrorBarcodeEndPLC} = 1)成功");
+                    }
+                    catch (Exception ex)
+                    {
+                        DisplayMessage($"条码规范性验证：条码内容不符合规范，反馈(条码验证{bv.ErrorBarcodeEndPLC} = 1)失败：{ex}");
+                    }
+
+                    return false;
+                }
+
+                // 条码规则验证：判断实际条码与设定的条码规则是否匹配
+                if (validationRule.Contains(actualBarcodePrefix))
+                {
+                    return true;
+                }
+                else
+                {
+                    InvokeOnUIThreadAsync(() =>
+                    {
+                        lblValidationStatus.ForeColor = Color.Red;
+                        lblRunningStatus.ForeColor = Color.Red;
+                        lblRunningStatus.Text = bv.BarcodeRuleDismachPrompt;
+                    });
+
+                    try
+                    {
+                        KeyenceMcNet.Write(bv.ErrorBarcodeEndPLC, 1);
+                        DisplayMessage($"条码规则验证：实际条码与设定的条码规则不匹配，反馈(条码验证{bv.ErrorBarcodeEndPLC} = 1)成功");
+                    }
+                    catch (Exception ex)
+                    {
+                        DisplayMessage($"条码规则验证：实际条码与设定的条码规则不匹配，反馈(条码验证{bv.ErrorBarcodeEndPLC} = 1)失败：{ex}");
+                    }
+
+                    return false;
+                }
+            }
+        }
+
+        #endregion
+
+        #region ------ 处理生产数据 ------
+
+        /// <summary>
+        /// 读取并上传生产数据
+        /// </summary>
+        private async void ProcessPlc_ReadData()
+        {
+            while (isReadData_PLC)
+            {
+                await ReadData();
+            }
+            Thread.Sleep(50);
+            Application.DoEvents();
+        }
+
+        private async Task ReadData()
+        {
+            if (!isPLCConnected) return;
+
+            var plcValue = await Task.Run(() => KeyenceMcNet.ReadInt32(sytemSetDerivedsd.StartProductPoint).Content);   // D1200
+
+            if (plcValue != 1) return;
+
+            await ProcessProductionData();
+        }
+
+        /// <summary>
+        /// 读测试数据 -> 读产品总结果 -> 上传MES -> 上传看板 -> 数据显示 -> 本地保存
+        /// </summary>
+        /// <returns></returns>
+        private async Task ProcessProductionData()
+        {
+            lblOperatePrompt.Text = resources.GetString("begin_read_data");  // 开始读取数据
+            //DisplayMessage("准备读取测试结果");
+
+            // 适用于气缸机生成条码
+            if (chkAutoBarcodeWithoutVerify.Checked)
+            {
+                if (!isSaveDataSuccessfully) return;
+                // 生成条码
+                barcodeInfo = AutoGenerateBarcode(txtBarcodeNumber.Text);
+                DisplayMessage($"生成的条码为：{barcodeInfo} ");
+                // 更新UI及相关控件可用性
+                txtShowBarcode.ForeColor = Color.Black;
+                txtShowBarcode.Text = lblBarcodeContent.Text = barcodeInfo;
+                txtBarcodeNumber.Enabled = false;
+                txtSN.Enabled = false;
+                // 更新字段
+                isSaveDataSuccessfully = false;
+            }
+
+            // 二次读条码
+            if (chkReadBarcodeSecondly.Checked)
+            {
+                await Task.Run(() => ReadBarcodeSecondly());
+            }
+
+            // 读取测试结果
+            await ReadTestResult();
+
+            // 读取产品总测试结果
+            MES_Result[3688] = await Task.Run(() => KeyenceMcNet.ReadInt32(sytemSetDerivedsd.TotalProductPoint).Content.ToString());
+
+            // 更新产品结果UI
+            await UpdateProductResultUI();
+
+            isProcessSuccessfully = true;
+
+            // 上传条码及相应测试结果到MES
+            await SendToMESAsync();
+
+            // 上传看板
+            SendToDashboardAsync();
+
+            // 本地保存
+            await SaveDataLocallyAsync();
+
+            await FinalizeProductionCycle();
+        }
+
+        private void ReadBarcodeSecondly()
+        {
+            // 二次读条码：D1050
+            ushort.TryParse(sytemSetDerivedsd.SecondProductLength, out ushort secondProductLength);
+            string rawBarcode = KeyenceMcNet.ReadString(sytemSetDerivedsd.SecondProductPoint, secondProductLength).Content;
+            barcodeInfo = CodeNum.CleanString(rawBarcode);
+        }
+
+        /// <summary>
+        /// 读取测试结果
+        /// </summary>
+        private async Task ReadTestResult()
+        {
+            actualValueList = new List<string>();
+            beatList = new List<string>();
+            maxList = new List<string>();
+            minList = new List<string>();
+            resultList = new List<string>();
+
+            if (PLCPointInfoTable.Rows.Count > 0)
+            {
+                var tasks = PLCPointInfoTable.AsEnumerable().Select(row => Task.Run(() =>
+                {
+                    var rowData = new
+                    {
+                        ListItem = ProcessPointData_PLC(row["BoardCode"].ToString()),           // 实际值
+                        MaxItem = ProcessPointData_PLC(row["MaxBoardCode"].ToString()),         // 上限
+                        MinItem = ProcessPointData_PLC(row["MinBoardCode"].ToString()),         // 下限
+                        ResultItem = ProcessPointData_PLC(row["ResultBoardCode"].ToString()),   // 测试结果
+                        BeatItem = ProcessPointData_PLC(row["BeatBoardCode"].ToString())        // 节拍
+                    };
+                    return rowData;
+
+                })).ToList();
+
+                var results = await Task.WhenAll(tasks);
+                foreach (var result in results)
+                {
+                    actualValueList.Add(result.ListItem);
+                    maxList.Add(result.MaxItem);
+                    minList.Add(result.MinItem);
+                    resultList.Add(result.ResultItem);
+                    beatList.Add(result.BeatItem);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 更新产品结果UI显示
+        /// </summary>
+        /// <returns></returns>
+        private async Task UpdateProductResultUI()
+        {
+            await InvokeOnUIThreadAsync(() =>
+            {
+                if (MES_Result[3688] == "3")
+                {
+                    lblProductResult.ForeColor = Color.White;
+                    lblProductResult.BackColor = Color.Green;
+                    lblProductResult.Text = "OK";
+
+                    Value[9999] = "OK";
+                }
+                else
+                {
+                    lblProductResult.ForeColor = Color.White;
+                    lblProductResult.BackColor = Color.Red;
+                    lblProductResult.Text = "NG";
+
+                    Value[9999] = "NG";
+                }
+            });
+        }
+
+        private async Task SendToMESAsync()
+        {
+            if (isOffLine == 1) return;
+
+            InvokeOnUIThreadAsync(() =>
+            {
+                lblUploadStatus.ForeColor = Color.Orange;
+                lblRunningStatus.ForeColor = Color.Black;
+                lblRunningStatus.Text = resources.GetString("Mes_upload");  // 联机数据上传中
+                lblOperatePrompt.Text = resources.GetString("Wait");        // 请等待
+            });
+
+            isProductOK = Value[9999] == "OK";
+
+            // 联机上传条码测试数据
+            await Task.Run(() => UploadResult_MES(barcodeInfo));
+
+            InvokeOnUIThreadAsync(() =>
+            {
+                if (MES_Result[2006] == "1")
+                {
+                    lblUploadStatus.ForeColor = Color.Green;
+                    lblRunningStatus.Text = resources.GetString("Mes_upload_OK");   // 联机数据上传成功
+                }
+                else if (MES_Result[2008] == "1")
+                {
+                    lblUploadStatus.ForeColor = Color.Red;
+                    lblRunningStatus.Text = resources.GetString("Mes_upload_NG");   // 联机数据上传失败
+                    lblOperatePrompt.Text = resources.GetString("Re_upload");       // 请重新上传
+                }
+            });
+        }
+
+        private async Task SendToDashboardAsync()
+        {
+            if (isDashboardConnected)
+                Task.Run(() => GenerateProductionData());
+        }
+
+        private async Task SaveDataLocallyAsync()
+        {
+            await InvokeOnUIThreadAsync(() =>
+            {
+                Num++;
+                lblRunningStatus.Text = resources.GetString("Read_data");   // 本地数据保存中
+                lblOperatePrompt.Text = resources.GetString("Wait");        // 请等待
+            });
+
+            Task.Run(ShowResult);
+
+            Task.Run(SaveProductionDataAsync);
+
+            InvokeOnUIThreadAsync(() =>
+            {
+                lblRunningStatus.Text = resources.GetString("Read_data_OK");        // 本地数据保存完成
+                lblOperatePrompt.Text = resources.GetString("Continue_production"); // 请取下产品继续生产
+                //DisplayMessage("数据读取完成");
+                //DisplayMessage("生产结果读取完成...");
+            });
+        }
+
+        private async Task FinalizeProductionCycle()
+        {
+            try
+            {
+                await Task.Run(() => KeyenceMcNet.Write(sytemSetDerivedsd.EndProductPoint, 1));
+                //DisplayMessage("生产结果读取反馈【D1202】 = 1");
+            }
+            catch (Exception ex)
+            {
+                //DisplayMessage(ex.ToString());
+            }
+            finally
+            {
+                isSaveDataSuccessfully = true;
+            }
+
+            await Task.Delay(200);
+            await InvokeOnUIThreadAsync(() => lblRunningStatus.Text = resources.GetString("WaittingScanBarcode"));
+        }
+
+        private Task InvokeOnUIThreadAsync(Action action)
+        {
+            return Task.Run(() => Invoke(action));
+        }
+
+        #endregion
 
         /// <summary>
         /// 更新PLC状态指示灯 & 向 PLC 反馈看板连接状态
@@ -797,27 +1648,29 @@ namespace MesDatas
             {
                 this.BeginInvoke(new Action(() =>
                 {
-                    if (isPlcConnected == true)
+                    if (isPLCConnected)
                     {
                         lblPlcStatus.ForeColor = Color.Green;
+
                         try
                         {
                             // 向 PLC 反馈看板连接状态
-                            if (!string.IsNullOrEmpty(deviceInfo.ViewStatus))
+                            if (!string.IsNullOrEmpty(deviceInfo.DashboardStatusPoint))
                             {
                                 if (isDashboardConnected)
                                 {
-                                    KeyenceMcNet.Write(deviceInfo.ViewStatus, 1);
-                                    //Console.WriteLine("看板已连接");
+                                    KeyenceMcNet.Write(deviceInfo.DashboardStatusPoint, 1);
                                 }
                                 else
                                 {
-                                    KeyenceMcNet.Write(deviceInfo.ViewStatus, 0);
-                                    //Console.WriteLine("尚未连接到看板");
+                                    KeyenceMcNet.Write(deviceInfo.DashboardStatusPoint, 0);
                                 }
                             }
                         }
-                        catch (Exception ex) { }
+                        catch (Exception)
+                        {
+
+                        }
                     }
                     else
                     {
@@ -850,30 +1703,96 @@ namespace MesDatas
             }
         }
 
-        /// <summary>
-        /// 读取条码
-        /// </summary>
-        private void ProcessPlc_ReadBarcode()
+        private async void DisplayMessage(string msg)
         {
-            while (isReadBar_PLC)
+            this.Invoke(new Action(() =>
             {
-                ReadBarcode();
-            }
-            Thread.Sleep(50);
-            Application.DoEvents();
+                if (rtbProductLog.TextLength > 50000)
+                {
+                    rtbProductLog.Clear();
+                }
+                rtbProductLog.AppendText($"{DateTime.Now.ToString("HH:mm:ss_fff")}:{msg}\r\n");
+                rtbProductLog.ScrollToCaret();
+            }));
+
+            logProduction.Trace($"{msg}");
+        }
+
+        #endregion
+
+        #region ------------ MES上传 ------------
+
+        NLog.Logger loggerMESBarCoode = NLog.LogManager.GetLogger("MESBarCoodeLog");    // 记录上传条码后的MES反馈
+        NLog.Logger loggerMESData = NLog.LogManager.GetLogger("MESDataLog");            // 记录上传测试结果的后MES反馈
+        private bool isMesLoginSuccessful = false;  // 用户联机验证结果
+
+        #region ----- 从文本框获取MES配置参数 -----
+        private string ip => textBox_ip.Text;
+        private string port => textBox_port.Text;
+        private string timeout => textBox_timeout.Text;
+        private string nccode => textBox_nccode.Text;
+        private string operation => textBox_opration.Text;
+        private string user => textBox_user.Text;
+        private string password => textBox_password.Text;
+        private string url => textBox_url.Text;
+        private string site => textBox_site.Text;
+        private string resource => textBox_resource.Text;
+        #endregion
+
+        /// <summary>
+        /// MES参数 > 保存
+        /// </summary>
+        private void SaveMesConfig_Click(object sender, EventArgs e)
+        {
+            SaveParameter_MES();
+            LoadParameter_MES();
+            VarifyUserLogin_MES();
         }
 
         /// <summary>
-        /// 读取并上传生产数据
+        /// 加载MES联机参数到系统
         /// </summary>
-        private async void ProcessPlc_ReadData()
+        public void LoadParameter_MES()
         {
-            while (isReadData_PLC)
+            dbHelper = new MDBHelper(path4);
+            DataTable table = dbHelper.Find("select * from SytemInfo where ID = '1'");
+            for (int i = 0; i < table.Rows.Count; i++)
             {
-                await ReadData();
+                for (int j = 0; j < table.Columns.Count; j++)
+                {
+                    textBox_ip.Text = table.Rows[i]["IP"].ToString();
+                    textBox_port.Text = table.Rows[i]["Port"].ToString();
+                    textBox_timeout.Text = table.Rows[i]["Timeout"].ToString();
+                    textBox_nccode.Text = table.Rows[i]["NcCode"].ToString();
+                    textBox_opration.Text = table.Rows[i]["Opration"].ToString();
+                    textBox_password.Text = table.Rows[i]["Password"].ToString();
+                    textBox_resource.Text = table.Rows[i]["Resource"].ToString();
+                    textBox_site.Text = table.Rows[i]["Site"].ToString();
+                    textBox_url.Text = table.Rows[i]["Url"].ToString();
+                    textBox_user.Text = table.Rows[i]["User"].ToString();
+                }
             }
-            Thread.Sleep(50);
-            Application.DoEvents();
+            dbHelper.CloseConnection();
+        }
+
+        /// <summary>
+        /// 保存MES联机参数到数据库
+        /// </summary>
+        public void SaveParameter_MES()
+        {
+            SytemInfoEntity infoEntity = new SytemInfoEntity();
+            infoEntity.IP = textBox_ip.Text;
+            infoEntity.Port = textBox_port.Text;
+            infoEntity.Timeout = textBox_timeout.Text;
+            infoEntity.NcCode = textBox_nccode.Text;
+            infoEntity.Opration = textBox_opration.Text;
+            infoEntity.Password = textBox_password.Text;
+            infoEntity.Resource = textBox_resource.Text;
+            infoEntity.Site = textBox_site.Text;
+            infoEntity.Url = textBox_url.Text;
+            infoEntity.User = textBox_user.Text;
+
+            SaveSystemInfo(path4, infoEntity);
         }
 
         private void SaveSystemInfo(string conn, SytemInfoEntity systemInfo)
@@ -1025,908 +1944,6 @@ namespace MesDatas
             dbHelper.CloseConnection();
         }
 
-        private bool isProcessSuccessfully = true;      // 自动生成条码时使用
-        private string barcodeData = string.Empty;      // 实时读取的或自动生成的条码，用于本地验证、MES验证
-        private string barcodeInfo = null;              // 存储二次读取过后的条码，同时用于数据上传、保存
-
-        /// <summary>
-        /// 读条码 -> 条码有效性判断 -> 本地条码验证 -> 本地二维码验证 -> MES条码验证
-        /// </summary>
-        /// <remarks>
-        /// 本地验证：工装验证 -> 条码重复性验证 -> 条码规则验证
-        /// </remarks>
-        private void ReadBarcode()
-        {
-            if (isPlcConnected)
-            {
-                var bvlist = BarcodeVefictnServer.GetBarcodeVefictnList(LanguageId);
-                BarcodeVerification bv = null;
-
-                for (int i = 0; i < bvlist.Count; i++)
-                {
-                    // BarcodeStartPLC：D1000 = 1 
-                    var plcValue = KeyenceMcNet.ReadInt32(bvlist[i].BarcodeStartPLC).Content;
-
-                    // 读到1开始读取条码
-                    if (plcValue == 1)
-                    {
-                        bv = bvlist[i];
-                        break;
-                    }
-                }
-
-                if (bv == null) return;
-
-                Invoke(new Action(async () =>
-                {
-                    InvokeOnUIThreadAsync(() =>
-                    {
-                        // 初始化状态指示灯
-                        lblScanBarcodeStatus.ForeColor = Color.Black; // 扫码状态指示灯
-                        lblValidationStatus.ForeColor = Color.Black;  // 验证状态指示灯
-                        lblUploadStatus.ForeColor = Color.Black;      // 上传状态指示灯
-
-                        lblRunningStatus.ForeColor = Color.Black;     // 当前运行状态
-                        lblProductResult.Text = resources.GetString("label_Value"); // 待机
-                        lblProductResult.ForeColor = Color.Black;
-                        lblProductResult.BackColor = Color.White;
-                    });
-
-                    // 自动生成条码
-                    if (chkGenerateBarcode.Checked)
-                    {
-                        if (!isProcessSuccessfully)
-                        {
-                            return;
-                        }
-                        string barcodeNum = txtBarcodeNumber.Text;
-                        barcodeData = AutoGenerateBarcode(barcodeNum);
-                        barcodeInfo = barcodeData;
-                        txtShowBarcode.Text = lblBarcodeContent.Text = barcodeData;
-                        txtBarcodeNumber.Enabled = false;
-                        txtSN.Enabled = false;
-                        DisplayMessage($"生成的条码为：{barcodeData} ");
-                        isProcessSuccessfully = false;
-
-                        // 更新获取条码计数器
-                        sytemSetDerivedsd.TotalBarcodeCount++;
-                        lblTotalBarcodesCount.Text = sytemSetDerivedsd.TotalBarcodeCount.ToString();
-                    }
-                    // 实时读取条码
-                    else
-                    {
-                        // 读取条码 (D1100)
-                        ushort barcodeLength = bv.GetBarcodeLength();
-                        string rawBarcode = KeyenceMcNet.ReadString(bv.BarcodePositionPLC, barcodeLength).Content;
-                        barcodeData = CodeNum.CleanString(rawBarcode);
-                        txtShowBarcode.Text = barcodeData;
-                        barcodeInfo = barcodeData;
-                        DisplayMessage($"读取{bv.BarcodePositionPLC} = {barcodeData} ");
-
-                        // 更新获取条码计数器
-                        sytemSetDerivedsd.TotalBarcodeCount++;
-                        lblTotalBarcodesCount.Text = sytemSetDerivedsd.TotalBarcodeCount.ToString();
-                    }
-
-                    // 条码有效性验证（空引用、空字符或仅空格）
-                    if (string.IsNullOrWhiteSpace(barcodeData))
-                    {
-                        lblScanBarcodeStatus.ForeColor = Color.Red;
-                        txtShowBarcode.Text = bv.NoBarcodePrompt;
-                        DisplayMessage($"未读到条码，条码为NULL或为EMPTY ");
-
-                        // 更新条码NG计数器
-                        sytemSetDerivedsd.BarcodeNGCount++;
-                        lblBarcodeNGCount.Text = sytemSetDerivedsd.BarcodeNGCount.ToString();
-
-                        try
-                        {
-                            // 验证失败结束点位
-                            KeyenceMcNet.Write(bv.ErrorBarcodeEndPLC, 1);
-                            DisplayMessage("条码验证失败【D1005】= 1");
-                        }
-                        catch (Exception ex)
-                        {
-                            //DisplayMessage($"反馈条码验证出错：{ex}");
-                        }
-                        return;
-                    }
-
-                    // 本地验证（工装验证 -> 条码重复性验证 -> 条码规则验证）
-                    if (!chkBypassBarcodeValidation.Checked)
-                    {
-                        // 本地工装验证
-                        if (!chkBypassFixtureValidation.Checked)
-                        {
-                            string[] expectedFixtures = CodeNum.ExtractFixturesInfo(cboBarcodeRuleAndFixtures.Text);
-                            string[] frockB = (txtFixtureBinding.Text).Split('+');
-
-                            // 判断工装是否相等
-                            if (!CodeNum.CompareArray(expectedFixtures, frockB))
-                            {
-                                // 判断条码是否在工装里面
-                                if (expectedFixtures.Contains(barcodeData))
-                                {
-                                    if (string.IsNullOrWhiteSpace(txtFixtureBinding.Text))
-                                    {
-                                        txtFixtureBinding.Text = barcodeData;
-                                    }
-                                    else
-                                    {
-                                        if (!frockB.Contains(barcodeData))
-                                        {
-                                            txtFixtureBinding.Text = $"{txtFixtureBinding.Text}+{barcodeData}";
-                                        }
-                                    }
-
-                                    string[] frockC = txtFixtureBinding.Text.Split('+');
-
-                                    // 验证条码则保存到数据库
-                                    if (CodeNum.CompareArray(expectedFixtures, frockC))
-                                    {
-                                        dbHelper = new MDBHelper(path4);
-                                        DataTable table1 = dbHelper.Find("select * from SytemSet where ID = '1'");
-                                        if (table1.Rows.Count > 0)
-                                        {
-                                            string sql = "update [SytemSet] set [BoardBeat]='" + txtFixtureBinding.Text + "' where [ID] = '1'";
-                                            var result = dbHelper.Change(sql);
-                                        }
-                                        dbHelper.CloseConnection();
-                                        lblOperatePrompt.Text = resources.GetString("scanning");// 等待扫描条码
-                                    }
-
-                                    lblScanBarcodeStatus.ForeColor = Color.Green;
-                                    lblRunningStatus.ForeColor = Color.Green;
-                                    lblRunningStatus.Text = resources.GetString("Fixture_OK");  // 工装编号验证通过
-
-                                    // 条码验证通过
-                                    try
-                                    {
-                                        // 保存通过验证的条码
-                                        KeyenceMcNet.Write(bv.PassBarcodeEndPLC, 2);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        //DisplayMessage(ex.ToString());
-                                    }
-                                    //DisplayMessage("反馈条码验证【D1003】 = 2");
-                                    return;
-                                }
-                                else
-                                {
-                                    lblRunningStatus.ForeColor = Color.Red;
-                                    lblRunningStatus.Text = resources.GetString("Fixture_NG");
-                                    lblValidationStatus.ForeColor = Color.Red;
-                                    //DisplayMessage("工装编号验证失败！");
-
-                                    // 更新条码NG计数器
-                                    sytemSetDerivedsd.BarcodeNGCount++;
-                                    lblBarcodeNGCount.Text = sytemSetDerivedsd.BarcodeNGCount.ToString();
-
-                                    try
-                                    {
-                                        // 验证失败结束
-                                        KeyenceMcNet.Write(bv.ErrorBarcodeEndPLC, 2);
-                                        //DisplayMessage("反馈条码验证【D1005】 = 2");
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        //DisplayMessage(ex.ToString());
-                                    }
-                                    return;
-                                }
-                            }
-                        }
-
-                        // 本地历史数据验证（条码重复性验证，即是否存在重复条码）
-                        if (!chkBanLocalHistoricalData.Checked)
-                        {
-                            string dataPath = $"{lblDataPath.Text}\\{DateTime.Now:Y}生产数据.mdb";
-
-                            dbHelper = new MDBHelper(dataPath);
-                            string selectSql = $" SELECT * FROM [Sheet1] WHERE 条码 = '{barcodeData}' ";
-
-                            // 屏蔽NG历史数据
-                            if (chkBypassLocalNgHistoricalData.Checked == true)
-                            {
-                                selectSql += " and 测试结果 = 'OK' ";
-                            }
-
-                            bool isDataExist = dbHelper.DoesDataExist(selectSql);
-                            dbHelper.CloseConnection();
-
-                            if (isDataExist)
-                            {
-                                InvokeOnUIThreadAsync(() =>
-                                {
-                                    lblRunningStatus.ForeColor = Color.Red;
-                                    lblRunningStatus.Text = bv.RepeatcodePrompt;
-                                    lblValidationStatus.ForeColor = Color.Red;
-                                    DisplayMessage("条码重复扫过，请重新扫描！");
-
-                                    // 更新条码NG计数器
-                                    sytemSetDerivedsd.BarcodeNGCount++;
-                                    lblBarcodeNGCount.Text = sytemSetDerivedsd.BarcodeNGCount.ToString();
-                                });
-
-                                try
-                                {
-                                    // 条码重复性验证失败，反馈条码验证失败信号
-                                    KeyenceMcNet.Write(bv.ErrorBarcodeEndPLC, 1);
-                                    DisplayMessage("反馈条码验证【D1005】= 1");
-                                }
-                                catch (Exception ex)
-                                {
-                                    //DisplayMessage(ex.ToString());
-                                }
-
-                                return;
-                            }
-                        }
-
-                        // 本地条码验证（若实际获取的条码前缀 = 设定的条码验证规则 => 通过验证）
-                        string verificationRule = CodeNum.ExtractBarcodeVerificationRule(cboBarcodeRuleAndFixtures.Text);
-                        bool isVerifySuccessfully = VerifyBarcodeLocally(bv, verificationRule);
-                        if (!isVerifySuccessfully)
-                        {
-                            return;
-                        }
-                    }
-
-                    // 屏蔽本地二维码验证
-                    if (bv.IsEnableQRcodeVerify)
-                    {
-                        // 验证二维码前缀
-                        if (!chkBypassQRcodeValidation.Checked)
-                        {
-                            string verificationRule = CodeNum.GetQRCodeVerification(cboBarcodeRuleAndFixtures.Text, codesTable);
-
-                            if (!VerifyBarcodeLocally(bv, verificationRule))
-                            {
-                                return;
-                            }
-                        }
-                    }
-
-                    // 联机上传MES进行条码验证，单机直接通过
-                    if (isOffLine == 1)
-                    {
-                        lblScanBarcodeStatus.ForeColor = Color.Green;
-                        lblRunningStatus.ForeColor = Color.Green;
-                        lblRunningStatus.Text = bv.PassPrompt;  // 条码验证通过
-
-                        try
-                        {
-                            KeyenceMcNet.Write(bv.PassBarcodeEndPLC, 1);
-                        }
-                        catch (Exception ex)
-                        {
-                            //DisplayMessage(ex.ToString());
-                        }
-                        DisplayMessage("单机模式，条码验证通过【D1003】 = 1");
-                    }
-                    else
-                    {
-                        // 绑定工单
-                        if (chkBindWorkOrder.Checked == true)
-                        {
-                            workOrder = txtWorkOrder.Text;
-                            MesIntegrationService.BindWorkOrder(workOrder, out bool bindingResult, out string MESFeedback, out string XML);
-                        }
-
-                        // 上传MES进行条码验证
-                        VarifyBarcode_MES(barcodeData);
-
-                        // 更新UI并向PLC反馈数值，成功2002=1；失败2004=1；
-                        if (MES_Result[2002] == "1")
-                        {
-                            lblRunningStatus.ForeColor = Color.Green;
-                            lblRunningStatus.Text = bv.PassPrompt;
-                            lblValidationStatus.ForeColor = Color.Green;
-                            DisplayMessage("MES条码验证通过");
-                            try
-                            {
-                                KeyenceMcNet.Write(bv.PassBarcodeEndPLC, 1);
-                            }
-                            catch (Exception ex)
-                            {
-                                //DisplayMessage(ex.ToString());
-                            }
-                            DisplayMessage("反馈条码验证【D1003】 = 1");
-                        }
-                        else if (MES_Result[2004] == "1")
-                        {
-                            lblRunningStatus.ForeColor = Color.Red;
-                            lblRunningStatus.Text = bv.MesErrorPrompt;  // MES条码验证失败
-                            lblValidationStatus.ForeColor = Color.Red;
-                            DisplayMessage("MES条码验证失败");
-                            try
-                            {
-                                KeyenceMcNet.Write(bv.ErrorBarcodeEndPLC, 1);
-                            }
-                            catch (Exception ex)
-                            {
-                                //DisplayMessage(ex.ToString());
-                            }
-                            DisplayMessage("反馈条码验证【D1005】 = 1");
-                        }
-
-                        Thread.Sleep(200);
-                        Application.DoEvents();
-                    }
-
-                    lblOperatePrompt.Text = resources.GetString("ScanBarCode_OK");  // 扫码完成
-                    DisplayMessage("条码读取完成!");
-
-                    // 更新条码验证OK计数器
-                    sytemSetDerivedsd.BarcodeOKCount++;
-                    lblBarcodeOKCount.Text = sytemSetDerivedsd.BarcodeOKCount.ToString();
-                }));
-
-                // 扫物料，置3
-                var Read_data = KeyenceMcNet.ReadInt32(bvlist[0].BarcodeStartPLC).Content;
-                if (Read_data == 3)
-                {
-                    Invoke(new Action(() =>
-                    {
-                        bv = bvlist[0];
-                        ushort barcodeLength = bv.GetBarcodeLength();
-                        string rawBarcode = KeyenceMcNet.ReadString(bv.BarcodePositionPLC, barcodeLength).Content;
-                        barcodeData = CodeNum.CleanString(rawBarcode);
-                        txtShowBarcode.Text = barcodeData;
-                        //DisplayMessage($"条码【D1100】 = {barcodeData}");
-
-                        if (string.IsNullOrEmpty(this.barcodeData))
-                        {
-                            lblScanBarcodeStatus.ForeColor = Color.Red;
-                            txtShowBarcode.Text = resources.GetString("barCode_State");
-                            //DisplayMessage("未获取到条码，请重新扫描！");
-                            try
-                            {
-                                //KeyenceMcNet.Write("D1005", 1);
-                                KeyenceMcNet.Write(bv.ErrorBarcodeEndPLC, 1);
-                                //DisplayMessage("反馈条码验证【D1005】 = 1");
-                            }
-                            catch (Exception ex)
-                            {
-                                //DisplayMessage(ex.ToString());
-                            }
-                            return;
-                        }
-                        string[] frockA = textBox42.Text.ToString().Split('+');
-                        if (frockA.Contains(this.barcodeData))
-                        {
-                            lblScanBarcodeStatus.ForeColor = Color.Green;
-                            lblRunningStatus.ForeColor = Color.Green;
-                            lblRunningStatus.Text = resources.GetString("material_OK");
-                            try
-                            {
-
-                                //KeyenceMcNet.Write("D1003", 3);
-                                KeyenceMcNet.Write(bv.PassBarcodeEndPLC, 3);
-                            }
-                            catch (Exception ex)
-                            {
-                                //DisplayMessage(ex.ToString());
-                            }
-                            //DisplayMessage("反馈条码验证【D1003】 =3");
-                            return;
-                        }
-                        else
-                        {
-                            lblRunningStatus.ForeColor = Color.Red;
-                            lblRunningStatus.Text = resources.GetString("material_NG");
-                            lblValidationStatus.ForeColor = Color.Red;
-                            //DisplayMessage("物料验证失败，请重新扫描！");
-                            try
-                            {
-                                //KeyenceMcNet.Write("D1005", 3);
-                                KeyenceMcNet.Write(bv.ErrorBarcodeEndPLC, 3);
-                                //DisplayMessage("反馈条码验证【D1005】 =3");
-                            }
-                            catch (Exception ex)
-                            {
-                                //DisplayMessage(ex.ToString());
-                            }
-                            return;
-                        }
-                    }));
-                }
-            }
-        }
-
-        /// <summary>
-        /// 自动生成条码内容
-        /// </summary>
-        /// <param name="codeNumber">10位字符串码号</param>
-        /// <returns>18位的条码字符串</returns>
-        private string AutoGenerateBarcode(string codeNumber)
-        {
-            DateTime currentDate = DateTime.Now.Date;
-
-            if (ShouldResetSerialNumber())
-            {
-                ResetSerialNumber();
-                SaveLastSavedDate(DateTime.Now.Date);
-            }
-            else
-            {
-                SaveLastSavedDate(currentDate);
-            }
-
-            // 获取当前流水号
-            if (!int.TryParse(txtSN.Text, out int serialNumber))
-            {
-                serialNumber = 0;
-            }
-            // 计算新的流水号
-            int newSerialNumber = serialNumber + 1;
-
-            // 更新流水号并保存
-            string formattedSerialNumber = newSerialNumber.ToString("D5");
-            sytemSetDerivedsd.SerialNumber = formattedSerialNumber;
-            txtSN.Text = formattedSerialNumber;
-            sytemSetDerivedsd.Save();
-
-            string month = DateTime.Now.Month.ToString();
-            string day = DateTime.Now.Day.ToString("D2");
-
-            /*if (month == "10" || month == "11" || month == "12")
-            {
-                switch (month)
-                {
-                    case "10": month = "0"; break;
-                    case "11": month = "A"; break;
-                    case "12": month = "B"; break;
-                }
-            }*/
-
-            codeNumber = codeNumber += month + day;
-            string barcodeInfo = codeNumber + txtSN.Text;
-            return barcodeInfo;
-        }
-
-        /// <summary>
-        /// 本地条码验证（条码规则验证）
-        /// </summary>
-        /// <param name="barcodeVerification"></param>
-        /// <param name="verificationRule">条码验证规则</param>
-        /// <returns>验证成功返回True，否则为False</returns>
-        private bool VerifyBarcodeLocally(BarcodeVerification barcodeVerification, string verificationRule)
-        {
-            // 判断条码验证规则是否有效（空引用、空字符或空白）
-            if (string.IsNullOrWhiteSpace(verificationRule))
-            {
-                InvokeOnUIThreadAsync(() =>
-                {
-                    lblRunningStatus.ForeColor = Color.Red;
-                    lblRunningStatus.Text = barcodeVerification.NoVerificationRulePrompt;
-                    lblValidationStatus.ForeColor = Color.Red;
-                    DisplayMessage("没有选择条码验证规则！");
-                });
-
-                try
-                {
-                    KeyenceMcNet.Write(barcodeVerification.ErrorBarcodeEndPLC, 1);
-                    DisplayMessage("反馈条码验证【D1005】 = 1");
-                }
-                catch (Exception ex)
-                {
-                    //DisplayMessage(ex.ToString());
-                }
-                return false;
-            }
-            else
-            {
-                int ruleLength = verificationRule.Length;
-                bool isVerifySuccessfully = false;
-
-                // 条码是否符合规范
-                if (barcodeData.Length > 12 && barcodeData.Length > ruleLength)
-                {
-                    // 从实际读取到的条码中提取条码前缀
-                    string actualBarcodePrefix = barcodeData.Substring(0, ruleLength);
-                    string[] validationRule = verificationRule.Split('|');
-
-                    // 验证通过
-                    if (validationRule.Contains(actualBarcodePrefix))
-                    {
-                        isVerifySuccessfully = true;
-                    }
-                }
-
-                // 验证失败
-                if (isVerifySuccessfully == false)
-                {
-                    InvokeOnUIThreadAsync(() =>
-                    {
-                        lblRunningStatus.ForeColor = Color.Red;
-                        lblRunningStatus.Text = barcodeVerification.ErrorPrompt;
-                        lblValidationStatus.ForeColor = Color.Red;
-                        DisplayMessage("实际条码前缀与条码验证规则不匹配！");
-
-                        // 更新条码NG计数器
-                        sytemSetDerivedsd.BarcodeNGCount++;
-                        lblBarcodeNGCount.Text = sytemSetDerivedsd.BarcodeNGCount.ToString();
-                    });
-
-                    try
-                    {
-                        KeyenceMcNet.Write(barcodeVerification.ErrorBarcodeEndPLC, 1);
-                        DisplayMessage("条码验证失败【D1005】 = 1");
-                    }
-                    catch (Exception)
-                    {
-                        //DisplayMessage(ex.ToString());
-                    }
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        #region 处理生产数据（读测试结果 -> 上传 -> 保存）
-
-        private async Task ReadData()
-        {
-            if (!isPlcConnected) return;
-
-            var plcValue = await Task.Run(() => KeyenceMcNet.ReadInt32(sytemSetDerivedsd.StartProductPoint).Content);   // D1200
-
-            if (plcValue != 1) return;
-
-            await ProcessProductionData();
-        }
-
-        /// <summary>
-        /// 读测试结果 -> 上传测试结果 -> 上传看板 -> UI显示 -> 本地保存
-        /// </summary>
-        /// <returns></returns>
-        private async Task ProcessProductionData()
-        {
-            InvokeOnUIThreadAsync(() =>
-            {
-                lblOperatePrompt.Text = resources.GetString("begin_read_data");  // 开始读取数据
-                //DisplayMessage("准备读取测试结果");
-            });
-
-            await Task.Run(() =>
-            {
-                if (chkReadBarcodeSecondly.Checked)
-                {
-                    ReadBarcodeSecondly();
-                }
-
-                // 读取产品总测试结果
-                MES_Result[3688] = KeyenceMcNet.ReadInt32(sytemSetDerivedsd.TotalProductPoint).Content.ToString();  // TotalProductPoint: D1078
-            });
-
-            // 读取测试结果
-            await ReadTestResult();
-
-            await UpdateProductResultUI();
-
-            isProcessSuccessfully = true;
-
-            // 上传条码及相应测试结果到MES
-            await UploadDataToMES();
-
-            // 上传看板
-            SendToDashboardIfConnected();
-
-            // 本地保存
-            await SaveDataLocally();
-
-            await FinalizeProductionCycle();
-
-        }
-
-        private void ReadBarcodeSecondly()
-        {
-            // 二次读条码：D1050
-            ushort.TryParse(sytemSetDerivedsd.SecondProductLength, out ushort secondProductLength);
-            string rawBarcode = KeyenceMcNet.ReadString(sytemSetDerivedsd.SecondProductPoint, secondProductLength).Content;
-            barcodeInfo = CodeNum.CleanString(rawBarcode);
-        }
-
-        /// <summary>
-        /// 读取测试结果
-        /// </summary>
-        private async Task ReadTestResult()
-        {
-            actualValueList = new List<string>();
-            beatList = new List<string>();
-            maxList = new List<string>();
-            minList = new List<string>();
-            resultList = new List<string>();
-
-            if (PLCPointInfoTable.Rows.Count > 0)
-            {
-                var tasks = PLCPointInfoTable.AsEnumerable().Select(row => Task.Run(() =>
-                {
-                    var rowData = new
-                    {
-                        ListItem = ProcessPointData_PLC(row["BoardCode"].ToString()),           // 实际值
-                        MaxItem = ProcessPointData_PLC(row["MaxBoardCode"].ToString()),         // 上限
-                        MinItem = ProcessPointData_PLC(row["MinBoardCode"].ToString()),         // 下限
-                        ResultItem = ProcessPointData_PLC(row["ResultBoardCode"].ToString()),   // 测试结果
-                        BeatItem = ProcessPointData_PLC(row["BeatBoardCode"].ToString())        // 节拍
-                    };
-                    return rowData;
-
-                })).ToList();
-
-                var results = await Task.WhenAll(tasks);
-                foreach (var result in results)
-                {
-                    actualValueList.Add(result.ListItem);
-                    maxList.Add(result.MaxItem);
-                    minList.Add(result.MinItem);
-                    resultList.Add(result.ResultItem);
-                    beatList.Add(result.BeatItem);
-                }
-            }
-        }
-
-        /// <summary>
-        /// 更新产品结果UI显示
-        /// </summary>
-        /// <returns></returns>
-        private async Task UpdateProductResultUI()
-        {
-            await InvokeOnUIThreadAsync(() =>
-            {
-                if (MES_Result[3688] == "3")
-                {
-                    lblProductResult.Text = "OK";
-                    lblProductResult.ForeColor = Color.White;
-                    lblProductResult.BackColor = Color.Green;
-                    Value[9999] = "OK";
-                }
-                else
-                {
-                    lblProductResult.Text = "NG";
-                    lblProductResult.ForeColor = Color.White;
-                    lblProductResult.BackColor = Color.Red;
-                    Value[9999] = "NG";
-                }
-            });
-        }
-
-        private async Task UploadDataToMES()
-        {
-            if (isOffLine == 1) return;
-
-            InvokeOnUIThreadAsync(() =>
-            {
-                lblRunningStatus.ForeColor = Color.Black;
-                lblRunningStatus.Text = resources.GetString("Mes_upload");  // 联机数据上传中
-                lblOperatePrompt.Text = resources.GetString("Wait");        // 请等待
-                lblUploadStatus.ForeColor = Color.Orange;
-            });
-
-            isProductOK = Value[9999] == "OK";
-
-            // 联机上传条码测试数据
-            await Task.Run(() => UploadResult_MES(barcodeInfo));
-
-            InvokeOnUIThreadAsync(() =>
-            {
-                if (MES_Result[2006] == "1")
-                {
-                    lblRunningStatus.Text = resources.GetString("Mes_upload_OK");   // 联机数据上传成功
-                    lblUploadStatus.ForeColor = Color.Green;
-
-                    // 
-
-                }
-                else if (MES_Result[2008] == "1")
-                {
-                    lblRunningStatus.Text = resources.GetString("Mes_upload_NG");   // 联机数据上传失败
-                    lblUploadStatus.ForeColor = Color.Red;
-                    lblOperatePrompt.Text = resources.GetString("Re_upload");       // 请重新上传
-
-
-                }
-            });
-        }
-
-        private async Task SendToDashboardIfConnected()
-        {
-            if (isDashboardConnected)
-            {
-                Task.Run(() => GenerateProductionData());
-            }
-        }
-
-        private async Task SaveDataLocally()
-        {
-            await InvokeOnUIThreadAsync(() =>
-            {
-                Num++;
-                lblRunningStatus.Text = resources.GetString("Read_data");   // 本地数据保存中
-                lblOperatePrompt.Text = resources.GetString("Wait");        // 请等待
-            });
-
-            Task.Run(ShowResult);
-
-            Task.Run(SaveProductionDataAsync);
-
-            InvokeOnUIThreadAsync(() =>
-            {
-                lblRunningStatus.Text = resources.GetString("Read_data_OK");        // 本地数据保存完成
-                lblOperatePrompt.Text = resources.GetString("Continue_production"); // 请取下产品继续生产
-                //DisplayMessage("数据读取完成");
-                //DisplayMessage("生产结果读取完成...");
-            });
-        }
-
-        private async Task FinalizeProductionCycle()
-        {
-            try
-            {
-                await Task.Run(() => KeyenceMcNet.Write(sytemSetDerivedsd.EndProductPoint, 1));
-                //DisplayMessage("生产结果读取反馈【D1202】 = 1");
-            }
-            catch (Exception ex)
-            {
-                //DisplayMessage(ex.ToString());
-            }
-
-            await Task.Delay(200);
-            await InvokeOnUIThreadAsync(() => lblRunningStatus.Text = resources.GetString("scanning"));
-        }
-
-        private Task InvokeOnUIThreadAsync(Action action)
-        {
-            return Task.Run(() => Invoke(action));
-        }
-
-        #endregion
-
-        private async void DisplayMessage(string msg)
-        {
-            this.Invoke(new Action(() =>
-            {
-                if (rtbProductLog.TextLength > 50000)
-                {
-                    rtbProductLog.Clear();
-                }
-                rtbProductLog.AppendText($"{DateTime.Now.ToString("HH:mm:ss_fff")}:{msg}\r\n");
-                rtbProductLog.ScrollToCaret();
-            }));
-
-            //await Task.Run(() => SaveLogToCSV(msg));
-            //Task.Run(() => logProduction.Trace($"{msg}"));
-            logProduction.Trace($"{msg}");
-        }
-
-        public async Task SaveLogToCSV(string log)
-        {
-            try
-            {
-                if (!System.IO.Directory.Exists("D:\\Log"))
-                {
-                    System.IO.Directory.CreateDirectory("D:\\Log");
-                }
-
-                StringBuilder DataLine = new StringBuilder();
-                string strT = $"{DateTime.Now:HH:mm:ss_fff}";
-                DataLine.Append(strT + ":" + log);
-                string FileName = $"{DateTime.Now:yyyy-MM-dd}";
-                string FilePath = $@"D:\Log\{FileName}.CSV";
-
-                if (System.IO.File.Exists(FilePath) == false)
-                {
-                    System.IO.StreamWriter stream = new System.IO.StreamWriter(FilePath, true, Encoding.UTF8);
-                    stream.WriteLine(DataLine);
-                    stream.Flush();
-                    stream.Close();
-                    stream.Dispose();
-                }
-                else
-                {
-                    System.IO.StreamWriter stream = new System.IO.StreamWriter(FilePath, true, Encoding.UTF8);
-                    stream.WriteLine(DataLine);
-                    stream.Flush();
-                    stream.Close();
-                    stream.Dispose();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-
-            return;
-
-        }
-
-        #endregion
-
-        #region ------------ MES上传 ------------
-
-        NLog.Logger loggerMESBarCoode = NLog.LogManager.GetLogger("MESBarCoodeLog");    // 记录上传条码后的MES反馈
-        NLog.Logger loggerMESData = NLog.LogManager.GetLogger("MESDataLog");            // 记录上传测试结果的后MES反馈
-        private bool isMesLoginSuccessful = false;  // 用户联机验证结果
-
-        #region ----- 从文本框获取MES配置参数 -----
-        private string ip => textBox_ip.Text;
-        private string port => textBox_port.Text;
-        private string timeout => textBox_timeout.Text;
-        private string nccode => textBox_nccode.Text;
-        private string operation => textBox_opration.Text;
-        private string user => textBox_user.Text;
-        private string password => textBox_password.Text;
-        private string url => textBox_url.Text;
-        private string site => textBox_site.Text;
-        private string resource => textBox_resource.Text;
-        #endregion
-
-        /// <summary>
-        /// MES参数 > 保存
-        /// </summary>
-        private void SaveMesConfig_Click(object sender, EventArgs e)
-        {
-            SaveParameter_MES();
-            LoadParameter_MES();
-            VarifyUserLogin_MES();
-        }
-
-        /// <summary>
-        /// 加载MES联机参数到系统
-        /// </summary>
-        public void LoadParameter_MES()
-        {
-            dbHelper = new MDBHelper(path4);
-            DataTable table = dbHelper.Find("select * from SytemInfo where ID = '1'");
-            for (int i = 0; i < table.Rows.Count; i++)
-            {
-                for (int j = 0; j < table.Columns.Count; j++)
-                {
-                    textBox_ip.Text = table.Rows[i]["IP"].ToString();
-                    textBox_port.Text = table.Rows[i]["Port"].ToString();
-                    textBox_timeout.Text = table.Rows[i]["Timeout"].ToString();
-                    textBox_nccode.Text = table.Rows[i]["NcCode"].ToString();
-                    textBox_opration.Text = table.Rows[i]["Opration"].ToString();
-                    textBox_password.Text = table.Rows[i]["Password"].ToString();
-                    textBox_resource.Text = table.Rows[i]["Resource"].ToString();
-                    textBox_site.Text = table.Rows[i]["Site"].ToString();
-                    textBox_url.Text = table.Rows[i]["Url"].ToString();
-                    textBox_user.Text = table.Rows[i]["User"].ToString();
-                }
-            }
-            dbHelper.CloseConnection();
-        }
-
-        /// <summary>
-        /// 保存MES联机参数到数据库
-        /// </summary>
-        public void SaveParameter_MES()
-        {
-            SytemInfoEntity infoEntity = new SytemInfoEntity();
-            infoEntity.IP = textBox_ip.Text;
-            infoEntity.Port = textBox_port.Text;
-            infoEntity.Timeout = textBox_timeout.Text;
-            infoEntity.NcCode = textBox_nccode.Text;
-            infoEntity.Opration = textBox_opration.Text;
-            infoEntity.Password = textBox_password.Text;
-            infoEntity.Resource = textBox_resource.Text;
-            infoEntity.Site = textBox_site.Text;
-            infoEntity.Url = textBox_url.Text;
-            infoEntity.User = textBox_user.Text;
-            /*infoEntity.FileVersion = FileVersion.Text;
-            infoEntity.SoftwareVersion = SoftwareVersion.Text;
-            infoEntity.UserCheckCmd = "";
-            infoEntity.UserCheckPass = UserCheckPass.Text;
-            infoEntity.UserCheckFail = UserCheckFail.Text;
-            infoEntity.CodeCheckCmd = CodeCheckCmd.Text;
-            infoEntity.CodeCheckPass = CodeCheckPass.Text;
-            infoEntity.CodeSendCmd = CodeSendCmd.Text;*/
-
-            SaveSystemInfo(path4, infoEntity);
-        }
-
         /// <summary>
         /// MES配置
         /// </summary>
@@ -1956,12 +1973,12 @@ namespace MesDatas
 
             Config_Mes(ip, port, timeout, url, site, user, password, resource, operation, nccode);
 
-            bool validationResult;
+            bool isValidateSuccessful;
             string MESFeedback;
             string XMLOUT;
-            MesIntegrationService.VarifyUserLogin(out validationResult, out MESFeedback, out XMLOUT);
+            MesIntegrationService.VarifyUserLogin(out isValidateSuccessful, out MESFeedback, out XMLOUT);
 
-            if (validationResult == true)
+            if (isValidateSuccessful)
             {
                 if (MESFeedback != null)
                 {
@@ -1970,7 +1987,7 @@ namespace MesDatas
 
                     lblRunningStatus.ForeColor = Color.Green;
                     lblRunningStatus.Text = resources.GetString("onlineUser_OK");   // 联机用户验证成功
-                    lblOperatePrompt.Text = resources.GetString("scanning");        // 等待扫描条码
+                    lblOperatePrompt.Text = resources.GetString("WaittingScanBarcode");        // 等待扫描条码
 
                     isMesLoginSuccessful = true;
                 }
@@ -1998,15 +2015,12 @@ namespace MesDatas
         /// <summary>
         /// MES交互2：条码验证
         /// </summary>
-        private void VarifyBarcode_MES(string barcode)
+        private void VarifyBarcode_MES(string barcodeData)
         {
-            MES_Result[2002] = "0";
-            MES_Result[2004] = "0";
-
-            bool validationResult;
+            bool isVerifySuccessfully;
             string MESFeedback;
             string XMLOUT;
-            MesIntegrationService.VarifyBarcode(barcode, out validationResult, out MESFeedback, out XMLOUT);
+            MesIntegrationService.VarifyBarcode(barcodeData, out isVerifySuccessfully, out MESFeedback, out XMLOUT);
 
             rtbMesLog.Clear();
             rtbMesLog.AppendText(MESFeedback);
@@ -2014,7 +2028,7 @@ namespace MesDatas
             rtbMesLog.SelectionStart = rtbMesLog.Text.Length;
             rtbMesLog.ScrollToCaret();
 
-            if (validationResult == true)
+            if (isVerifySuccessfully)
             {
                 MES_Result[2002] = "1";
             }
@@ -2155,11 +2169,11 @@ namespace MesDatas
                 OperateResult result = await Task.Run(() => KeyenceMcNet.ConnectServer());
                 if (result.IsSuccess)
                 {
-                    isPlcConnected = true;
+                    isPLCConnected = true;
                 }
                 else
                 {
-                    isPlcConnected = false;
+                    isPLCConnected = false;
                     // 使用 Invoke 确保在 UI 线程上显示消息框
                     await ShowMessageBoxAsync(resources.GetString("plcConn"));
                 }
@@ -2218,8 +2232,10 @@ namespace MesDatas
             sytemSetDerivedsd.SytemQRcodNorif = chkBypassQRcodeValidation.Checked;      // 屏蔽本地二维码验证
             sytemSetDerivedsd.SytemNGCodesData = chkBypassLocalNgHistoricalData.Checked;// 屏蔽本地NG历史记录
             sytemSetDerivedsd.SytemHistorCodes = chkBanLocalHistoricalData.Checked;     // 本地历史数据
-
             sytemSetDerivedsd.ISAutoGenerateBarcode = chkGenerateBarcode.Checked;       // 自动生成条码
+            sytemSetDerivedsd.IsAutoBarcodeWithoutVerify = chkAutoBarcodeWithoutVerify.Checked;
+            sytemSetDerivedsd.IsSkipBarcodeVerifyLocally = chkBanBarcodeVerificationLocally.Checked;
+
             sytemSetDerivedsd.SerialNumber = txtSN.Text;                                // 流水号
             sytemSetDerivedsd.BarcodeNumber = txtBarcodeNumber.Text;                    // 码号
 
@@ -2310,8 +2326,10 @@ namespace MesDatas
             chkBypassQRcodeValidation.Checked = sytemSetDerivedsd.SytemQRcodNorif;          // 屏蔽本地二维码验证
             chkBypassLocalNgHistoricalData.Checked = sytemSetDerivedsd.SytemNGCodesData;    // 屏蔽本地NG历史数据
             chkBanLocalHistoricalData.Checked = sytemSetDerivedsd.SytemHistorCodes;         // 屏蔽本地历史数据
-
             chkGenerateBarcode.Checked = sytemSetDerivedsd.ISAutoGenerateBarcode;           // 自动生成条码
+            chkAutoBarcodeWithoutVerify.Checked = sytemSetDerivedsd.IsAutoBarcodeWithoutVerify;         // 气缸机自动生成条码
+            chkBanBarcodeVerificationLocally.Checked = sytemSetDerivedsd.IsSkipBarcodeVerifyLocally;    // 屏蔽本地条码验证
+
             txtSN.Text = sytemSetDerivedsd.SerialNumber;                                    // 流水号
             txtBarcodeNumber.Text = sytemSetDerivedsd.BarcodeNumber;                        // 码号
 
@@ -2334,15 +2352,15 @@ namespace MesDatas
             txtProductResultPoint.Text = sytemSetDerivedsd.TotalProductPoint;               // 产品结果点位：D1078
 
             // 设备产品点位
-            txtDeviceStatePoint.Text = deviceInfo.DeviceStatus;     // 设备状态点位：D1007
-            txtProductModelPoint.Text = deviceInfo.ProductModel;    // 产品型号点位：D1120
+            txtDeviceStatePoint.Text = deviceInfo.DeviceStatusPoint;     // 设备状态点位：D1007
+            txtProductModelPoint.Text = deviceInfo.ProductModelPoint;    // 产品型号点位：D1120
             txtPMLength.Text = deviceInfo.ProductModelLength;       // 产品型号长度：10
             txtRecipeIdPoint.Text = deviceInfo.RecipeIdPoint;       // 配方号点位：D1208
-            textBox43.Text = deviceInfo.FormulaModify;              // 配方修改：D1204
-            textBox47.Text = deviceInfo.FormulaNumModify;           // 配方号修改：D1206
-            textBox34.Text = deviceInfo.StartNFC;                   // 开始NFC
-            textBox35.Text = deviceInfo.EndNFC;                     // 结束NFC
-            txtViewStatus.Text = deviceInfo.ViewStatus;             // 看板状态
+            textBox43.Text = deviceInfo.ModifyRecipePoint;              // 配方修改：D1204
+            textBox47.Text = deviceInfo.ModifyRecipeIDPoint;           // 配方号修改：D1206
+            textBox34.Text = deviceInfo.StartNFCPoint;                   // 开始NFC
+            textBox35.Text = deviceInfo.EndNFCPoint;                     // 结束NFC
+            txtViewStatus.Text = deviceInfo.DashboardStatusPoint;             // 看板状态
 
             // 连接数据库
             dbHelper = new MDBHelper(path4);
@@ -2394,15 +2412,15 @@ namespace MesDatas
         {
             SaveSystemConfig();
 
-            deviceInfo.DeviceStatus = txtDeviceStatePoint.Text;
-            deviceInfo.ProductModel = txtProductModelPoint.Text;
+            deviceInfo.DeviceStatusPoint = txtDeviceStatePoint.Text;
+            deviceInfo.ProductModelPoint = txtProductModelPoint.Text;
             deviceInfo.ProductModelLength = txtPMLength.Text;
             deviceInfo.RecipeIdPoint = txtRecipeIdPoint.Text;
-            deviceInfo.FormulaModify = textBox43.Text;
-            deviceInfo.FormulaNumModify = textBox47.Text;
-            deviceInfo.StartNFC = textBox34.Text;
-            deviceInfo.EndNFC = textBox35.Text;
-            deviceInfo.ViewStatus = txtViewStatus.Text;
+            deviceInfo.ModifyRecipePoint = textBox43.Text;
+            deviceInfo.ModifyRecipeIDPoint = textBox47.Text;
+            deviceInfo.StartNFCPoint = textBox34.Text;
+            deviceInfo.EndNFCPoint = textBox35.Text;
+            deviceInfo.DashboardStatusPoint = txtViewStatus.Text;
             deviceInfo.Save();
             loggerConfig.Trace($"通用点位设置保存成功");
         }
@@ -2450,7 +2468,7 @@ namespace MesDatas
         /// </summary>
         private void GetPLCMaxMin()
         {
-            if (isPlcConnected == true)
+            if (isPLCConnected == true)
             {
                 ValueList = new List<MaxMinValue>();
                 for (int i = 0; i < PLCPointInfoTable.Rows.Count; i++)
@@ -2485,7 +2503,7 @@ namespace MesDatas
         {
             BeginInvoke(new Action(() =>
             {
-                if (isPlcConnected == true)
+                if (isPLCConnected == true)
                 {
                     List<MaxMinValue> maxMinList = this.ValueList;
 
@@ -2791,8 +2809,8 @@ namespace MesDatas
         private async Task InitializeModelReadAsync()
         {
             // 获取用户输入
-            deviceInfo.DeviceStatus = txtDeviceStatePoint.Text;
-            deviceInfo.ProductModel = txtProductModelPoint.Text;
+            deviceInfo.DeviceStatusPoint = txtDeviceStatePoint.Text;
+            deviceInfo.ProductModelPoint = txtProductModelPoint.Text;
             deviceInfo.ProductModelLength = txtPMLength.Text;
             deviceInfo.Save();
 
@@ -2826,16 +2844,16 @@ namespace MesDatas
         /// <returns></returns>
         private async Task ReadModelAsync_PLC(CancellationToken token)
         {
-            if (!isPlcConnected) return;
+            if (!isPLCConnected) return;
 
             try
             {
                 // 读取设备运行状态 D1007
-                deviceState = await ReadPlcValueAsync(deviceInfo.DeviceStatus, token);
+                deviceState = await ReadPlcValueAsync(deviceInfo.DeviceStatusPoint, token);
 
                 // 读取产品型号 D1120
                 ushort productModelLength = ushort.TryParse(deviceInfo.ProductModelLength, out var length) ? length : (ushort)10;
-                string pModel = await ReadPlcStringAsync(deviceInfo.ProductModel, productModelLength, token);
+                string pModel = await ReadPlcStringAsync(deviceInfo.ProductModelPoint, productModelLength, token);
                 productModel = CodeNum.CleanString(pModel);
 
                 // 读取其他 KPI 数据
@@ -2948,24 +2966,24 @@ namespace MesDatas
             {
                 switch (deviceState)
                 {
-                    case "1":
+                    case "1":   // 运行
                         lblDeviceStatus.ForeColor = Color.Green;
                         EndFaults();
                         break;
-                    case "2":
+                    case "2":   // 故障不停机
                         lblDeviceStatus.ForeColor = Color.Red;
                         SendFaultInfo("触发故障");
                         break;
-                    case "3":
+                    case "3":   // 故障停机
                         lblDeviceStatus.ForeColor = Color.Red;
                         SendFaultInfo("故障停机");
                         break;
-                    case "4":
+                    case "4":   // 待机
                         lblDeviceStatus.ForeColor = Color.Orange;
                         EndFaults();
                         break;
                     default:
-                        lblDeviceStatus.ForeColor = Color.Red;
+                        lblDeviceStatus.ForeColor = Color.Black;
                         break;
                 }
             }
@@ -3056,7 +3074,8 @@ namespace MesDatas
 
                 if (!CodeNum.CompareArray(expectedFixtures, frockC))
                 {
-                    lblOperatePrompt.Text = resources.GetString("Wait_scan_Jig");
+                    //lblOperatePrompt.Text = resources.GetString("Wait_scan_Jig");   
+                    lblOperatePrompt.Text = resources.GetString("WaittingSacnFixtures");    // 等待扫工装
                 }
             }
         }
@@ -4035,9 +4054,9 @@ namespace MesDatas
                 try
                 {
                     // D1204：允许修改标志
-                    KeyenceMcNet.Write(deviceInfo.FormulaModify, 1);
+                    KeyenceMcNet.Write(deviceInfo.ModifyRecipePoint, 1);
                     // D1206：修改配方号
-                    KeyenceMcNet.Write(deviceInfo.FormulaNumModify, int.Parse(cboBarcodeRuleAndFixtures.SelectedValue.ToString()));
+                    KeyenceMcNet.Write(deviceInfo.ModifyRecipeIDPoint, int.Parse(cboBarcodeRuleAndFixtures.SelectedValue.ToString()));
                     MessageBox.Show("发送PLC成功！");
                 }
                 catch (Exception ex)
@@ -4293,8 +4312,7 @@ namespace MesDatas
         /// <param name="e"></param>
         private void dataGridView2_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex == -1)
-            { return; }
+            if (e.RowIndex == -1) return;
 
             // 需要记录到日志的字段
             string[] logFields = { "WorkID", "BoardPosition", "BoardName", "BoardTheory", "BoardCode" };
@@ -4380,8 +4398,7 @@ namespace MesDatas
         /// <param name="e"></param>
         private void dataGridView3_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex == -1)
-            { return; }
+            if (e.RowIndex == -1) return;
 
             // 需要记录日志的字段
             string[] logField = { "WorkID", "CodeID", "Faults" };
@@ -4511,7 +4528,7 @@ namespace MesDatas
         /// <param name="e"></param>
         private void ConnectDashboard_Click(object sender, EventArgs e)
         {
-            if (chkEnableDashboard.Checked == false)
+            if (!chkEnableDashboard.Checked)
             {
                 isDashboardConnected = false;
                 lblDashboardStatus.ForeColor = Color.Black;
@@ -4528,11 +4545,6 @@ namespace MesDatas
         /// <param name="port"></param>
         public async void ConnectToServer()
         {
-            Invoke(new Action(() =>
-            {
-                lblDashboardStatus.ForeColor = Color.Red;
-            }));
-
             await Task.Run(() =>
             {
                 while (true)
@@ -4541,7 +4553,7 @@ namespace MesDatas
                     {
                         // Internet 协议、字节流、IPv4连接
                         socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
-                        IPAddress serverIP = IPAddress.Parse(txtDashboardIP.Text);
+                        System.Net.IPAddress serverIP = System.Net.IPAddress.Parse(txtDashboardIP.Text);
                         IPEndPoint serverEndPoint = new IPEndPoint(serverIP, Convert.ToInt32(txtDashboardPort.Text));
 
                         socket.Connect(serverEndPoint);
@@ -4919,78 +4931,85 @@ namespace MesDatas
 
         #region ------------ 处理接受过来的数据 ------------
 
-        bool sedbool = false;
+        bool isAllowSwitchWorkOrder = false;
 
-        public void ReceiveData(string strdata)
+        public void ReceiveData(string receivedMsg)
         {
-            string[] dateshuzu = new string[] { };
-            dateshuzu = strdata.Split(new char[] { '+' });
-            switch (dateshuzu[0])
+            string[] dateArray = new string[] { };
+            dateArray = receivedMsg.Split(new char[] { '+' });
+
+            // dateArray[0]
+            // "0"：切换配方号； 0+配方号
+            // "1"：切换工单号； 0+工单号
+
+            switch (dateArray[0])
             {
                 case "0":
                     try
                     {
-                        //D1204
-                        KeyenceMcNet.Write(deviceInfo.FormulaModify, 1);
-                        //D1206
-                        KeyenceMcNet.Write(deviceInfo.FormulaNumModify, int.Parse(dateshuzu[1].ToString()));
+                        // 向PLC发送配方切换信号，并发送对应配方号
+                        KeyenceMcNet.Write(deviceInfo.ModifyRecipePoint, 1);
+                        KeyenceMcNet.Write(deviceInfo.ModifyRecipeIDPoint, int.Parse(dateArray[1].ToString()));
+
+                        // 更新系统配方号
                         dbHelper = new MDBHelper(path4);
-                        DataTable table1 = dbHelper.Find("select * from SytemSet where ID = '1'");
-                        if (table1.Rows.Count > 0)
+                        DataTable SytemSetTable = dbHelper.Find(" SELECT * FROM [SytemSet] WHERE ID = '1' ");
+                        if (SytemSetTable.Rows.Count > 0)
                         {
-                            string sql = "update [SytemSet] set [faults]='" + dateshuzu[1] + "'" +
-                                //",Workstname ='" + checkBox6.Checked + "'" + 
-                                " where [ID] = '1'";
+                            string sql = $" UPDATE [SytemSet] SET [faults]= '{dateArray[1]}' WHERE [ID] = '1' ";
                             var result = dbHelper.Change(sql);
                         }
-                        dbHelper.CloseConnection();
+
+                        // 反馈配方切换状态
                         Invoke(new Action(() =>
                         {
-                            cboBarcodeRuleAndFixtures.SelectedValue = dateshuzu[1];
-                            lblRecipeId.Text = dateshuzu[1];
-                            Send("6+" + lblDeviceName.Text + "配方切换成功");
+                            cboBarcodeRuleAndFixtures.SelectedValue = dateArray[1];
+                            lblRecipeId.Text = dateArray[1];
+                            Send($"6+{lblDeviceName.Text}配方切换成功");
                         }));
                     }
                     catch (Exception ex)
                     {
                         //DisplayMessage(ex.ToString());
-                        Send("6+" + lblDeviceName.Text + "配方切换失败");
+                        Send($"6+{lblDeviceName.Text}配方切换失败");
                     }
                     break;
                 case "1":
                     try
                     {
+                        // 联机登录成功时接收工单
                         if (isOffLine == 0 && isMesLoginSuccessful == true)
                         {
-                            //MessageBox.Show("确认接收生产工单");
-                            if (sedbool == true)
+                            // 切换工单号
+                            if (isAllowSwitchWorkOrder)
                             {
                                 Invoke(new Action(() =>
                                 {
-                                    txtWorkOrder.Text = dateshuzu[1];
+                                    txtWorkOrder.Text = dateArray[1];
+                                }));
+
+                                Invoke(new Action(() =>
+                                {
+                                    if (txtWorkOrder.Text.Equals(dateArray[1]))
+                                    {
+                                        Send($"6+{lblDeviceName.Text}生产工单接收成功");
+                                    }
                                 }));
                             }
                             else
                             {
-                                char[] prowrd = dateshuzu[1].ToCharArray();
+                                char[] prowrd = dateArray[1].ToCharArray();
                                 foreach (var chstr in prowrd)
                                 {
                                     SendKeys.SendWait("{" + chstr + "}");
                                 }
                                 SendKeys.SendWait("{Enter}");
                             }
-                            Invoke(new Action(() =>
-                            {
-                                if (txtWorkOrder.Text.Equals(dateshuzu[1]))
-                                {
-                                    Send("6+" + lblDeviceName.Text + "生产工单发送成功");
-                                }
-                            }));
                         }
                     }
                     catch (Exception ex)
                     {
-                        Send("6+" + lblDeviceName.Text + "生产工单发送失败");
+                        Send($"6+{lblDeviceName.Text}生产工单接收失败");
                     }
                     break;
             }
@@ -5767,8 +5786,8 @@ namespace MesDatas
 
         public Boolean ConnectPrintServer()
         {
-            IPAddress ipAddress;
-            if (!IPAddress.TryParse(txtPrinter_IP.Text.ToString(), out ipAddress))
+            System.Net.IPAddress ipAddress;
+            if (!System.Net.IPAddress.TryParse(txtPrinter_IP.Text.ToString(), out ipAddress))
             {
                 MessageBox.Show("IP地址无效");
                 return false;
@@ -5778,7 +5797,7 @@ namespace MesDatas
             bool isNumber = int.TryParse(txtPrinter_Port.Text.ToString(), out port);
 
             // 设置连接
-            EndPoint point = new IPEndPoint(IPAddress.Parse(ip), port);		// Server IP 和端
+            EndPoint point = new IPEndPoint(System.Net.IPAddress.Parse(ip), port);		// Server IP 和端
 
             Console.Write("连接中...");
             clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -5858,7 +5877,7 @@ namespace MesDatas
             Task.Run(() =>
             {
                 // 触发通讯读
-                if (isPlcConnected)
+                if (isPLCConnected)
                 {
                     var printResult = KeyenceMcNet.ReadInt16(printerConfig.PrintResult).Content;    // D1014
                     var printStep = KeyenceMcNet.ReadInt32(printerConfig.PrintStep).Content;        // D1012
@@ -6345,7 +6364,7 @@ namespace MesDatas
                 string sql = "insert into Board ([ID],[WorkID],[StandardCode],[BoardName],[BoardCode],[MaxBoardCode],[MinBoardCode],[BeatBoardCode],[ResultBoardCode],[BoardA1]) values ("
                     + pid + ",'" + workID + "','" + stanCode + "','" + boardName + "','" + boardCode + "','" + maxBoardCode + "','" + minBoardCode + "','" + beatBoardCode + "','" + resultBoardCode + "','" + beatBoardA1 + "')";
 
-                bool result = dbHelper.Add(sql.ToString());
+                bool result = dbHelper.Add(sql);
                 if (result == true)
                 {
                     MessageBox.Show("新增成功");
@@ -6432,25 +6451,25 @@ namespace MesDatas
 
         public void PLCBarQRCode()
         {
-            Utility.DGVButAdd.DatGridBut.DataGdvewBut(dataGridView6);
+            Utility.DGVButAdd.DataGridViewButton.AddDGVButton(dataGridView6);
         }
 
         private void dataGridView6_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex == -1)
-            { return; }
-            BarcodeVerification barcodeVefictn = bindingVefictn[e.RowIndex];
+            if (e.RowIndex == -1) return;
+            BarcodeVerification bv = bindingVefictn[e.RowIndex];
+
+            // 删除
             if (dataGridView6.Columns[e.ColumnIndex].Name == "BtnDel")
             {
-                //说明点击的列是DataGridViewButtonColumn列
-                MessageBox.Show(barcodeVefictn.Delete());
+                MessageBox.Show(bv.Delete());
                 RefreshTable();
             }
-            //保存
+
+            // 保存
             if (dataGridView6.Columns[e.ColumnIndex].Name == "BtnSave")
             {
-                MessageBox.Show(barcodeVefictn.Save());
-                //说明点击的列是DataGridViewButtonColumn列
+                MessageBox.Show(bv.Save());
                 RefreshTable();
             }
         }
@@ -6623,7 +6642,7 @@ namespace MesDatas
                         {
                             if (list.Count > 1)
                             {
-                                KeyenceMcNet.Write(deviceInfo.EndNFC, -1);
+                                KeyenceMcNet.Write(deviceInfo.EndNFCPoint, -1);
                             }
                             foreach (var v in list)
                             {
@@ -6652,13 +6671,13 @@ namespace MesDatas
                                     }
                                 }
                                 lblPlcAccess.Text = Paccess.ToString();
-                                KeyenceMcNet.Write(deviceInfo.EndNFC, Paccess);
+                                KeyenceMcNet.Write(deviceInfo.EndNFCPoint, Paccess);
                                 loggerAccount.Trace($"【PLC触摸屏当前权限信息】\n 工号：{v.Uuser} | 姓名：{v.userName} | 权限：{v.Utype}");
                             }
                         }
                         else
                         {
-                            KeyenceMcNet.Write(deviceInfo.EndNFC, -1);
+                            KeyenceMcNet.Write(deviceInfo.EndNFCPoint, -1);
                         }
 
                         PuserUID = string.Empty;

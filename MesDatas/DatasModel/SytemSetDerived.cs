@@ -52,7 +52,13 @@ namespace MesDatas.DatasModel
         public string TotalProductPoint { get; set; }   // 总结果点位
 
         [SugarColumn(ColumnName = "ISAutoGenerate", IsNullable = true)]
-        public bool ISAutoGenerateBarcode { get; set; }   // 是否自动生成条码
+        public bool ISAutoGenerateBarcode { get; set; }   // 自动生成条码（包含条码验证）
+
+        [SugarColumn(ColumnName = "AutoGenerateQiGang", IsNullable = true)]
+        public bool IsAutoBarcodeWithoutVerify { get; set; }   // 自动生成条码(忽略条码验证)
+
+        [SugarColumn(ColumnName = "SkipBarcodeVerifyLocally", IsNullable = true)]
+        public bool IsSkipBarcodeVerifyLocally { get; set; }   // 跳过本地条码验证
 
         [SugarColumn(ColumnName = "SerialNumber", IsNullable = true)]
         public string SerialNumber { get; set; }    // 流水号：5位，每天重置，范围 00000~99999） 

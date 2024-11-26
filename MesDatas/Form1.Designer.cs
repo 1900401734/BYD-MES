@@ -37,7 +37,7 @@ namespace MesDatas
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.skinEngine1 = new Sunisoft.IrisSkin.SkinEngine(((System.ComponentModel.Component)(this)));
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.tabControl4 = new System.Windows.Forms.TabControl();
@@ -171,8 +171,11 @@ namespace MesDatas
             this.tabControl3 = new System.Windows.Forms.TabControl();
             this.tabPage12 = new System.Windows.Forms.TabPage();
             this.groupBox43 = new System.Windows.Forms.GroupBox();
+            this.label109 = new System.Windows.Forms.Label();
             this.label43 = new System.Windows.Forms.Label();
+            this.label85 = new System.Windows.Forms.Label();
             this.txtSN = new System.Windows.Forms.TextBox();
+            this.label70 = new System.Windows.Forms.Label();
             this.txtBarcodeNumber = new System.Windows.Forms.TextBox();
             this.label38 = new System.Windows.Forms.Label();
             this.lblBarcodeContent = new System.Windows.Forms.Label();
@@ -184,7 +187,9 @@ namespace MesDatas
             this.chkBypassBarcodeValidation = new System.Windows.Forms.CheckBox();
             this.chkGenerateBarcode = new System.Windows.Forms.CheckBox();
             this.chkBanLocalHistoricalData = new System.Windows.Forms.CheckBox();
+            this.chkAutoBarcodeWithoutVerify = new System.Windows.Forms.CheckBox();
             this.chkBypassLocalNgHistoricalData = new System.Windows.Forms.CheckBox();
+            this.chkBanBarcodeVerificationLocally = new System.Windows.Forms.CheckBox();
             this.chkBypassFixtureValidation = new System.Windows.Forms.CheckBox();
             this.chkBypassQRcodeValidation = new System.Windows.Forms.CheckBox();
             this.chkReadBarcodeSecondly = new System.Windows.Forms.CheckBox();
@@ -1263,10 +1268,10 @@ namespace MesDatas
             // Column2
             // 
             this.Column2.DataPropertyName = "用户密码";
-            dataGridViewCellStyle1.Format = "*****";
-            dataGridViewCellStyle1.NullValue = "#";
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.Column2.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Format = "*****";
+            dataGridViewCellStyle2.NullValue = "#";
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.Column2.DefaultCellStyle = dataGridViewCellStyle2;
             resources.ApplyResources(this.Column2, "Column2");
             this.Column2.Name = "Column2";
             this.Column2.ReadOnly = true;
@@ -1496,8 +1501,11 @@ namespace MesDatas
             // 
             // groupBox43
             // 
+            this.groupBox43.Controls.Add(this.label109);
             this.groupBox43.Controls.Add(this.label43);
+            this.groupBox43.Controls.Add(this.label85);
             this.groupBox43.Controls.Add(this.txtSN);
+            this.groupBox43.Controls.Add(this.label70);
             this.groupBox43.Controls.Add(this.txtBarcodeNumber);
             this.groupBox43.Controls.Add(this.label38);
             this.groupBox43.Controls.Add(this.lblBarcodeContent);
@@ -1509,16 +1517,34 @@ namespace MesDatas
             this.groupBox43.Name = "groupBox43";
             this.groupBox43.TabStop = false;
             // 
+            // label109
+            // 
+            resources.ApplyResources(this.label109, "label109");
+            this.label109.ForeColor = System.Drawing.Color.Red;
+            this.label109.Name = "label109";
+            // 
             // label43
             // 
             resources.ApplyResources(this.label43, "label43");
             this.label43.ForeColor = System.Drawing.Color.Red;
             this.label43.Name = "label43";
             // 
+            // label85
+            // 
+            resources.ApplyResources(this.label85, "label85");
+            this.label85.ForeColor = System.Drawing.Color.Red;
+            this.label85.Name = "label85";
+            // 
             // txtSN
             // 
             resources.ApplyResources(this.txtSN, "txtSN");
             this.txtSN.Name = "txtSN";
+            // 
+            // label70
+            // 
+            resources.ApplyResources(this.label70, "label70");
+            this.label70.ForeColor = System.Drawing.Color.Red;
+            this.label70.Name = "label70";
             // 
             // txtBarcodeNumber
             // 
@@ -1562,7 +1588,9 @@ namespace MesDatas
             this.groupBox32.Controls.Add(this.chkBypassBarcodeValidation);
             this.groupBox32.Controls.Add(this.chkGenerateBarcode);
             this.groupBox32.Controls.Add(this.chkBanLocalHistoricalData);
+            this.groupBox32.Controls.Add(this.chkAutoBarcodeWithoutVerify);
             this.groupBox32.Controls.Add(this.chkBypassLocalNgHistoricalData);
+            this.groupBox32.Controls.Add(this.chkBanBarcodeVerificationLocally);
             this.groupBox32.Controls.Add(this.chkBypassFixtureValidation);
             this.groupBox32.Controls.Add(this.chkBypassQRcodeValidation);
             this.groupBox32.Controls.Add(this.chkReadBarcodeSecondly);
@@ -1588,11 +1616,23 @@ namespace MesDatas
             this.chkBanLocalHistoricalData.Name = "chkBanLocalHistoricalData";
             this.chkBanLocalHistoricalData.UseVisualStyleBackColor = true;
             // 
+            // chkAutoBarcodeWithoutVerify
+            // 
+            resources.ApplyResources(this.chkAutoBarcodeWithoutVerify, "chkAutoBarcodeWithoutVerify");
+            this.chkAutoBarcodeWithoutVerify.Name = "chkAutoBarcodeWithoutVerify";
+            this.chkAutoBarcodeWithoutVerify.UseVisualStyleBackColor = true;
+            // 
             // chkBypassLocalNgHistoricalData
             // 
             resources.ApplyResources(this.chkBypassLocalNgHistoricalData, "chkBypassLocalNgHistoricalData");
             this.chkBypassLocalNgHistoricalData.Name = "chkBypassLocalNgHistoricalData";
             this.chkBypassLocalNgHistoricalData.UseVisualStyleBackColor = true;
+            // 
+            // chkBanBarcodeVerificationLocally
+            // 
+            resources.ApplyResources(this.chkBanBarcodeVerificationLocally, "chkBanBarcodeVerificationLocally");
+            this.chkBanBarcodeVerificationLocally.Name = "chkBanBarcodeVerificationLocally";
+            this.chkBanBarcodeVerificationLocally.UseVisualStyleBackColor = true;
             // 
             // chkBypassFixtureValidation
             // 
@@ -4085,6 +4125,11 @@ namespace MesDatas
         private System.Windows.Forms.Label label57;
         private System.Windows.Forms.Button btnResetBarcodeCount;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Label label70;
+        private System.Windows.Forms.Label label85;
+        private System.Windows.Forms.Label label109;
+        private System.Windows.Forms.CheckBox chkAutoBarcodeWithoutVerify;
+        private System.Windows.Forms.CheckBox chkBanBarcodeVerificationLocally;
     }
 }
 

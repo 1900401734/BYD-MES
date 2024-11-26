@@ -16,7 +16,7 @@ namespace MesDatas.DatasServer
 		{ 
 			try 
 			{ 
-				using (var db = DBConnSugClie.GetDBConn()) 
+				using (var db = DBConnSugClie.GetDBConnection()) 
 				{ 
 					db.CodeFirst.InitTables<Printers>();
                     Printers printers = Printers.InitGetPrinters();
@@ -35,7 +35,7 @@ namespace MesDatas.DatasServer
 		{ 
 			try 
 			{ 
-				using (var db = DBConnSugClie.GetDBConn()) 
+				using (var db = DBConnSugClie.GetDBConnection()) 
 				{ 
 					if(db.Queryable<Printers>().Where(it => it.ID == printers.ID).Any()) 
 					{ 
@@ -57,7 +57,7 @@ namespace MesDatas.DatasServer
 			{ 
 				try 
 				{ 
-					using (var db = DBConnSugClie.GetDBConn()) 
+					using (var db = DBConnSugClie.GetDBConnection()) 
 					{ 
 						string sql = "INSERT INTO Printers ( +"; 
 						 sql+="LanguageId, ";
@@ -106,7 +106,7 @@ namespace MesDatas.DatasServer
 			{ 
 				try 
 				{ 
-					using (var db = DBConnSugClie.GetDBConn()) 
+					using (var db = DBConnSugClie.GetDBConnection()) 
 					{ 
 						return db.Updateable(printers).Where(it => it.ID == printers.ID).ExecuteCommand() >0 ? LanguageUtiye.PassBtnUpdate : LanguageUtiye.ErrorBtnUpdate; 
 					} 
@@ -121,7 +121,7 @@ namespace MesDatas.DatasServer
 			{ 
 				try 
 				{ 
-					using (var db = DBConnSugClie.GetDBConn()) 
+					using (var db = DBConnSugClie.GetDBConnection()) 
 					{
 					string sql = "UPDATE Printers SET ";
 						sql += "Ptype = @Ptype, ";
@@ -153,7 +153,7 @@ namespace MesDatas.DatasServer
 			{ 
 				try 
 				{ 
-					using (var db = DBConnSugClie.GetDBConn()) 
+					using (var db = DBConnSugClie.GetDBConnection()) 
 					{ 
 						return db.Deleteable(printers).ExecuteCommand() > 0 ? LanguageUtiye.PassBtnDelete : LanguageUtiye.ErrorBtnDelete; 
 					} 
@@ -168,7 +168,7 @@ namespace MesDatas.DatasServer
 			{ 
 				try 
 				{ 
-					using (var db = DBConnSugClie.GetDBConn()) 
+					using (var db = DBConnSugClie.GetDBConnection()) 
 					{ 
 						string sql=$"DELETE FROM Printers WHERE ID = @ID"; 
 						return db.Ado.ExecuteCommand(sql, printers)> 0 ? LanguageUtiye.PassBtnDelete : LanguageUtiye.ErrorBtnDelete; 
@@ -184,7 +184,7 @@ namespace MesDatas.DatasServer
 			{ 
 				try 
 				{ 
-					using (var db = DBConnSugClie.GetDBConn()) 
+					using (var db = DBConnSugClie.GetDBConnection()) 
 					{ 
 						return db.Queryable<Printers>().Where(it=>it.ID == id).First(); 
 					} 
@@ -199,7 +199,7 @@ namespace MesDatas.DatasServer
 			{ 
 				try 
 				{ 
-					using (var db = DBConnSugClie.GetDBConn()) 
+					using (var db = DBConnSugClie.GetDBConnection()) 
 					{ 
 						return db.Queryable<Printers>().ToList(); 
 					} 
@@ -214,7 +214,7 @@ namespace MesDatas.DatasServer
 			{ 
 				try 
 				{ 
-					using (var db = DBConnSugClie.GetDBConn()) 
+					using (var db = DBConnSugClie.GetDBConnection()) 
 					{ 
 						return db.Queryable<Printers>().Where(it=>it.LanguageId == LanguageId).ToList(); 
 					} 
@@ -234,7 +234,7 @@ namespace MesDatas.DatasServer
 			{ 
 				try 
 				{ 
-					using (var db = DBConnSugClie.GetDBConn()) 
+					using (var db = DBConnSugClie.GetDBConnection()) 
 					{ 
 						return db.Queryable<Printers>().Where(it=>it.LanguageId == LanguageId).First(); 
 					} 

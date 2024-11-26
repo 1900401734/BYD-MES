@@ -15,7 +15,7 @@ namespace MesDatas.DatasServer
         {
             try
             {
-                using (var db = DBConnSugClie.GetDBConn())
+                using (var db = DBConnSugClie.GetDBConnection())
                 {
                     db.CodeFirst.InitTables<SytemSetDerived>();
                     SytemSetDerived sytemsetderived = SytemSetDerived.SytemSetDerivedDMESS();
@@ -36,7 +36,7 @@ namespace MesDatas.DatasServer
         {
             try
             {
-                using (var db = DBConnSugClie.GetDBConn())
+                using (var db = DBConnSugClie.GetDBConnection())
                 {
                     if (db.Queryable<SytemSetDerived>().Where(it => it.ID == sytemsetderived.ID).Any())
                     {
@@ -59,7 +59,7 @@ namespace MesDatas.DatasServer
         {
             try
             {
-                using (var db = DBConnSugClie.GetDBConn())
+                using (var db = DBConnSugClie.GetDBConnection())
                 {
                     return db.Updateable(sytemsetderived).ExecuteCommand() > 0 ? LanguageResour.PassBtnUpdate : LanguageResour.ErrorBtnUpdate;
                 }
@@ -75,7 +75,7 @@ namespace MesDatas.DatasServer
         {
             try
             {
-                using (var db = DBConnSugClie.GetDBConn())
+                using (var db = DBConnSugClie.GetDBConnection())
                 {
                     return db.Deleteable(sytemsetderived).ExecuteCommand() > 0 ? LanguageResour.ErrorBtnDelete : LanguageResour.PassBtnDelete;
                 }
@@ -91,7 +91,7 @@ namespace MesDatas.DatasServer
         {
             try
             {
-                using (var db = DBConnSugClie.GetDBConn())
+                using (var db = DBConnSugClie.GetDBConnection())
                 {
                     return db.Queryable<SytemSetDerived>().Where(it => it.ID == id).First();
                 }
@@ -107,7 +107,7 @@ namespace MesDatas.DatasServer
         {
             try
             {
-                using (var db = DBConnSugClie.GetDBConn())
+                using (var db = DBConnSugClie.GetDBConnection())
                 {
                     return db.Queryable<SytemSetDerived>().ToList();
                 }
@@ -123,7 +123,7 @@ namespace MesDatas.DatasServer
         {
             try
             {
-                using (var db = DBConnSugClie.GetDBConn())
+                using (var db = DBConnSugClie.GetDBConnection())
                 {
                     return db.Queryable<SytemSetDerived>().Where(it => it.LanguageId == LanguageId).ToList();
                 }
@@ -145,7 +145,7 @@ namespace MesDatas.DatasServer
         {
             try
             {
-                using (var db = DBConnSugClie.GetDBConn())
+                using (var db = DBConnSugClie.GetDBConnection())
                 {
                     return db.Queryable<SytemSetDerived>().Where(it => it.LanguageId == LanguageId).First();
                 }

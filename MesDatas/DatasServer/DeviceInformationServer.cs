@@ -15,7 +15,7 @@ namespace MesDatas.DatasServer
         {
             try
             {
-                using (var db = DBConnSugClie.GetDBConn())
+                using (var db = DBConnSugClie.GetDBConnection())
                 {
                     db.CodeFirst.InitTables<DeviceInformation>();
 
@@ -37,7 +37,7 @@ namespace MesDatas.DatasServer
         {
             try
             {
-                using (var db = DBConnSugClie.GetDBConn())
+                using (var db = DBConnSugClie.GetDBConnection())
                 {
                     if (db.Queryable<DeviceInformation>().Where(it => it.ID == deviceinformation.ID).Any())
                     {
@@ -61,7 +61,7 @@ namespace MesDatas.DatasServer
         {
             try
             {
-                using (var db = DBConnSugClie.GetDBConn())
+                using (var db = DBConnSugClie.GetDBConnection())
                 {
                     return db.Updateable(deviceinformation).ExecuteCommand() > 0 ? LanguageResour.PassBtnUpdate : LanguageResour.ErrorBtnUpdate;
                 }
@@ -78,7 +78,7 @@ namespace MesDatas.DatasServer
         {
             try
             {
-                using (var db = DBConnSugClie.GetDBConn())
+                using (var db = DBConnSugClie.GetDBConnection())
                 {
                     return db.Deleteable(deviceinformation).ExecuteCommand() > 0 ? LanguageResour.PassBtnDelete : LanguageResour.ErrorBtnDelete;
                 }
@@ -95,7 +95,7 @@ namespace MesDatas.DatasServer
         {
             try
             {
-                using (var db = DBConnSugClie.GetDBConn())
+                using (var db = DBConnSugClie.GetDBConnection())
                 {
                     return db.Queryable<DeviceInformation>().Where(it => it.ID == id).First();
                 }
@@ -112,7 +112,7 @@ namespace MesDatas.DatasServer
         {
             try
             {
-                using (var db = DBConnSugClie.GetDBConn())
+                using (var db = DBConnSugClie.GetDBConnection())
                 {
                     return db.Queryable<DeviceInformation>().ToList();
                 }
@@ -129,7 +129,7 @@ namespace MesDatas.DatasServer
         {
             try
             {
-                using (var db = DBConnSugClie.GetDBConn())
+                using (var db = DBConnSugClie.GetDBConnection())
                 {
                     return db.Queryable<DeviceInformation>().Where(it => it.LanguageId == LanguageId).ToList();
                 }
@@ -152,7 +152,7 @@ namespace MesDatas.DatasServer
         {
             try
             {
-                using (var db = DBConnSugClie.GetDBConn())
+                using (var db = DBConnSugClie.GetDBConnection())
                 {
                     return db.Queryable<DeviceInformation>().Where(it => it.LanguageId == LanguageId).First();
                 }

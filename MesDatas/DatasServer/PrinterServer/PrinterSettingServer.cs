@@ -15,7 +15,7 @@ namespace MesDatas.DatasServer
 		{ 
 			try 
 			{ 
-				using (var db = DBConnSugClie.GetDBConn()) 
+				using (var db = DBConnSugClie.GetDBConnection()) 
 				{ 
 					db.CodeFirst.InitTables<PrinterSetting>();
 
@@ -36,7 +36,7 @@ namespace MesDatas.DatasServer
 		{ 
 			try 
 			{ 
-				using (var db = DBConnSugClie.GetDBConn()) 
+				using (var db = DBConnSugClie.GetDBConnection()) 
 				{ 
 					if(db.Queryable<PrinterSetting>().Where(it => it.ID == printersetting.ID).Any()) 
 					{ 
@@ -59,7 +59,7 @@ namespace MesDatas.DatasServer
 			{ 
 				try 
 				{ 
-					using (var db = DBConnSugClie.GetDBConn()) 
+					using (var db = DBConnSugClie.GetDBConnection()) 
 					{ 
 						return db.Updateable(printersetting).ExecuteCommand() > 0 ? LanguageResour.PassBtnUpdate : LanguageResour.ErrorBtnUpdate; 
 					} 
@@ -74,7 +74,7 @@ namespace MesDatas.DatasServer
 			{ 
 				try 
 				{ 
-					using (var db = DBConnSugClie.GetDBConn()) 
+					using (var db = DBConnSugClie.GetDBConnection()) 
 					{ 
 						return db.Deleteable(printersetting).ExecuteCommand() > 0 ? LanguageResour.PassBtnDelete : LanguageResour.ErrorBtnDelete; 
 					} 
@@ -89,7 +89,7 @@ namespace MesDatas.DatasServer
 			{ 
 				try 
 				{ 
-					using (var db = DBConnSugClie.GetDBConn()) 
+					using (var db = DBConnSugClie.GetDBConnection()) 
 					{ 
 						return db.Queryable<PrinterSetting>().Where(it=>it.ID == id).First(); 
 					} 
@@ -105,7 +105,7 @@ namespace MesDatas.DatasServer
 			{ 
 				try 
 				{ 
-					using (var db = DBConnSugClie.GetDBConn()) 
+					using (var db = DBConnSugClie.GetDBConnection()) 
 					{ 
 						return db.Queryable<PrinterSetting>().ToList(); 
 					} 
@@ -121,7 +121,7 @@ namespace MesDatas.DatasServer
 			{ 
 				try 
 				{ 
-					using (var db = DBConnSugClie.GetDBConn()) 
+					using (var db = DBConnSugClie.GetDBConnection()) 
 					{ 
 						return db.Queryable<PrinterSetting>().Where(it=>it.LanguageId == LanguageId).ToList(); 
 					} 
@@ -142,7 +142,7 @@ namespace MesDatas.DatasServer
 			{ 
 				try 
 				{ 
-					using (var db = DBConnSugClie.GetDBConn()) 
+					using (var db = DBConnSugClie.GetDBConnection()) 
 					{ 
 						return db.Queryable<PrinterSetting>().Where(it=>it.LanguageId == LanguageId).First(); 
 					} 

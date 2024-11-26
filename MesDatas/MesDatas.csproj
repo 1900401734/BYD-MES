@@ -437,7 +437,7 @@
     <Compile Include="UpdateModel\ConiferFile.cs" />
     <Compile Include="Utiey\FaultsBLL.cs" />
     <Compile Include="Utiey\WhiteNightShift.cs" />
-    <Compile Include="Utility\DGVButAdd\DatGridBut.cs" />
+    <Compile Include="Utility\DGVButAdd\DataGridViewButton.cs" />
     <Compile Include="Utility\PrintersFileChecker\PrinFileChecker.cs" />
     <Compile Include="Utility\ResourcesLaguage\LanguageResour.cs" />
     <Compile Include="Utility\SugarDB\DBConnSugClie.cs" />

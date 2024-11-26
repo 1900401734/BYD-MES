@@ -187,14 +187,14 @@ namespace MesDatas
                     return false;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
-            //foreach (DataRow item in dt.Rows)
-            //{
-            //    Console.WriteLine(item[0] + "|" + item[1] + "|" + InvalidOperationException:“未在本地计算机上注册“Microsoft.Jet.OLEDB.4.0”提供程item[2] + "|" + item[3]);
-            //}
+            finally
+            {
+                myConn.Close();
+            }
         }
 
         /// <summary>
@@ -206,6 +206,7 @@ namespace MesDatas
         {
             OleDbCommand oleDbCommand = new OleDbCommand(sql, myConn);
             int i = oleDbCommand.ExecuteNonQuery();
+            myConn.Close();
             return i > 0;
         }
 
@@ -301,8 +302,13 @@ namespace MesDatas
             catch { return false; }
         }
 
-        //新建mdb的表 
-        //mdbHead是一个ArrayList，存储的是table表中的具体列名。 
+        /// <summary>
+        /// 新建mdb的表 
+        /// </summary>
+        /// <param name="mdbPath">数据库目标路径</param>
+        /// <param name="tableName">表名</param>
+        /// <param name="mdbHead">字段名集合</param>
+        /// <returns></returns>
         public static bool CreateMDBTable(string mdbPath, string tableName, ArrayList mdbHead)
         {
             try
@@ -335,7 +341,11 @@ namespace MesDatas
                 cn.Close();
                 return true;
             }
-            catch { return false; }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ERROR:{ex}");
+                return false;
+            }
         }
 
         // 读取mdb数据 
@@ -493,7 +503,5 @@ namespace MesDatas
                 return dt;
             }
         }
-
     }
-
 }

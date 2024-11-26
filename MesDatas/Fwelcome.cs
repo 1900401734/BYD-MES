@@ -92,13 +92,13 @@ namespace MesDatas
             {
                 NLogHelperYY.InitConfigNLog();
                 // 初始化表
-                DatasServer.SytemSetDerivedServer.InitSytemSetDerived();//系统设置
-                DatasServer.CodesServer.InitCodes();//条码 PLC点位
-                DatasServer.BarcodeVefictnServer.InitBarcodeVefictn();//数据 PLC点位
-                DatasServer.PrinterSettingServer.InitPrinterSetting();//打印设置 PLC点位
-                DatasServer.DeviceInformationServer.InitDeviceInformation();//其它连接 PLC点位
-                DatasServer.PrintersServer.InitPrinters();//网络打印内容设置
-                DatasServer.PrintersBtwServer.InitPrintersBtw();//通过电脑打印设置
+                DatasServer.SytemSetDerivedServer.InitSytemSetDerived();        // 系统设置
+                DatasServer.CodesServer.InitCodes();                            // 条码 PLC点位
+                DatasServer.BarcodeVefictnServer.InitBarcodeVefictn();          // 数据 PLC点位
+                DatasServer.PrinterSettingServer.InitPrinterSetting();          // 打印设置 PLC点位
+                DatasServer.DeviceInformationServer.InitDeviceInformation();    // 其它连接 PLC点位
+                DatasServer.PrintersServer.InitPrinters();                      // 网络打印内容设置
+                DatasServer.PrintersBtwServer.InitPrintersBtw();                // 通过电脑打印设置
             });
         }
 

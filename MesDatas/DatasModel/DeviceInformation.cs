@@ -13,10 +13,10 @@ namespace MesDatas.DatasModel
         public int LanguageId { get; set; }      // 语言ID 
 
         [SugarColumn(ColumnName = "DeviceStatus", IsNullable = true)]
-        public string DeviceStatus { get; set; }      // 设备状态 
+        public string DeviceStatusPoint { get; set; }      // 设备状态 
 
         [SugarColumn(ColumnName = "ProductModelNum", IsNullable = true)]
-        public string ProductModel { get; set; }       // 产品型号 
+        public string ProductModelPoint { get; set; }       // 产品型号 
 
         [SugarColumn(ColumnName = "ProductModelLength", IsNullable = true)]
         public string ProductModelLength { get; set; }    // 型号长度 
@@ -24,45 +24,51 @@ namespace MesDatas.DatasModel
         [SugarColumn(ColumnName = "FormulaNum", IsNullable = true)]
         public string RecipeIdPoint { get; set; }    // 配方号 
 
+        /// <summary>
+        /// D1204
+        /// </summary>
         [SugarColumn(ColumnName = "FormulaModify", IsNullable = true)]
-        public string FormulaModify { get; set; }     // 配方修改 
+        public string ModifyRecipePoint { get; set; }     // 配方修改 
 
+        /// <summary>
+        /// D1206
+        /// </summary>
         [SugarColumn(ColumnName = "FormulaNumModify", IsNullable = true)]
-        public string FormulaNumModify { get; set; }      // 配方号修改 
+        public string ModifyRecipeIDPoint { get; set; }      // 配方号修改 
 
         [SugarColumn(ColumnName = "StartNFC", IsNullable = true)]
-        public string StartNFC { get; set; } // 开始NFC
+        public string StartNFCPoint { get; set; } // 开始NFC
 
         [SugarColumn(ColumnName = "EndNFC", IsNullable = true)]
-        public string EndNFC { get; set; } // 结束NFC 默认：D18040
+        public string EndNFCPoint { get; set; } // 结束NFC 默认：D18040
 
         [SugarColumn(ColumnName = "ViewStatus", IsNullable = true)]
-        public string ViewStatus { get; set; } // 开始NFC修改
+        public string DashboardStatusPoint { get; set; }    // 看板连接状态
 
         public static DeviceInformation DeviceInformationInitalize()
         {
             DeviceInformation deviceInformation = new DeviceInformation();
             deviceInformation.ID = 1;
             deviceInformation.LanguageId = 0;
-            deviceInformation.DeviceStatus = "D1007";       // 设备状态
-            deviceInformation.ProductModel = "D1120";
+            deviceInformation.DeviceStatusPoint = "D1007";       // 设备状态
+            deviceInformation.ProductModelPoint = "D1120";
             deviceInformation.ProductModelLength = "10";
             deviceInformation.RecipeIdPoint = "D1208";
-            deviceInformation.FormulaModify = "D1204";
-            deviceInformation.FormulaNumModify = "D1206";
+            deviceInformation.ModifyRecipePoint = "D1204";
+            deviceInformation.ModifyRecipeIDPoint = "D1206";
 
             return deviceInformation;
         }
 
         public string Save()
         {
-            if (string.IsNullOrWhiteSpace(DeviceStatus))
+            if (string.IsNullOrWhiteSpace(DeviceStatusPoint))
             {
-                DeviceStatus = "D1007";
+                DeviceStatusPoint = "D1007";
             }
-            if (string.IsNullOrWhiteSpace(ProductModel))
+            if (string.IsNullOrWhiteSpace(ProductModelPoint))
             {
-                ProductModel = "D1120";
+                ProductModelPoint = "D1120";
             }
             if (string.IsNullOrWhiteSpace(ProductModelLength))
             {
@@ -72,13 +78,13 @@ namespace MesDatas.DatasModel
             {
                 RecipeIdPoint = "D1208";
             }
-            if (string.IsNullOrWhiteSpace(FormulaModify))
+            if (string.IsNullOrWhiteSpace(ModifyRecipePoint))
             {
-                FormulaModify = "D1204";
+                ModifyRecipePoint = "D1204";
             }
-            if (string.IsNullOrWhiteSpace(FormulaNumModify))
+            if (string.IsNullOrWhiteSpace(ModifyRecipeIDPoint))
             {
-                FormulaNumModify = "D1206";
+                ModifyRecipeIDPoint = "D1206";
             }
 
             return DeviceInformationServer.GetDeviceInformationSave(this);

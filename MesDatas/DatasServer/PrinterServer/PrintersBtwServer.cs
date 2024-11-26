@@ -16,7 +16,7 @@ namespace MesDatas.DatasServer
         {
             try
             {
-                using (var db = DBConnSugClie.GetDBConn())
+                using (var db = DBConnSugClie.GetDBConnection())
                 {
                     db.CodeFirst.InitTables<PrintersBtw>();
                     PrintersBtw printersbtw = PrintersBtw.InitGetPrintersBtw();
@@ -36,7 +36,7 @@ namespace MesDatas.DatasServer
         {
             try
             {
-                using (var db = DBConnSugClie.GetDBConn())
+                using (var db = DBConnSugClie.GetDBConnection())
                 {
                     if (db.Queryable<PrintersBtw>().Where(it => it.ID == printersbtw.ID).Any())
                     {
@@ -59,7 +59,7 @@ namespace MesDatas.DatasServer
         {
             try
             {
-                using (var db = DBConnSugClie.GetDBConn())
+                using (var db = DBConnSugClie.GetDBConnection())
                 {
                     string sql = "INSERT INTO printersBtw ( +";
                     sql += "LanguageId, ";
@@ -109,7 +109,7 @@ namespace MesDatas.DatasServer
         {
             try
             {
-                using (var db = DBConnSugClie.GetDBConn())
+                using (var db = DBConnSugClie.GetDBConnection())
                 {
                     return db.Updateable(printersbtw).Where(it => it.ID == printersbtw.ID).ExecuteCommand() > 0 ? LanguageUtiye.PassBtnUpdate : LanguageUtiye.ErrorBtnUpdate;
                 }
@@ -125,7 +125,7 @@ namespace MesDatas.DatasServer
         {
             try
             {
-                using (var db = DBConnSugClie.GetDBConn())
+                using (var db = DBConnSugClie.GetDBConnection())
                 {
                     string sql = "UPDATE printersBtw SET ";
                     sql += "PtypeBtw = @PtypeBtw, ";
@@ -158,7 +158,7 @@ namespace MesDatas.DatasServer
         {
             try
             {
-                using (var db = DBConnSugClie.GetDBConn())
+                using (var db = DBConnSugClie.GetDBConnection())
                 {
                     return db.Deleteable(printersbtw).ExecuteCommand() > 0 ? LanguageUtiye.PassBtnDelete : LanguageUtiye.ErrorBtnDelete;
                 }
@@ -174,7 +174,7 @@ namespace MesDatas.DatasServer
         {
             try
             {
-                using (var db = DBConnSugClie.GetDBConn())
+                using (var db = DBConnSugClie.GetDBConnection())
                 {
                     string sql = $"DELETE FROM printersBtw WHERE ID = @ID";
                     return db.Ado.ExecuteCommand(sql, printersbtw) > 0 ? LanguageUtiye.PassBtnDelete : LanguageUtiye.ErrorBtnDelete;
@@ -191,7 +191,7 @@ namespace MesDatas.DatasServer
         {
             try
             {
-                using (var db = DBConnSugClie.GetDBConn())
+                using (var db = DBConnSugClie.GetDBConnection())
                 {
                     return db.Queryable<PrintersBtw>().Where(it => it.ID == id).First();
                 }
@@ -207,7 +207,7 @@ namespace MesDatas.DatasServer
         {
             try
             {
-                using (var db = DBConnSugClie.GetDBConn())
+                using (var db = DBConnSugClie.GetDBConnection())
                 {
                     return db.Queryable<PrintersBtw>().ToList();
                 }
@@ -223,7 +223,7 @@ namespace MesDatas.DatasServer
         {
             try
             {
-                using (var db = DBConnSugClie.GetDBConn())
+                using (var db = DBConnSugClie.GetDBConnection())
                 {
                     return db.Queryable<PrintersBtw>().Where(it => it.LanguageId == LanguageId).ToList();
                 }
@@ -245,7 +245,7 @@ namespace MesDatas.DatasServer
         {
             try
             {
-                using (var db = DBConnSugClie.GetDBConn())
+                using (var db = DBConnSugClie.GetDBConnection())
                 {
                     return db.Queryable<PrintersBtw>().Where(it => it.LanguageId == LanguageId).First();
                 }

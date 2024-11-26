@@ -15,7 +15,7 @@ namespace MesDatas.DatasServer
         {
             try
             {
-                using (var db = DBConnSugClie.GetDBConn())
+                using (var db = DBConnSugClie.GetDBConnection())
                 {
                     db.CodeFirst.InitTables<Codes>();
                 }
@@ -30,7 +30,7 @@ namespace MesDatas.DatasServer
         {
             try
             {
-                using (var db = DBConnSugClie.GetDBConn())
+                using (var db = DBConnSugClie.GetDBConnection())
                 {
                     if (db.Queryable<Codes>().Where(it => it.ID == codes.ID).Any())
                     {
@@ -53,7 +53,7 @@ namespace MesDatas.DatasServer
         {
             try
             {
-                using (var db = DBConnSugClie.GetDBConn())
+                using (var db = DBConnSugClie.GetDBConnection())
                 {
                     return db.Updateable(codes).ExecuteCommand() > 0 ? LanguageResour.PassBtnUpdate : LanguageResour.ErrorBtnUpdate;
                 }
@@ -69,7 +69,7 @@ namespace MesDatas.DatasServer
         {
             try
             {
-                using (var db = DBConnSugClie.GetDBConn())
+                using (var db = DBConnSugClie.GetDBConnection())
                 {
                     return db.Deleteable(codes).Where(it => it.ID == codes.ID).ExecuteCommand() > 0 ? LanguageResour.PassBtnDelete : LanguageResour.ErrorBtnDelete;
                 }
@@ -85,7 +85,7 @@ namespace MesDatas.DatasServer
         {
             try
             {
-                using (var db = DBConnSugClie.GetDBConn())
+                using (var db = DBConnSugClie.GetDBConnection())
                 {
                     return db.Queryable<Codes>().Where(it => it.ID == id).First();
                 }
@@ -101,7 +101,7 @@ namespace MesDatas.DatasServer
         {
             try
             {
-                using (var db = DBConnSugClie.GetDBConn())
+                using (var db = DBConnSugClie.GetDBConnection())
                 {
                     return db.Queryable<Codes>().ToList();
                 }
