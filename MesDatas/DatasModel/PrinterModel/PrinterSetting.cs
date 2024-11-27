@@ -11,7 +11,7 @@ namespace MesDatas.DatasModel
         [SugarColumn(ColumnName = "LanguageId", DefaultValue = "0")]
         public int LanguageId { get; set; }             // 语言ID 
 
-        [SugarColumn(ColumnName = "PrintStep", IsNullable = false)]
+        [SugarColumn(ColumnName = "PrintStep", IsNullable = true)]
         public string PrintStep { get; set; }         // 打印机步骤 
 
         [SugarColumn(ColumnName = "PrintResult", IsNullable = true)]

@@ -146,7 +146,6 @@ namespace 工艺部信息化组
         private static bool CutResult(string html)  //Y return true : N return false
         {
             return html.Contains("</b>Y</td>") ? true : false;
-            // return true;
         }
 
         private static string GetHtmlByPost(string URL, string Param, int TimeOut)
