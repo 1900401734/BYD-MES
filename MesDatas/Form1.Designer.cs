@@ -170,12 +170,15 @@ namespace MesDatas
             this.panel19 = new System.Windows.Forms.Panel();
             this.tabControl3 = new System.Windows.Forms.TabControl();
             this.tabPage12 = new System.Windows.Forms.TabPage();
-            this.groupBox43 = new System.Windows.Forms.GroupBox();
-            this.label109 = new System.Windows.Forms.Label();
-            this.label43 = new System.Windows.Forms.Label();
-            this.label85 = new System.Windows.Forms.Label();
-            this.txtSN = new System.Windows.Forms.TextBox();
+            this.groupBox44 = new System.Windows.Forms.GroupBox();
             this.label70 = new System.Windows.Forms.Label();
+            this.label121 = new System.Windows.Forms.Label();
+            this.label109 = new System.Windows.Forms.Label();
+            this.label115 = new System.Windows.Forms.Label();
+            this.label85 = new System.Windows.Forms.Label();
+            this.groupBox43 = new System.Windows.Forms.GroupBox();
+            this.label43 = new System.Windows.Forms.Label();
+            this.txtSN = new System.Windows.Forms.TextBox();
             this.txtBarcodeNumber = new System.Windows.Forms.TextBox();
             this.label38 = new System.Windows.Forms.Label();
             this.lblBarcodeContent = new System.Windows.Forms.Label();
@@ -502,6 +505,7 @@ namespace MesDatas
             this.panel19.SuspendLayout();
             this.tabControl3.SuspendLayout();
             this.tabPage12.SuspendLayout();
+            this.groupBox44.SuspendLayout();
             this.groupBox43.SuspendLayout();
             this.groupBox32.SuspendLayout();
             this.groupBox29.SuspendLayout();
@@ -1488,6 +1492,7 @@ namespace MesDatas
             // 
             // tabPage12
             // 
+            this.tabPage12.Controls.Add(this.groupBox44);
             this.tabPage12.Controls.Add(this.groupBox43);
             this.tabPage12.Controls.Add(this.groupBox32);
             this.tabPage12.Controls.Add(this.groupBox29);
@@ -1499,13 +1504,51 @@ namespace MesDatas
             this.tabPage12.Name = "tabPage12";
             this.tabPage12.UseVisualStyleBackColor = true;
             // 
+            // groupBox44
+            // 
+            this.groupBox44.Controls.Add(this.label70);
+            this.groupBox44.Controls.Add(this.label121);
+            this.groupBox44.Controls.Add(this.label109);
+            this.groupBox44.Controls.Add(this.label115);
+            this.groupBox44.Controls.Add(this.label85);
+            resources.ApplyResources(this.groupBox44, "groupBox44");
+            this.groupBox44.Name = "groupBox44";
+            this.groupBox44.TabStop = false;
+            // 
+            // label70
+            // 
+            resources.ApplyResources(this.label70, "label70");
+            this.label70.ForeColor = System.Drawing.Color.Red;
+            this.label70.Name = "label70";
+            // 
+            // label121
+            // 
+            resources.ApplyResources(this.label121, "label121");
+            this.label121.ForeColor = System.Drawing.Color.Red;
+            this.label121.Name = "label121";
+            // 
+            // label109
+            // 
+            resources.ApplyResources(this.label109, "label109");
+            this.label109.ForeColor = System.Drawing.Color.Red;
+            this.label109.Name = "label109";
+            // 
+            // label115
+            // 
+            resources.ApplyResources(this.label115, "label115");
+            this.label115.ForeColor = System.Drawing.Color.Red;
+            this.label115.Name = "label115";
+            // 
+            // label85
+            // 
+            resources.ApplyResources(this.label85, "label85");
+            this.label85.ForeColor = System.Drawing.Color.Red;
+            this.label85.Name = "label85";
+            // 
             // groupBox43
             // 
-            this.groupBox43.Controls.Add(this.label109);
             this.groupBox43.Controls.Add(this.label43);
-            this.groupBox43.Controls.Add(this.label85);
             this.groupBox43.Controls.Add(this.txtSN);
-            this.groupBox43.Controls.Add(this.label70);
             this.groupBox43.Controls.Add(this.txtBarcodeNumber);
             this.groupBox43.Controls.Add(this.label38);
             this.groupBox43.Controls.Add(this.lblBarcodeContent);
@@ -1517,34 +1560,16 @@ namespace MesDatas
             this.groupBox43.Name = "groupBox43";
             this.groupBox43.TabStop = false;
             // 
-            // label109
-            // 
-            resources.ApplyResources(this.label109, "label109");
-            this.label109.ForeColor = System.Drawing.Color.Red;
-            this.label109.Name = "label109";
-            // 
             // label43
             // 
             resources.ApplyResources(this.label43, "label43");
             this.label43.ForeColor = System.Drawing.Color.Red;
             this.label43.Name = "label43";
             // 
-            // label85
-            // 
-            resources.ApplyResources(this.label85, "label85");
-            this.label85.ForeColor = System.Drawing.Color.Red;
-            this.label85.Name = "label85";
-            // 
             // txtSN
             // 
             resources.ApplyResources(this.txtSN, "txtSN");
             this.txtSN.Name = "txtSN";
-            // 
-            // label70
-            // 
-            resources.ApplyResources(this.label70, "label70");
-            this.label70.ForeColor = System.Drawing.Color.Red;
-            this.label70.Name = "label70";
             // 
             // txtBarcodeNumber
             // 
@@ -3582,6 +3607,8 @@ namespace MesDatas
             this.panel19.ResumeLayout(false);
             this.tabControl3.ResumeLayout(false);
             this.tabPage12.ResumeLayout(false);
+            this.groupBox44.ResumeLayout(false);
+            this.groupBox44.PerformLayout();
             this.groupBox43.ResumeLayout(false);
             this.groupBox43.PerformLayout();
             this.groupBox32.ResumeLayout(false);
@@ -4130,6 +4157,9 @@ namespace MesDatas
         private System.Windows.Forms.Label label109;
         private System.Windows.Forms.CheckBox chkAutoBarcodeWithoutVerify;
         private System.Windows.Forms.CheckBox chkBanBarcodeVerificationLocally;
+        private System.Windows.Forms.GroupBox groupBox44;
+        private System.Windows.Forms.Label label115;
+        private System.Windows.Forms.Label label121;
     }
 }
 

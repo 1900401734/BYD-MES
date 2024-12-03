@@ -1,10 +1,12 @@
 ﻿using MesDatas.MESModel;
 using Newtonsoft.Json;
+using NLog;
 using System;
 using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -30,10 +32,17 @@ namespace 工艺部信息化组
     {
         private static string ParamOUT;
 
-        public static void BindWorkOrder(string 工单号, out bool 验证结果, out string MES反馈, out string XMLOUT)
+        /// <summary>
+        /// MES交互4：绑定工单
+        /// </summary>
+        /// <param name="工单号"></param>
+        /// <param name="isBindingSuccessfully">是否绑定成功</param>
+        /// <param name="MES反馈"></param>
+        /// <param name="XMLOUT"></param>
+        public static void BindWorkOrder(string 工单号, out bool isBindingSuccessfully, out string MES反馈, out string XMLOUT)
         {
             MES反馈 = MesIntegrationService.GetHtmlByPost("http://" + MesConfig.IP + ":" + MesConfig.PORT + MesConfig.URL, "&message=" + ("<PRODUCTION_REQUEST><RESOURCE_BANDING_SHOPORDER><SITE>" + MesConfig.Site + "</SITE><NAME>" + MesConfig.UserName + "</NAME><PWD>" + MesConfig.Password + "</PWD><RESOURCE>" + MesConfig.Resource + "</RESOURCE><SHOPORDER>" + 工单号 + "</SHOPORDER></RESOURCE_BANDING_SHOPORDER></PRODUCTION_REQUEST>"), MesConfig.TimeOut);
-            验证结果 = CutResult(MES反馈);
+            isBindingSuccessfully = CutResult(MES反馈);
             XMLOUT = ParamOUT;
         }
 
@@ -74,28 +83,40 @@ namespace 工艺部信息化组
         /// MES交互1：用户验证
         /// </summary>
         /// <param name="验证结果"></param>
-        /// <param name="MES反馈"></param>
+        /// <param name="userVerificationFeedback"></param>
         /// <param name="XMLOUT"></param>
-        public static void VarifyUserLogin(out bool 验证结果, out string MES反馈, out string XMLOUT)
+        public static void VarifyUserLogin(out bool 验证结果, out string userVerificationFeedback, out string XMLOUT)
         {
-            MES反馈 = MesIntegrationService.GetHtmlByPost("http://" + MesConfig.IP + ":" + MesConfig.PORT + MesConfig.URL, "&message=" + ("<PRODUCTION_REQUEST><USER><SITE>" + MesConfig.Site + "</SITE><NAME>" + MesConfig.UserName + "</NAME><PWD>" + MesConfig.Password + "</PWD></USER></PRODUCTION_REQUEST>"), MesConfig.TimeOut);
-            验证结果 = CutResult(MES反馈);
+            userVerificationFeedback = MesIntegrationService.GetHtmlByPost("http://" + MesConfig.IP + ":" + MesConfig.PORT + MesConfig.URL, "&message=" + ("<PRODUCTION_REQUEST><USER><SITE>" + MesConfig.Site + "</SITE><NAME>" + MesConfig.UserName + "</NAME><PWD>" + MesConfig.Password + "</PWD></USER></PRODUCTION_REQUEST>"), MesConfig.TimeOut);
+            验证结果 = CutResult(userVerificationFeedback);
             XMLOUT = ParamOUT;
         }
 
         /// <summary>
         /// MES交互2：条码验证
         /// </summary>
-        /// <param name="产品条码"></param>
-        /// <param name="验证结果"></param>
-        /// <param name="MES反馈"></param>
+        /// <param name="barcode"></param>
+        /// <param name="isVerifySuccessfully"></param>
+        /// <param name="barcodeverificationResponse"></param>
         /// <param name="XMLOUT"></param>
-        public static void VarifyBarcode(string 产品条码, out bool 验证结果, out string MES反馈, out string XMLOUT)
+        public static void VarifyBarcode(string barcode, out bool isVerifySuccessfully, out string barcodeverificationResponse, out string XMLOUT)
         {
-            MES反馈 = MesIntegrationService.GetHtmlByPost("http://" + MesConfig.IP + ":" + MesConfig.PORT + MesConfig.URL, "&message=" + ("<PRODUCTION_REQUEST><START><SFC_LIST><SFC><SITE>" + MesConfig.Site + "</SITE><ACTIVITY>XML</ACTIVITY><ID>" + 产品条码 + "</ID><RESOURCE>" + MesConfig.Resource + "</RESOURCE><OPERATION>" + MesConfig.Operation + "</OPERATION><USER>" + MesConfig.UserName + "</USER><QTY></QTY><DATE_TIME></DATE_TIME><COMPLEX>" + "N" + "</COMPLEX></SFC></SFC_LIST></START></PRODUCTION_REQUEST>!erpautogy03!1234567@byd"), MesConfig.TimeOut);
+            barcodeverificationResponse = MesIntegrationService.GetHtmlByPost(
+           $"http://{MesConfig.IP}:{MesConfig.PORT}{MesConfig.URL}",
+                $"&message=" +
+                $"<PRODUCTION_REQUEST><START><SFC_LIST><SFC><SITE>{MesConfig.Site}</SITE>" +
+                $"<ACTIVITY>XML</ACTIVITY><ID>{barcode}</ID>" +
+                $"<RESOURCE>{MesConfig.Resource}</RESOURCE>" +
+                $"<OPERATION>{MesConfig.Operation}</OPERATION>" +
+                $"<USER>{MesConfig.UserName}</USER>" +
+                $"<QTY></QTY><DATE_TIME></DATE_TIME>" +
+                $"<COMPLEX>N</COMPLEX></SFC></SFC_LIST></START></PRODUCTION_REQUEST>!erpautogy03!1234567@byd",
+                MesConfig.TimeOut);
+
             Thread.Sleep(200);
             Application.DoEvents();
-            验证结果 = CutResult(MES反馈);
+
+            isVerifySuccessfully = CutResult(barcodeverificationResponse);
             XMLOUT = ParamOUT;
         }
 
@@ -108,12 +129,13 @@ namespace 工艺部信息化组
         /// <param name="软件版本"></param>
         /// <param name="测试项"></param>
         /// <param name="验证结果"></param>
-        /// <param name="MES反馈"></param>
+        /// <param name="resultFeedback"></param>
         /// <param name="XMLOUT"></param>
         public static void UploadBarcode(bool 测试结果, string 产品条码, string 文件版本, string 软件版本, string 测试项,
-                                   out bool 验证结果, out string MES反馈, out string XMLOUT)
+                                   out bool 验证结果, out string resultFeedback, out string XMLOUT)
         {
             string mge = "";
+
             if (测试结果 == true)
             {
                 mge = PassValidate(产品条码, 文件版本, 软件版本, 测试项);
@@ -122,8 +144,9 @@ namespace 工艺部信息化组
             {
                 mge = ErrorValidate(产品条码, 文件版本, 软件版本, 测试项);
             }
-            MES反馈 = mge;
-            验证结果 = CutResult(MES反馈);
+
+            resultFeedback = mge;
+            验证结果 = CutResult(resultFeedback);
             XMLOUT = ParamOUT;
         }
 
@@ -148,36 +171,69 @@ namespace 工艺部信息化组
             return html.Contains("</b>Y</td>") ? true : false;
         }
 
-        private static string GetHtmlByPost(string URL, string Param, int TimeOut)
+        /// <summary>
+        /// 使用POST方法发送HTTP请求并获取响应内容
+        /// </summary>
+        /// <param name="url">目标URL地址</param>
+        /// <param name="requestParameters">请求参数</param>
+        /// <param name="timeout">请求超时时间（毫秒）</param>
+        /// <returns>服务器响应的文本内容</returns>
+        private static string GetHtmlByPost(string url, string requestParameters, int timeout)
         {
-            ParamOUT = Param;
-            string str;
+            // 用于存储外部传入的请求参数（如果需要）
+            ParamOUT = requestParameters;
+
             try
             {
-                byte[] bytes = Encoding.GetEncoding("GB2312").GetBytes(Param);
-                HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create(URL);
+                // 使用GB2312编码转换请求参数
+                byte[] requestBytes = Encoding.GetEncoding("GB2312").GetBytes(requestParameters);
+                // 创建HTTP请求
+                HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create(url);
+                // 设置请求头信息
                 httpWebRequest.ContentType = "application/x-www-form-urlencoded";
                 httpWebRequest.Accept = "*/*";
                 httpWebRequest.UserAgent = "Mozilla/4.0(compatible;MSIE 6.0;Windows NT 5.1;SV1;Maxthon;.NET CLR 1.1.4322)";
                 httpWebRequest.Method = "POST";
-                httpWebRequest.ContentLength = (long)bytes.Length;
-                httpWebRequest.Timeout = TimeOut;
+                httpWebRequest.ContentLength = (long)requestBytes.Length;
+                httpWebRequest.Timeout = timeout;
                 httpWebRequest.ServicePoint.Expect100Continue = false;
-                Stream requestStream = httpWebRequest.GetRequestStream();
-                requestStream.Write(bytes, 0, bytes.Length);
-                requestStream.Close();
+                // 写入请求数据
+                using (Stream requestStream = httpWebRequest.GetRequestStream())
+                {
+                    requestStream.Write(requestBytes, 0, requestBytes.Length);
+                }
+                // 获取响应
+                using (HttpWebResponse httpWebResponse = (HttpWebResponse)httpWebRequest.GetResponse())
+                {
+                    using (StreamReader streamReader = new StreamReader(httpWebResponse.GetResponseStream(), Encoding.GetEncoding("GB2312")))
+                    {
+                        // 读取响应内容
+                        string responseContent = streamReader.ReadToEnd();
+
+                        // 关闭请求
+                        httpWebRequest.Abort();
+
+                        // 替换特殊字符并返回
+                        return responseContent.Replace("&lt;", "<").Replace("&gt;", ">");
+                    }
+                }
+                /*// 获取响应
                 HttpWebResponse httpWebResponse = (HttpWebResponse)httpWebRequest.GetResponse();
                 StreamReader streamReader = new StreamReader(httpWebResponse.GetResponseStream(), Encoding.GetEncoding("GB2312"));
+                // 读取响应内容
                 str = streamReader.ReadToEnd();
                 streamReader.Close();
+                // 关闭请求
                 httpWebRequest.Abort();
-                httpWebResponse.Close();
+                httpWebResponse.Close();*/
             }
             catch (Exception ex)
             {
-                str = ex.Message;
+                return ex.Message;
             }
-            return str.Replace("&lt;", "<").Replace("&gt;", ">");
+
+            // 替换特殊字符并返回
+            //return str.Replace("&lt;", "<").Replace("&gt;", ">");
         }
 
         #region --------- 版本优化 ---------
