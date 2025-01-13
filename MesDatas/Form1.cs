@@ -530,7 +530,7 @@ namespace MesDatas
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
-            //关闭标签应用，并且不保存
+            // 关闭标签应用，并且不保存
             if (btApp != null)
             {
                 btApp.Quit(BarTender.BtSaveOptions.btDoNotSaveChanges);
@@ -785,8 +785,6 @@ namespace MesDatas
         bool isReadMaxMin_PLC = true;   // 读取、绑定上下限
         bool IsUpdateStatus_PLC = true; // 更新PLC连接状态
         //private bool isBarcodeVerifySuccessfully = false;
-        //List<BarcodeVerification> bvlist;
-        //BarcodeVerification bv = null;
         private bool isProcessSuccessfully = true;  // 自动生成条码时使用
         private bool isSaveDataSuccessfully = true;
         private string barcodeData = string.Empty;  // 实时读取或自动生成的条码，用于本地验证、MES验证
@@ -794,10 +792,6 @@ namespace MesDatas
         public static string path4 = System.AppDomain.CurrentDomain.BaseDirectory + "SystemDateBase.mdb";
         public static string pathText = System.AppDomain.CurrentDomain.BaseDirectory + "logfault.txt";
         public static string userFileuRL = "D:\\BYD_Users\\Users_Data.MDB";
-        //Logger singleLog = LogManager.GetLogger("InteractionSingle");
-        //List<BarcodeVerification> bvlist;
-        //BarcodeVerification bv;
-
 
         #region ------ 条码读取与验证 ------
 
@@ -4479,7 +4473,11 @@ namespace MesDatas
         #region ------------ 看板Socket连接服务器 ------------
 
         private System.Net.Sockets.Socket socket;
+        private static readonly object objSync = new object();
 
+        /// <summary>
+        /// 连接看板
+        /// </summary>
         private void ConnectDashboard()
         {
             ConnectDashboard_Click(null, null);
@@ -4526,7 +4524,7 @@ namespace MesDatas
                         if (isDashboardConnected)
                         {
                             // 读取消息
-                            System.Threading.Thread thread = new System.Threading.Thread(Received);
+                            System.Threading.Thread thread = new System.Threading.Thread(ReceivedMsg);
                             thread.IsBackground = true;
                             thread.Start();
 
@@ -4558,7 +4556,7 @@ namespace MesDatas
         /// <summary>
         /// 接收线程
         /// </summary>
-        private void Received()
+        private void ReceivedMsg()
         {
             while (isDashboardConnected)
             {
@@ -4566,12 +4564,12 @@ namespace MesDatas
                 {
                     byte[] buffer = new byte[1024 * 1024 * 3];
                     // 实际接收到的有效字节数
-                    int len = socket.Receive(buffer);
-                    if (len == 0)
+                    int length = socket.Receive(buffer);
+                    if (length == 0)
                     {
                         break;
                     }
-                    string receivedMsg = Encoding.UTF8.GetString(buffer, 0, len);
+                    string receivedMsg = Encoding.UTF8.GetString(buffer, 0, length);
                     ReceiveData(receivedMsg);
                     this.BeginInvoke(ShowMsgAction, socket.RemoteEndPoint + ":" + receivedMsg);
                     ShowMsg(socket.RemoteEndPoint + ":" + receivedMsg);
@@ -4616,12 +4614,12 @@ namespace MesDatas
         }
 
         /// <summary>
-        /// 发送机台名称和工位名称
+        /// 发送机台名称和工位名称：一个机台可能有若干个工位
         /// <para>
-        /// 0+工位名称
+        /// 工位配置信息：0 + 工位名称
         /// </para>
         /// <para>
-        /// 5+机台名称
+        /// 工位状态：5 + 机台名称
         /// </para>
         /// </summary>
         public async void SendDeviceAndStationName()
@@ -4632,26 +4630,9 @@ namespace MesDatas
                 await Task.Delay(50);
             }
 
-            await Task.Delay(200); // 异步延迟
+            await Task.Delay(200);
             Send("5+" + txtDeviceName.Text);
         }
-        /*public void SendDeviceAndStationName()
-        {
-            Invoke(new Action(() =>
-            {
-                for (int i = 0; i < stationName.Length; i++)
-                {
-                    Thread.Sleep(50);
-                    Application.DoEvents();
-                    Send("0+" + stationName[i]);
-                    Thread.Sleep(50);
-                    Application.DoEvents();
-                }
-                Thread.Sleep(200);
-                Application.DoEvents();
-                Send("5+" + txtDeviceName.Text);
-            }));
-        }*/
 
         /// <summary>
         /// 生成产线信息
@@ -4712,14 +4693,10 @@ namespace MesDatas
                             stationName = CodeNum.GetStationNameByID(row["工位ID"].ToString(), this.stationNameSets);
 
                             // 4+易损件所在工位+机台名称+易损件所在位置+易损件名称+易损件理论使用次数+易损件已使用次数
-                            /*string vulnerableInfo = "4+" + stationName + "+" + lblDeviceName.Text + "+" + row["易损件所在的位置"] + "+"
-                               + row["易损件的名称"] + "+" + theoreticalUsage + "+" + actualUsage;*/
                             string vulnerableInfo = $"4+{stationName}+{lblDeviceName.Text}+{row["易损件所在的位置"]}" +
                                                      $"+{row["易损件的名称"]}+{theoreticalUsage}+{actualUsage}";
 
                             productionData += "|" + vulnerableInfo;
-                            //ShowMsg(vulnerableInfo);
-                            //Send(vulnerableInfo);
                         }
                     }
                 }
@@ -4739,9 +4716,6 @@ namespace MesDatas
                     {
                         if (!string.IsNullOrWhiteSpace(fixturesInfo[i]))
                         {
-                            /*string chesBBB = "2+" + stationNameSets[j] + "+" + txtWorkOrder.Text + "+" + barcodeInfo + "+"
-                                            + LoginUser.ToString() + "+" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") +
-                                                "+" + Value[9999] + "+" + D1090 + "+工装编号" + (i + 1) + "+" + "  " + "+" + "  " + "+" + fixturesInfo[i];*/
                             string chesBBB = $"2+{stationNameSets[j]}+{txtWorkOrder.Text}+{barcodeInfo}+{LoginUser}+{DateTime.Now:yyyy-MM-dd HH:mm:ss}+{Value[9999]}+{D1090}+工装编号{i + 1}+ + +{fixturesInfo[i]}";
                             productionData += "|" + chesBBB;
                         }
@@ -4754,9 +4728,6 @@ namespace MesDatas
                     {
                         if (!string.IsNullOrWhiteSpace(productCodeInfo[i]))
                         {
-                            /*string chesCCC = "2+" + stationNameSets[j] + "+" + txtWorkOrder.Text + "+" + barcodeInfo + "+"
-                                               + LoginUser.ToString() + "+" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") +
-                                                   "+" + Value[9999] + "+" + D1090 + "+产品物料号" + (i + 1) + "+" + " " + "+" + "  " + "+" + productCodeInfo[i];*/
                             string chesCCC = $"2+{stationNameSets[j]}+{txtWorkOrder.Text}+{barcodeInfo}+{LoginUser}+{DateTime.Now:yyyy-MM-dd HH:mm:ss}+{Value[9999]}+{D1090}+产品物料号{i + 1}+ + +{productCodeInfo[i]}";
 
                             productionData += "|" + chesCCC;
@@ -4775,10 +4746,6 @@ namespace MesDatas
                             // 生产信息：
                             if (maxValuePoint[i] == "NO" && minValuePoint[i] == "NO" && testResultPoint[i] == "NO")
                             {
-                                /*string cheshixm1 = "2+" + stationNameList[i] + "+" + txtWorkOrder.Text + "+" + barcodeInfo + "+"
-                                        + LoginUser.ToString() + "+" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") +
-                                            "+" + Value[9999] + "+" + D1090 + "+" + testItemsName[i] + "+" + "" + "+" + "" + "+" + actualValueList[i];*/
-
                                 // 2 + 工位名称 + 当前工单号 + 产品条码 + 操作人员 + 测试时间 + 测试结果 + 生产节拍 + 测试项名称 +  +  + 测式项实际值;
                                 string cheshixm1 = $"2+{stationNameList[i]}+{txtWorkOrder.Text}+{barcodeInfo}+{LoginUser}+{DateTime.Now:yyyy-MM-dd HH:mm:ss}" +
                                                   $"+{Value[9999]}+{D1090}+{testItemsName[i]}+ + +{actualValueList[i]}";
@@ -4787,10 +4754,6 @@ namespace MesDatas
                             }
                             else
                             {
-                                /*string cheshixm1 = "2+" + stationNameList[i] + "+" + txtWorkOrder.Text + "+" + barcodeInfo + "+"
-                                 + LoginUser.ToString() + "+" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") +
-                                     "+" + Value[9999] + "+" + D1090 + "+" + testItemsName[i] + "+" + maxList[i] + "+" + minList[i] + "+" + actualValueList[i];*/
-
                                 // 2 + 工位名称 + 工单号 + 条码 + 操作人员 + 测试时间 + 测试结果 + 生产节拍 + 测试项目名称 + 测试项上限 + 测试项下限 + 测试项实际值;
                                 string cheshixm1 = $"2+{stationNameList[i]}+{txtWorkOrder.Text}+{barcodeInfo}+{LoginUser}+{DateTime.Now:yyyy-MM-dd HH:mm:ss}" +
                                 $"+{Value[9999]}+{D1090}+{testItemsName[i]}+{maxList[i]}+{minList[i]}+{actualValueList[i]}";
@@ -4806,10 +4769,6 @@ namespace MesDatas
                     // 注意：（测试项名称 + 测试项上限 + 测试项下限 + 测式项实际值）为空
                     for (int i = 0; i < stationNameSets.Length; i++)
                     {
-                        /*string cheshixm2 = "2+" + stationNameSets[i] + "+" + txtWorkOrder.Text + "+" + barcodeInfo + "+"
-                         + LoginUser.ToString() + "+" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") +
-                                "+" + Value[9999] + "+" + D1090 + "+" + "测试总结果" + "+" + " " + "+" + " " + "+" + Value[9999];*/
-
                         string cheshixm2 = $"2+{stationNameSets[i]}+{txtWorkOrder.Text}+{barcodeInfo}+{LoginUser}+{DateTime.Now:yyyy-MM-dd HH:mm:ss}+{Value[9999]}+{D1090}+测试总结果+ + +{Value[9999]}";
                         productionData += "|" + cheshixm2;
                     }
@@ -4820,12 +4779,10 @@ namespace MesDatas
             }));
         }
 
-        private static readonly object objSync = new object();
-
         /// <summary>
         /// 发送信息到服务器
         /// <para>
-        /// |0+工位名称集合|
+        /// 0+工位名称集合
         /// </para>
         /// <para>
         /// 1+故障所在工位+机台名称+故障状态+故障的描述+触发故障的开始时间 
@@ -4843,7 +4800,10 @@ namespace MesDatas
         /// </para>
         /// <para>
         /// 工位状态：
-        /// |5+机台名称|
+        /// 5+机台名称
+        /// </para>
+        /// <para>
+        /// 6+机台名称（配方切换、工单切换结果反馈）
         /// </para>
         /// </summary>
         /// <param name="msg"></param>
@@ -4986,9 +4946,11 @@ namespace MesDatas
         DatasModel.Printers printers = new DatasModel.Printers();
         DatasModel.PrintersBtw printersBtw = new PrintersBtw();
         DatasModel.PrinterSetting printerConfig = new DatasModel.PrinterSetting();
+
         private static BarTender.Application btApp = null;
         private static BarTender.Format btFormat;
-        bool prinBoolOK = false;
+        bool isPrintOK = false;
+
         private Socket clientSocket = null;     // 连接打印机
 
         #region ------ 打印机基本配置 ------
@@ -5087,8 +5049,8 @@ namespace MesDatas
                 chkAutoAddDate.Checked = printersBtw.PrintNowDateTime;  // 自动添加日期
                 chkPlus2Print.Checked = printersBtw.PrintCodeTwoBool;   // +2打印
                                                                         // 配置prn文件
-                lblPrnFilePath_COM.Text = printersBtw.PertowBtw;        // prn文件路径
-                cboPrintFormat_COM.Text = printersBtw.TxttowBtw;        // 打印文件格式
+                lblFilePath_COM.Text = printersBtw.PertowBtw;        // prn文件路径
+                cboFileFormat_COM.Text = printersBtw.TxttowBtw;        // 打印文件格式
 
                 #endregion
             }
@@ -5118,13 +5080,13 @@ namespace MesDatas
         /// <summary>
         /// BTW 文件打印
         /// </summary>
-        /// <param name="printCode"></param>
-        /// <param name="printAgo"></param>
-        /// <param name="printAfter"></param>
-        /// <param name="printType"></param>
-        /// <param name="printNum"></param>
+        /// <param name="barcodeInfo">条码内容</param>
+        /// <param name="printAgo">条码前端内容</param>
+        /// <param name="printAfter">条码后端内容</param>
+        /// <param name="barcodeModel">条码对应的产品型号</param>
+        /// <param name="printNum">打印份数</param>
         /// <exception cref="Exception"></exception>
-        private async void BTW_PrintersCodes(string printCode, string printAgo, string printAfter, string printType, int printNum)
+        private async void BTW_PrintersCodes(string barcodeInfo, string printAgo, string printAfter, string barcodeModel, int printNum)
         {
             try
             {
@@ -5132,29 +5094,29 @@ namespace MesDatas
 
                 if (btApp == null)
                 {
-                    prinBoolOK = false;
+                    isPrintOK = false;
                     return;
                 }
 
-                if (PrinFileChecker.IsBtwFile(lblPrnFilePath_COM.Text) == false)
+                if (PrinFileChecker.IsBtwFile(lblFilePath_COM.Text) == false)
                 {
-                    prinBoolOK = false;
+                    isPrintOK = false;
                     return;
                 }
 
-                btFormat = btApp.Formats.Open(lblPrnFilePath_COM.Text);
+                btFormat = btApp.Formats.Open(lblFilePath_COM.Text);
                 btFormat.PrintSetup.NumberSerializedLabels = printNum; //设置打印份数
 
                 switch (chkUseFont.Checked)
                 {
                     case false:
                         //设置打印字段值
-                        btFormat.SetNamedSubStringValue("0", printCode);
+                        btFormat.SetNamedSubStringValue("0", barcodeInfo);
                         break;
                     case true:
                         btFormat.SetNamedSubStringValue("1", printAgo);
                         btFormat.SetNamedSubStringValue("2", printAfter);
-                        btFormat.SetNamedSubStringValue("3", printType);
+                        btFormat.SetNamedSubStringValue("3", barcodeModel);
                         goto case false;
                 }
 
@@ -5166,16 +5128,17 @@ namespace MesDatas
                 }
                 else
                 {
-                    btFormat.SetNamedSubStringValue("4", printCode);
+                    btFormat.SetNamedSubStringValue("4", barcodeInfo);
                 }
 
                 await Task.Run(() =>
                 {
                     // 打印标签
                     btFormat.PrintOut(false, false);
+
                     // 不保存标签退出
                     btFormat.Close(BarTender.BtSaveOptions.btDoNotSaveChanges);
-                    prinBoolOK = true;
+                    isPrintOK = true;
                 });
             }
             catch (Exception ex)
@@ -5233,7 +5196,7 @@ namespace MesDatas
 
             try
             {
-                string fileContent = File.ReadAllText(lblPrnFilePath_COM.Text);
+                string fileContent = File.ReadAllText(lblFilePath_COM.Text);
                 int copiesPerBarcode = chkPlus2Print.Checked ? 2 : 1;           // 每个条码打印的份数
 
                 for (int i = 0; i < printCount; i++)
@@ -5299,19 +5262,19 @@ namespace MesDatas
         private void ChangePath_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
-            if (string.IsNullOrEmpty(cboPrintFormat_COM.Text))
+            if (string.IsNullOrEmpty(cboFileFormat_COM.Text))
             {
                 MessageBox.Show("请选择打印文件格式");
                 return;
             }
-            openFileDialog.Filter = "PRN files " + cboPrintFormat_COM.Text;
+            openFileDialog.Filter = "PRN files " + cboFileFormat_COM.Text;
             openFileDialog.Title = "选择打印文件";
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 // 获取选中的PRN文件路径
                 string prnFilePath = openFileDialog.FileName;
-                lblPrnFilePath_COM.Text = prnFilePath;
+                lblFilePath_COM.Text = prnFilePath;
                 // 在这里添加代码以处理PRN文件
             }
         }
@@ -5323,7 +5286,7 @@ namespace MesDatas
         /// <param name="e"></param>
         private void ShowPath_COM_Click(object sender, EventArgs e)
         {
-            string filePath = lblPrnFilePath_COM.Text;
+            string filePath = lblFilePath_COM.Text;
             Direc_Troy_Path_Position(filePath);
         }
 
@@ -5344,8 +5307,8 @@ namespace MesDatas
             printersBtw.BarcodeNumber = txtCodeNumber.Text;         // 码号
             printersBtw.SerialNumber = txtSerialNumber.Text;        // 流水号
             printersBtw.TlowBtw = txtSerialSpan.Text;               // 打印数量
-            printersBtw.PertowBtw = lblPrnFilePath_COM.Text;        // prn文件路径
-            printersBtw.TxttowBtw = cboPrintFormat_COM.Text;        // 打印文件格式
+            printersBtw.PertowBtw = lblFilePath_COM.Text;        // prn文件路径
+            printersBtw.TxttowBtw = cboFileFormat_COM.Text;        // 打印文件格式
             printersBtw.PrintNowDateTime = chkAutoAddDate.Checked;  // 自动添加日期
             printersBtw.PrintSerialNumber = false;                  // 打印机打印条码
             printersBtw.PrintCodeTwoBool = chkPlus2Print.Checked;   // +2打印
@@ -5361,10 +5324,11 @@ namespace MesDatas
         {
             // 判断是否选中打印机
             if (string.IsNullOrWhiteSpace(cboPrinterType.Text)) return;
+
             try
             {
                 GenerateBarcode();  // 生成条码内容
-                GoToPrint();        // 打印条码
+                GoToPrint();        // 驱动打印 -> 打印条码
 
                 lblPrintPrompt.Text = "OK";
                 lblPrintPrompt.ForeColor = Color.Green;
@@ -5373,7 +5337,7 @@ namespace MesDatas
             {
                 PrintNGPrompt();
             }
-            if (prinBoolOK == false)
+            if (isPrintOK == false)
             {
                 PrintNGPrompt();
             }
@@ -5465,7 +5429,7 @@ namespace MesDatas
             }
 
             // 判断打印格式
-            switch (cboPrintFormat_COM.SelectedIndex)
+            switch (cboFileFormat_COM.SelectedIndex)
             {
                 case 0: // BTW 文件打印
                     BTW_PrintersCodes(barcodeInfo, printAgo, printAfter, pModel, printCount);

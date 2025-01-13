@@ -102,10 +102,10 @@ namespace MesDatas
             this.groupBox36 = new System.Windows.Forms.GroupBox();
             this.btnShowPath_COM = new System.Windows.Forms.Button();
             this.label82 = new System.Windows.Forms.Label();
-            this.cboPrintFormat_COM = new System.Windows.Forms.ComboBox();
+            this.cboFileFormat_COM = new System.Windows.Forms.ComboBox();
             this.btnPrint_COM = new System.Windows.Forms.Button();
             this.btnSave_COM = new System.Windows.Forms.Button();
-            this.lblPrnFilePath_COM = new System.Windows.Forms.Label();
+            this.lblFilePath_COM = new System.Windows.Forms.Label();
             this.label122 = new System.Windows.Forms.Label();
             this.btnChangePath_COM = new System.Windows.Forms.Button();
             this.label125 = new System.Windows.Forms.Label();
@@ -314,6 +314,7 @@ namespace MesDatas
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.panel14 = new System.Windows.Forms.Panel();
             this.panel15 = new System.Windows.Forms.Panel();
+            this.dataGridViewDynamic1 = new MesDatasCore.DataGridViewDynamic();
             this.panel12 = new System.Windows.Forms.Panel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.button14 = new System.Windows.Forms.Button();
@@ -368,6 +369,7 @@ namespace MesDatas
             this.panel10 = new System.Windows.Forms.Panel();
             this.panel13 = new System.Windows.Forms.Panel();
             this.groupBox31 = new System.Windows.Forms.GroupBox();
+            this.dataGridViewDynamic3 = new MesDatasCore.DataGridViewDynamic();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
             this.lblProductResult = new System.Windows.Forms.Label();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
@@ -406,6 +408,7 @@ namespace MesDatas
             this.label103 = new System.Windows.Forms.Label();
             this.label94 = new System.Windows.Forms.Label();
             this.panel8 = new System.Windows.Forms.Panel();
+            this.dataGridViewDynamic4 = new MesDatasCore.DataGridViewDynamic();
             this.panel25 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.groupBox11 = new System.Windows.Forms.GroupBox();
@@ -425,6 +428,7 @@ namespace MesDatas
             this.lblPlcStatus = new System.Windows.Forms.Label();
             this.lblDashboardStatus = new System.Windows.Forms.Label();
             this.lblDeviceStatus = new System.Windows.Forms.Label();
+            this.dataGridViewDynamic2 = new MesDatasCore.DataGridViewDynamic();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage6 = new System.Windows.Forms.TabPage();
             this.panel20 = new System.Windows.Forms.Panel();
@@ -473,10 +477,6 @@ namespace MesDatas
             this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.saveFileDialog2 = new System.Windows.Forms.SaveFileDialog();
-            this.dataGridViewDynamic3 = new MesDatasCore.DataGridViewDynamic();
-            this.dataGridViewDynamic4 = new MesDatasCore.DataGridViewDynamic();
-            this.dataGridViewDynamic2 = new MesDatasCore.DataGridViewDynamic();
-            this.dataGridViewDynamic1 = new MesDatasCore.DataGridViewDynamic();
             this.tabPage4.SuspendLayout();
             this.tabControl4.SuspendLayout();
             this.tabPage15.SuspendLayout();
@@ -537,6 +537,7 @@ namespace MesDatas
             this.groupBox4.SuspendLayout();
             this.panel14.SuspendLayout();
             this.panel15.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewDynamic1)).BeginInit();
             this.panel12.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             this.panel4.SuspendLayout();
@@ -549,6 +550,7 @@ namespace MesDatas
             this.panel10.SuspendLayout();
             this.panel13.SuspendLayout();
             this.groupBox31.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewDynamic3)).BeginInit();
             this.groupBox8.SuspendLayout();
             this.groupBox7.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -560,11 +562,13 @@ namespace MesDatas
             this.panel22.SuspendLayout();
             this.panel23.SuspendLayout();
             this.panel8.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewDynamic4)).BeginInit();
             this.panel25.SuspendLayout();
             this.panel2.SuspendLayout();
             this.groupBox11.SuspendLayout();
             this.panel7.SuspendLayout();
             this.groupBox10.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewDynamic2)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage6.SuspendLayout();
             this.panel20.SuspendLayout();
@@ -581,10 +585,6 @@ namespace MesDatas
             this.groupBox28.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView5)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewDynamic3)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewDynamic4)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewDynamic2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewDynamic1)).BeginInit();
             this.SuspendLayout();
             // 
             // skinEngine1
@@ -1005,10 +1005,10 @@ namespace MesDatas
             // 
             this.groupBox36.Controls.Add(this.btnShowPath_COM);
             this.groupBox36.Controls.Add(this.label82);
-            this.groupBox36.Controls.Add(this.cboPrintFormat_COM);
+            this.groupBox36.Controls.Add(this.cboFileFormat_COM);
             this.groupBox36.Controls.Add(this.btnPrint_COM);
             this.groupBox36.Controls.Add(this.btnSave_COM);
-            this.groupBox36.Controls.Add(this.lblPrnFilePath_COM);
+            this.groupBox36.Controls.Add(this.lblFilePath_COM);
             this.groupBox36.Controls.Add(this.label122);
             this.groupBox36.Controls.Add(this.btnChangePath_COM);
             resources.ApplyResources(this.groupBox36, "groupBox36");
@@ -1027,15 +1027,15 @@ namespace MesDatas
             resources.ApplyResources(this.label82, "label82");
             this.label82.Name = "label82";
             // 
-            // cboPrintFormat_COM
+            // cboFileFormat_COM
             // 
-            this.cboPrintFormat_COM.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboPrintFormat_COM.FormattingEnabled = true;
-            this.cboPrintFormat_COM.Items.AddRange(new object[] {
-            resources.GetString("cboPrintFormat_COM.Items"),
-            resources.GetString("cboPrintFormat_COM.Items1")});
-            resources.ApplyResources(this.cboPrintFormat_COM, "cboPrintFormat_COM");
-            this.cboPrintFormat_COM.Name = "cboPrintFormat_COM";
+            this.cboFileFormat_COM.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboFileFormat_COM.FormattingEnabled = true;
+            this.cboFileFormat_COM.Items.AddRange(new object[] {
+            resources.GetString("cboFileFormat_COM.Items"),
+            resources.GetString("cboFileFormat_COM.Items1")});
+            resources.ApplyResources(this.cboFileFormat_COM, "cboFileFormat_COM");
+            this.cboFileFormat_COM.Name = "cboFileFormat_COM";
             // 
             // btnPrint_COM
             // 
@@ -1051,10 +1051,10 @@ namespace MesDatas
             this.btnSave_COM.UseVisualStyleBackColor = true;
             this.btnSave_COM.Click += new System.EventHandler(this.btnSaveCOM_Click);
             // 
-            // lblPrnFilePath_COM
+            // lblFilePath_COM
             // 
-            resources.ApplyResources(this.lblPrnFilePath_COM, "lblPrnFilePath_COM");
-            this.lblPrnFilePath_COM.Name = "lblPrnFilePath_COM";
+            resources.ApplyResources(this.lblFilePath_COM, "lblFilePath_COM");
+            this.lblFilePath_COM.Name = "lblFilePath_COM";
             // 
             // label122
             // 
@@ -2436,6 +2436,18 @@ namespace MesDatas
             resources.ApplyResources(this.panel15, "panel15");
             this.panel15.Name = "panel15";
             // 
+            // dataGridViewDynamic1
+            // 
+            this.dataGridViewDynamic1.AllowUserToAddRows = false;
+            this.dataGridViewDynamic1.AllowUserToDeleteRows = false;
+            this.dataGridViewDynamic1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewDynamic1.ColumnKey = null;
+            resources.ApplyResources(this.dataGridViewDynamic1, "dataGridViewDynamic1");
+            this.dataGridViewDynamic1.Name = "dataGridViewDynamic1";
+            this.dataGridViewDynamic1.ReadOnly = true;
+            this.dataGridViewDynamic1.RowTemplate.Height = 23;
+            this.dataGridViewDynamic1.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGridViewDynamic1_RowPrePaint);
+            // 
             // panel12
             // 
             this.panel12.Controls.Add(this.tableLayoutPanel3);
@@ -2797,6 +2809,23 @@ namespace MesDatas
             this.groupBox31.Name = "groupBox31";
             this.groupBox31.TabStop = false;
             // 
+            // dataGridViewDynamic3
+            // 
+            this.dataGridViewDynamic3.AllowUserToAddRows = false;
+            this.dataGridViewDynamic3.AllowUserToDeleteRows = false;
+            this.dataGridViewDynamic3.AllowUserToResizeColumns = false;
+            this.dataGridViewDynamic3.AllowUserToResizeRows = false;
+            this.dataGridViewDynamic3.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dataGridViewDynamic3.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
+            this.dataGridViewDynamic3.BackgroundColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.dataGridViewDynamic3.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewDynamic3.ColumnKey = null;
+            resources.ApplyResources(this.dataGridViewDynamic3, "dataGridViewDynamic3");
+            this.dataGridViewDynamic3.GridColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.dataGridViewDynamic3.Name = "dataGridViewDynamic3";
+            this.dataGridViewDynamic3.RowHeadersVisible = false;
+            this.dataGridViewDynamic3.RowTemplate.Height = 25;
+            // 
             // groupBox8
             // 
             this.groupBox8.Controls.Add(this.lblProductResult);
@@ -3053,6 +3082,23 @@ namespace MesDatas
             resources.ApplyResources(this.panel8, "panel8");
             this.panel8.Name = "panel8";
             // 
+            // dataGridViewDynamic4
+            // 
+            this.dataGridViewDynamic4.AllowUserToAddRows = false;
+            this.dataGridViewDynamic4.AllowUserToDeleteRows = false;
+            this.dataGridViewDynamic4.AllowUserToResizeColumns = false;
+            this.dataGridViewDynamic4.AllowUserToResizeRows = false;
+            this.dataGridViewDynamic4.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dataGridViewDynamic4.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders;
+            this.dataGridViewDynamic4.BackgroundColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.dataGridViewDynamic4.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewDynamic4.ColumnKey = null;
+            resources.ApplyResources(this.dataGridViewDynamic4, "dataGridViewDynamic4");
+            this.dataGridViewDynamic4.GridColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.dataGridViewDynamic4.Name = "dataGridViewDynamic4";
+            this.dataGridViewDynamic4.RowHeadersVisible = false;
+            this.dataGridViewDynamic4.RowTemplate.Height = 23;
+            // 
             // panel25
             // 
             this.panel25.Controls.Add(this.panel2);
@@ -3177,6 +3223,19 @@ namespace MesDatas
             resources.ApplyResources(this.lblDeviceStatus, "lblDeviceStatus");
             this.lblDeviceStatus.ForeColor = System.Drawing.SystemColors.AppWorkspace;
             this.lblDeviceStatus.Name = "lblDeviceStatus";
+            // 
+            // dataGridViewDynamic2
+            // 
+            this.dataGridViewDynamic2.AllowUserToAddRows = false;
+            this.dataGridViewDynamic2.AllowUserToDeleteRows = false;
+            this.dataGridViewDynamic2.BackgroundColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.dataGridViewDynamic2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewDynamic2.ColumnKey = null;
+            resources.ApplyResources(this.dataGridViewDynamic2, "dataGridViewDynamic2");
+            this.dataGridViewDynamic2.GridColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.dataGridViewDynamic2.Name = "dataGridViewDynamic2";
+            this.dataGridViewDynamic2.RowHeadersVisible = false;
+            this.dataGridViewDynamic2.RowTemplate.Height = 23;
             // 
             // tabControl1
             // 
@@ -3497,65 +3556,6 @@ namespace MesDatas
             this.label7.ForeColor = System.Drawing.Color.Red;
             this.label7.Name = "label7";
             // 
-            // dataGridViewDynamic3
-            // 
-            this.dataGridViewDynamic3.AllowUserToAddRows = false;
-            this.dataGridViewDynamic3.AllowUserToDeleteRows = false;
-            this.dataGridViewDynamic3.AllowUserToResizeColumns = false;
-            this.dataGridViewDynamic3.AllowUserToResizeRows = false;
-            this.dataGridViewDynamic3.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.dataGridViewDynamic3.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
-            this.dataGridViewDynamic3.BackgroundColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.dataGridViewDynamic3.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridViewDynamic3.ColumnKey = null;
-            resources.ApplyResources(this.dataGridViewDynamic3, "dataGridViewDynamic3");
-            this.dataGridViewDynamic3.GridColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.dataGridViewDynamic3.Name = "dataGridViewDynamic3";
-            this.dataGridViewDynamic3.RowHeadersVisible = false;
-            this.dataGridViewDynamic3.RowTemplate.Height = 25;
-            // 
-            // dataGridViewDynamic4
-            // 
-            this.dataGridViewDynamic4.AllowUserToAddRows = false;
-            this.dataGridViewDynamic4.AllowUserToDeleteRows = false;
-            this.dataGridViewDynamic4.AllowUserToResizeColumns = false;
-            this.dataGridViewDynamic4.AllowUserToResizeRows = false;
-            this.dataGridViewDynamic4.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.dataGridViewDynamic4.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders;
-            this.dataGridViewDynamic4.BackgroundColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.dataGridViewDynamic4.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridViewDynamic4.ColumnKey = null;
-            resources.ApplyResources(this.dataGridViewDynamic4, "dataGridViewDynamic4");
-            this.dataGridViewDynamic4.GridColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.dataGridViewDynamic4.Name = "dataGridViewDynamic4";
-            this.dataGridViewDynamic4.RowHeadersVisible = false;
-            this.dataGridViewDynamic4.RowTemplate.Height = 23;
-            // 
-            // dataGridViewDynamic2
-            // 
-            this.dataGridViewDynamic2.AllowUserToAddRows = false;
-            this.dataGridViewDynamic2.AllowUserToDeleteRows = false;
-            this.dataGridViewDynamic2.BackgroundColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.dataGridViewDynamic2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridViewDynamic2.ColumnKey = null;
-            resources.ApplyResources(this.dataGridViewDynamic2, "dataGridViewDynamic2");
-            this.dataGridViewDynamic2.GridColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.dataGridViewDynamic2.Name = "dataGridViewDynamic2";
-            this.dataGridViewDynamic2.RowHeadersVisible = false;
-            this.dataGridViewDynamic2.RowTemplate.Height = 23;
-            // 
-            // dataGridViewDynamic1
-            // 
-            this.dataGridViewDynamic1.AllowUserToAddRows = false;
-            this.dataGridViewDynamic1.AllowUserToDeleteRows = false;
-            this.dataGridViewDynamic1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridViewDynamic1.ColumnKey = null;
-            resources.ApplyResources(this.dataGridViewDynamic1, "dataGridViewDynamic1");
-            this.dataGridViewDynamic1.Name = "dataGridViewDynamic1";
-            this.dataGridViewDynamic1.ReadOnly = true;
-            this.dataGridViewDynamic1.RowTemplate.Height = 23;
-            this.dataGridViewDynamic1.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGridViewDynamic1_RowPrePaint);
-            // 
             // Form1
             // 
             resources.ApplyResources(this, "$this");
@@ -3650,6 +3650,7 @@ namespace MesDatas
             this.groupBox4.ResumeLayout(false);
             this.panel14.ResumeLayout(false);
             this.panel15.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewDynamic1)).EndInit();
             this.panel12.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel3.PerformLayout();
@@ -3665,6 +3666,7 @@ namespace MesDatas
             this.panel10.ResumeLayout(false);
             this.panel13.ResumeLayout(false);
             this.groupBox31.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewDynamic3)).EndInit();
             this.groupBox8.ResumeLayout(false);
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
@@ -3683,12 +3685,14 @@ namespace MesDatas
             this.panel23.ResumeLayout(false);
             this.panel23.PerformLayout();
             this.panel8.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewDynamic4)).EndInit();
             this.panel25.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.groupBox11.ResumeLayout(false);
             this.panel7.ResumeLayout(false);
             this.groupBox10.ResumeLayout(false);
             this.groupBox10.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewDynamic2)).EndInit();
             this.tabControl1.ResumeLayout(false);
             this.tabPage6.ResumeLayout(false);
             this.panel20.ResumeLayout(false);
@@ -3712,10 +3716,6 @@ namespace MesDatas
             this.groupBox28.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView5)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewDynamic3)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewDynamic4)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewDynamic2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewDynamic1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -4061,7 +4061,7 @@ namespace MesDatas
         private System.Windows.Forms.TabPage tabPage17;
         private System.Windows.Forms.GroupBox groupBox35;
         private System.Windows.Forms.GroupBox groupBox36;
-        private System.Windows.Forms.Label lblPrnFilePath_COM;
+        private System.Windows.Forms.Label lblFilePath_COM;
         private System.Windows.Forms.Label label122;
         private System.Windows.Forms.Button btnChangePath_COM;
         private System.Windows.Forms.Label label125;
@@ -4090,7 +4090,7 @@ namespace MesDatas
         private System.Windows.Forms.Label label47;
         private System.Windows.Forms.ComboBox cboPrintFile_TCP;
         private System.Windows.Forms.Label label82;
-        private System.Windows.Forms.ComboBox cboPrintFormat_COM;
+        private System.Windows.Forms.ComboBox cboFileFormat_COM;
         private System.Windows.Forms.CheckBox chkAutoAddDate;
         private System.Windows.Forms.GroupBox groupBox41;
         private System.Windows.Forms.Label lblPrintPrompt;
