@@ -181,11 +181,11 @@ namespace MesDatas
             this.txtSN = new System.Windows.Forms.TextBox();
             this.txtBarcodeNumber = new System.Windows.Forms.TextBox();
             this.label38 = new System.Windows.Forms.Label();
-            this.lblBarcodeContent = new System.Windows.Forms.Label();
-            this.label50 = new System.Windows.Forms.Label();
             this.label48 = new System.Windows.Forms.Label();
             this.label52 = new System.Windows.Forms.Label();
+            this.lblBarcodeContent = new System.Windows.Forms.Label();
             this.label41 = new System.Windows.Forms.Label();
+            this.label50 = new System.Windows.Forms.Label();
             this.groupBox32 = new System.Windows.Forms.GroupBox();
             this.chkBypassBarcodeValidation = new System.Windows.Forms.CheckBox();
             this.chkGenerateBarcode = new System.Windows.Forms.CheckBox();
@@ -1551,11 +1551,11 @@ namespace MesDatas
             this.groupBox43.Controls.Add(this.txtSN);
             this.groupBox43.Controls.Add(this.txtBarcodeNumber);
             this.groupBox43.Controls.Add(this.label38);
-            this.groupBox43.Controls.Add(this.lblBarcodeContent);
-            this.groupBox43.Controls.Add(this.label50);
             this.groupBox43.Controls.Add(this.label48);
             this.groupBox43.Controls.Add(this.label52);
+            this.groupBox43.Controls.Add(this.lblBarcodeContent);
             this.groupBox43.Controls.Add(this.label41);
+            this.groupBox43.Controls.Add(this.label50);
             resources.ApplyResources(this.groupBox43, "groupBox43");
             this.groupBox43.Name = "groupBox43";
             this.groupBox43.TabStop = false;
@@ -1582,16 +1582,6 @@ namespace MesDatas
             this.label38.ForeColor = System.Drawing.Color.Red;
             this.label38.Name = "label38";
             // 
-            // lblBarcodeContent
-            // 
-            resources.ApplyResources(this.lblBarcodeContent, "lblBarcodeContent");
-            this.lblBarcodeContent.Name = "lblBarcodeContent";
-            // 
-            // label50
-            // 
-            resources.ApplyResources(this.label50, "label50");
-            this.label50.Name = "label50";
-            // 
             // label48
             // 
             resources.ApplyResources(this.label48, "label48");
@@ -1603,10 +1593,20 @@ namespace MesDatas
             resources.ApplyResources(this.label52, "label52");
             this.label52.Name = "label52";
             // 
+            // lblBarcodeContent
+            // 
+            resources.ApplyResources(this.lblBarcodeContent, "lblBarcodeContent");
+            this.lblBarcodeContent.Name = "lblBarcodeContent";
+            // 
             // label41
             // 
             resources.ApplyResources(this.label41, "label41");
             this.label41.Name = "label41";
+            // 
+            // label50
+            // 
+            resources.ApplyResources(this.label50, "label50");
+            this.label50.Name = "label50";
             // 
             // groupBox32
             // 

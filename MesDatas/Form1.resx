@@ -4123,7 +4123,7 @@ ADM=5
     <value>654, 541</value>
   </data>
   <data name="groupBox44.Size" type="System.Drawing.Size, System.Drawing">
-    <value>673, 213</value>
+    <value>673, 262</value>
   </data>
   <data name="groupBox44.TabIndex" type="System.Int32, mscorlib">
     <value>87</value>
@@ -4177,7 +4177,7 @@ ADM=5
     <value>0</value>
   </data>
   <data name="txtSN.Location" type="System.Drawing.Point, System.Drawing">
-    <value>93, 163</value>
+    <value>410, 112</value>
   </data>
   <data name="txtSN.Size" type="System.Drawing.Size, System.Drawing">
     <value>180, 35</value>
@@ -4201,7 +4201,7 @@ ADM=5
     <value>92, 112</value>
   </data>
   <data name="txtBarcodeNumber.Size" type="System.Drawing.Size, System.Drawing">
-    <value>181, 35</value>
+    <value>220, 35</value>
   </data>
   <data name="txtBarcodeNumber.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -4251,66 +4251,6 @@ ADM=5
   <data name="&gt;&gt;label38.ZOrder" xml:space="preserve">
     <value>3</value>
   </data>
-  <data name="lblBarcodeContent.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="lblBarcodeContent.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="lblBarcodeContent.Location" type="System.Drawing.Point, System.Drawing">
-    <value>400, 115</value>
-  </data>
-  <data name="lblBarcodeContent.Size" type="System.Drawing.Size, System.Drawing">
-    <value>71, 30</value>
-  </data>
-  <data name="lblBarcodeContent.TabIndex" type="System.Int32, mscorlib">
-    <value>2</value>
-  </data>
-  <data name="lblBarcodeContent.Text" xml:space="preserve">
-    <value>None</value>
-  </data>
-  <data name="&gt;&gt;lblBarcodeContent.Name" xml:space="preserve">
-    <value>lblBarcodeContent</value>
-  </data>
-  <data name="&gt;&gt;lblBarcodeContent.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;lblBarcodeContent.Parent" xml:space="preserve">
-    <value>groupBox43</value>
-  </data>
-  <data name="&gt;&gt;lblBarcodeContent.ZOrder" xml:space="preserve">
-    <value>4</value>
-  </data>
-  <data name="label50.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="label50.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="label50.Location" type="System.Drawing.Point, System.Drawing">
-    <value>289, 115</value>
-  </data>
-  <data name="label50.Size" type="System.Drawing.Size, System.Drawing">
-    <value>123, 30</value>
-  </data>
-  <data name="label50.TabIndex" type="System.Int32, mscorlib">
-    <value>2</value>
-  </data>
-  <data name="label50.Text" xml:space="preserve">
-    <value>当前条码：</value>
-  </data>
-  <data name="&gt;&gt;label50.Name" xml:space="preserve">
-    <value>label50</value>
-  </data>
-  <data name="&gt;&gt;label50.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;label50.Parent" xml:space="preserve">
-    <value>groupBox43</value>
-  </data>
-  <data name="&gt;&gt;label50.ZOrder" xml:space="preserve">
-    <value>5</value>
-  </data>
   <data name="label48.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
@@ -4321,7 +4261,7 @@ ADM=5
     <value>NoControl</value>
   </data>
   <data name="label48.Location" type="System.Drawing.Point, System.Drawing">
-    <value>276, 171</value>
+    <value>356, 238</value>
   </data>
   <data name="label48.Size" type="System.Drawing.Size, System.Drawing">
     <value>255, 24</value>
@@ -4342,7 +4282,7 @@ ADM=5
     <value>groupBox43</value>
   </data>
   <data name="&gt;&gt;label48.ZOrder" xml:space="preserve">
-    <value>6</value>
+    <value>4</value>
   </data>
   <data name="label52.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -4351,7 +4291,7 @@ ADM=5
     <value>NoControl</value>
   </data>
   <data name="label52.Location" type="System.Drawing.Point, System.Drawing">
-    <value>10, 167</value>
+    <value>327, 116</value>
   </data>
   <data name="label52.Size" type="System.Drawing.Size, System.Drawing">
     <value>101, 30</value>
@@ -4372,7 +4312,37 @@ ADM=5
     <value>groupBox43</value>
   </data>
   <data name="&gt;&gt;label52.ZOrder" xml:space="preserve">
-    <value>7</value>
+    <value>5</value>
+  </data>
+  <data name="lblBarcodeContent.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="lblBarcodeContent.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="lblBarcodeContent.Location" type="System.Drawing.Point, System.Drawing">
+    <value>139, 163</value>
+  </data>
+  <data name="lblBarcodeContent.Size" type="System.Drawing.Size, System.Drawing">
+    <value>71, 30</value>
+  </data>
+  <data name="lblBarcodeContent.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="lblBarcodeContent.Text" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="&gt;&gt;lblBarcodeContent.Name" xml:space="preserve">
+    <value>lblBarcodeContent</value>
+  </data>
+  <data name="&gt;&gt;lblBarcodeContent.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblBarcodeContent.Parent" xml:space="preserve">
+    <value>groupBox43</value>
+  </data>
+  <data name="&gt;&gt;lblBarcodeContent.ZOrder" xml:space="preserve">
+    <value>6</value>
   </data>
   <data name="label41.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -4402,13 +4372,43 @@ ADM=5
     <value>groupBox43</value>
   </data>
   <data name="&gt;&gt;label41.ZOrder" xml:space="preserve">
+    <value>7</value>
+  </data>
+  <data name="label50.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="label50.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="label50.Location" type="System.Drawing.Point, System.Drawing">
+    <value>28, 163</value>
+  </data>
+  <data name="label50.Size" type="System.Drawing.Size, System.Drawing">
+    <value>123, 30</value>
+  </data>
+  <data name="label50.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="label50.Text" xml:space="preserve">
+    <value>当前条码：</value>
+  </data>
+  <data name="&gt;&gt;label50.Name" xml:space="preserve">
+    <value>label50</value>
+  </data>
+  <data name="&gt;&gt;label50.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;label50.Parent" xml:space="preserve">
+    <value>groupBox43</value>
+  </data>
+  <data name="&gt;&gt;label50.ZOrder" xml:space="preserve">
     <value>8</value>
   </data>
   <data name="groupBox43.Location" type="System.Drawing.Point, System.Drawing">
     <value>23, 541</value>
   </data>
   <data name="groupBox43.Size" type="System.Drawing.Size, System.Drawing">
-    <value>611, 213</value>
+    <value>611, 265</value>
   </data>
   <data name="groupBox43.TabIndex" type="System.Int32, mscorlib">
     <value>86</value>
@@ -5014,7 +5014,7 @@ ADM=5
     <value>NoControl</value>
   </data>
   <data name="btnSaveAtSystemSetting.Location" type="System.Drawing.Point, System.Drawing">
-    <value>23, 759</value>
+    <value>36, 811</value>
   </data>
   <data name="btnSaveAtSystemSetting.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>2, 2, 2, 2</value>

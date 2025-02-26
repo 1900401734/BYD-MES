@@ -17,7 +17,7 @@ namespace MesDatas.DatasModel
         #region ---------- 点位合集 ----------
 
         /// <summary>
-        /// 一般情况下为D100，用户可自定义
+        /// 一般情况下为D1000，用户可自定义
         /// </summary>
         [SugarColumn(ColumnName = "BarcodeStartPLC", IsNullable = true)]
         [DisplayName("开始读取点位")]
