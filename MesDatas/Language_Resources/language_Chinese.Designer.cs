@@ -106,6 +106,24 @@ namespace MesDatas.Language_Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to (*.btw)|*.btw.
+        /// </summary>
+        public static string cboFileFormat_TCP_Items {
+            get {
+                return ResourceManager.GetString("cboFileFormat_TCP.Items", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to (*.prn)|*.prn.
+        /// </summary>
+        public static string cboFileFormat_TCP_Items1 {
+            get {
+                return ResourceManager.GetString("cboFileFormat_TCP.Items1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 请检查联机参数.
         /// </summary>
         public static string Check_param {

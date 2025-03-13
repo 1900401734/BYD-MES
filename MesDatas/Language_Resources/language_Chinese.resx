@@ -352,4 +352,10 @@
   <data name="SystemDefaultDataNotDel" xml:space="preserve">
     <value>系统默认数据，不能删除</value>
   </data>
+  <data name="cboFileFormat_TCP.Items" xml:space="preserve">
+    <value>(*.btw)|*.btw</value>
+  </data>
+  <data name="cboFileFormat_TCP.Items1" xml:space="preserve">
+    <value>(*.prn)|*.prn</value>
+  </data>
 </root>

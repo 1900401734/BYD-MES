@@ -12,38 +12,56 @@ namespace MesDatas.DatasModel
         [SugarColumn(ColumnName = "LanguageId", DefaultValue = "0")]
         public int LanguageId { get; set; }      // 语言ID 
 
+        /// <summary>
+        /// 设备状态：D1007
+        /// </summary>
         [SugarColumn(ColumnName = "DeviceStatus", IsNullable = true)]
         public string DeviceStatusPoint { get; set; }      // 设备状态 
 
+        /// <summary>
+        /// 产品型号：D1120
+        /// </summary>
         [SugarColumn(ColumnName = "ProductModelNum", IsNullable = true)]
         public string ProductModelPoint { get; set; }       // 产品型号 
 
+        /// <summary>
+        /// 型号长度：10
+        /// </summary>
         [SugarColumn(ColumnName = "ProductModelLength", IsNullable = true)]
-        public string ProductModelLength { get; set; }    // 型号长度 
-
-        [SugarColumn(ColumnName = "FormulaNum", IsNullable = true)]
-        public string RecipeIdPoint { get; set; }    // 配方号 
+        public string ProductModelLength { get; set; }
 
         /// <summary>
-        /// D1204
+        /// 配方号：D1208
+        /// </summary>
+        [SugarColumn(ColumnName = "FormulaNum", IsNullable = true)]
+        public string RecipeIdPoint { get; set; }
+
+        /// <summary>
+        /// 配方修改：D1204
         /// </summary>
         [SugarColumn(ColumnName = "FormulaModify", IsNullable = true)]
-        public string ModifyRecipePoint { get; set; }     // 配方修改 
+        public string ModifyRecipePoint { get; set; }
 
         /// <summary>
-        /// D1206
+        /// 配方号修改：D1206
         /// </summary>
         [SugarColumn(ColumnName = "FormulaNumModify", IsNullable = true)]
-        public string ModifyRecipeIDPoint { get; set; }      // 配方号修改 
+        public string ModifyRecipeIDPoint { get; set; }
 
         [SugarColumn(ColumnName = "StartNFC", IsNullable = true)]
-        public string StartNFCPoint { get; set; } // 开始NFC
+        public string StartNFCPoint { get; set; }
 
+        /// <summary>
+        /// 刷卡返回：D18040
+        /// </summary>
         [SugarColumn(ColumnName = "EndNFC", IsNullable = true)]
-        public string EndNFCPoint { get; set; } // 结束NFC 默认：D18040
+        public string EndNFCPoint { get; set; }
 
+        /// <summary>
+        /// 看板连接状态
+        /// </summary>
         [SugarColumn(ColumnName = "ViewStatus", IsNullable = true)]
-        public string DashboardStatusPoint { get; set; }    // 看板连接状态
+        public string DashboardStatusPoint { get; set; }
 
         public static DeviceInformation DeviceInformationInitalize()
         {

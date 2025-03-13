@@ -218,17 +218,17 @@ namespace MesDatas.DatasModel
                 BarcodeLengthPLC = "10";
             }
 
-            return BarcodeVefictnServer.GetBarcodeVefictnSave(this);
+            return BarcodeVerificationServer.SaveBarcodeVerification(this);
         }
 
         public string Update()
         {
-            return BarcodeVefictnServer.GetBarcodeVefictnUpdate(this);
+            return BarcodeVerificationServer.UpdateBarcodeVerification(this);
         }
 
         public string Delete()
         {
-            return BarcodeVefictnServer.GetBarcodeVefictnDelete(this);
+            return BarcodeVerificationServer.DeleteBarcodeVerification(this);
         }
     }
 }
