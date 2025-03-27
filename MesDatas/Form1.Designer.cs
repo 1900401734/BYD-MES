@@ -37,7 +37,7 @@ namespace MesDatas
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.skinEngine1 = new Sunisoft.IrisSkin.SkinEngine(((System.ComponentModel.Component)(this)));
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.tabControl4 = new System.Windows.Forms.TabControl();
@@ -159,11 +159,10 @@ namespace MesDatas
             this.chkBypassBarcodeValidation = new System.Windows.Forms.CheckBox();
             this.chkGenerateBarcode = new System.Windows.Forms.CheckBox();
             this.chkBanLocalHistoricalData = new System.Windows.Forms.CheckBox();
-            this.chkAutoBarcodeWithoutVerify = new System.Windows.Forms.CheckBox();
-            this.chkBypassLocalNgHistoricalData = new System.Windows.Forms.CheckBox();
+            this.chkBanNGDataVerify = new System.Windows.Forms.CheckBox();
             this.chkBanBarcodeVerificationLocally = new System.Windows.Forms.CheckBox();
             this.chkBypassFixtureValidation = new System.Windows.Forms.CheckBox();
-            this.chkBypassQRcodeValidation = new System.Windows.Forms.CheckBox();
+            this.chkBanQRcodeValidation = new System.Windows.Forms.CheckBox();
             this.chkReadBarcodeSecondly = new System.Windows.Forms.CheckBox();
             this.groupBox29 = new System.Windows.Forms.GroupBox();
             this.label99 = new System.Windows.Forms.Label();
@@ -1028,10 +1027,10 @@ namespace MesDatas
             // Column2
             // 
             this.Column2.DataPropertyName = "用户密码";
-            dataGridViewCellStyle4.Format = "*****";
-            dataGridViewCellStyle4.NullValue = "#";
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.Column2.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle1.Format = "*****";
+            dataGridViewCellStyle1.NullValue = "#";
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.Column2.DefaultCellStyle = dataGridViewCellStyle1;
             resources.ApplyResources(this.Column2, "Column2");
             this.Column2.Name = "Column2";
             this.Column2.ReadOnly = true;
@@ -1369,11 +1368,10 @@ namespace MesDatas
             this.groupBox32.Controls.Add(this.chkBypassBarcodeValidation);
             this.groupBox32.Controls.Add(this.chkGenerateBarcode);
             this.groupBox32.Controls.Add(this.chkBanLocalHistoricalData);
-            this.groupBox32.Controls.Add(this.chkAutoBarcodeWithoutVerify);
-            this.groupBox32.Controls.Add(this.chkBypassLocalNgHistoricalData);
+            this.groupBox32.Controls.Add(this.chkBanNGDataVerify);
             this.groupBox32.Controls.Add(this.chkBanBarcodeVerificationLocally);
             this.groupBox32.Controls.Add(this.chkBypassFixtureValidation);
-            this.groupBox32.Controls.Add(this.chkBypassQRcodeValidation);
+            this.groupBox32.Controls.Add(this.chkBanQRcodeValidation);
             this.groupBox32.Controls.Add(this.chkReadBarcodeSecondly);
             resources.ApplyResources(this.groupBox32, "groupBox32");
             this.groupBox32.Name = "groupBox32";
@@ -1397,17 +1395,11 @@ namespace MesDatas
             this.chkBanLocalHistoricalData.Name = "chkBanLocalHistoricalData";
             this.chkBanLocalHistoricalData.UseVisualStyleBackColor = true;
             // 
-            // chkAutoBarcodeWithoutVerify
+            // chkBanNGDataVerify
             // 
-            resources.ApplyResources(this.chkAutoBarcodeWithoutVerify, "chkAutoBarcodeWithoutVerify");
-            this.chkAutoBarcodeWithoutVerify.Name = "chkAutoBarcodeWithoutVerify";
-            this.chkAutoBarcodeWithoutVerify.UseVisualStyleBackColor = true;
-            // 
-            // chkBypassLocalNgHistoricalData
-            // 
-            resources.ApplyResources(this.chkBypassLocalNgHistoricalData, "chkBypassLocalNgHistoricalData");
-            this.chkBypassLocalNgHistoricalData.Name = "chkBypassLocalNgHistoricalData";
-            this.chkBypassLocalNgHistoricalData.UseVisualStyleBackColor = true;
+            resources.ApplyResources(this.chkBanNGDataVerify, "chkBanNGDataVerify");
+            this.chkBanNGDataVerify.Name = "chkBanNGDataVerify";
+            this.chkBanNGDataVerify.UseVisualStyleBackColor = true;
             // 
             // chkBanBarcodeVerificationLocally
             // 
@@ -1421,11 +1413,11 @@ namespace MesDatas
             this.chkBypassFixtureValidation.Name = "chkBypassFixtureValidation";
             this.chkBypassFixtureValidation.UseVisualStyleBackColor = true;
             // 
-            // chkBypassQRcodeValidation
+            // chkBanQRcodeValidation
             // 
-            resources.ApplyResources(this.chkBypassQRcodeValidation, "chkBypassQRcodeValidation");
-            this.chkBypassQRcodeValidation.Name = "chkBypassQRcodeValidation";
-            this.chkBypassQRcodeValidation.UseVisualStyleBackColor = true;
+            resources.ApplyResources(this.chkBanQRcodeValidation, "chkBanQRcodeValidation");
+            this.chkBanQRcodeValidation.Name = "chkBanQRcodeValidation";
+            this.chkBanQRcodeValidation.UseVisualStyleBackColor = true;
             // 
             // chkReadBarcodeSecondly
             // 
@@ -3585,12 +3577,6 @@ namespace MesDatas
         private System.Windows.Forms.DataGridView dgvPLCPointInfo;
         private System.Windows.Forms.Button button23;
         private System.Windows.Forms.Panel panel19;
-        private System.Windows.Forms.Label label45;
-        private System.Windows.Forms.Button btnSearchReaderPort;
-        private System.Windows.Forms.ComboBox cmbShowPort;
-        private System.Windows.Forms.TextBox tbxReaderDeviceID;
-        private System.Windows.Forms.Label label49;
-        private System.Windows.Forms.Label label91;
         private System.Windows.Forms.TextBox txtDisplayWidth;
         private System.Windows.Forms.Label label78;
         private System.Windows.Forms.CheckBox chkBypassBarcodeValidation;
@@ -3705,8 +3691,8 @@ namespace MesDatas
         private System.Windows.Forms.DataGridView dataGridView6;
         private System.Windows.Forms.GroupBox groupBox27;
         private System.Windows.Forms.GroupBox groupBox18;
-        private System.Windows.Forms.CheckBox chkBypassQRcodeValidation;
-        private System.Windows.Forms.CheckBox chkBypassLocalNgHistoricalData;
+        private System.Windows.Forms.CheckBox chkBanQRcodeValidation;
+        private System.Windows.Forms.CheckBox chkBanNGDataVerify;
         private System.Windows.Forms.CheckBox chkBanLocalHistoricalData;
         private System.Windows.Forms.TabControl tabControl3;
         private System.Windows.Forms.TabPage tabPage12;
@@ -3805,7 +3791,6 @@ namespace MesDatas
         private System.Windows.Forms.Label label70;
         private System.Windows.Forms.Label label85;
         private System.Windows.Forms.Label label109;
-        private System.Windows.Forms.CheckBox chkAutoBarcodeWithoutVerify;
         private System.Windows.Forms.CheckBox chkBanBarcodeVerificationLocally;
         private System.Windows.Forms.GroupBox groupBox44;
         private System.Windows.Forms.Label label115;
@@ -3861,6 +3846,12 @@ namespace MesDatas
         private System.Windows.Forms.GroupBox groupBox45;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label label47;
+        private System.Windows.Forms.TextBox tbxReaderDeviceID;
+        private System.Windows.Forms.Button btnSearchReaderPort;
+        private System.Windows.Forms.ComboBox cmbShowPort;
+        private System.Windows.Forms.Label label49;
+        private System.Windows.Forms.Label label45;
+        private System.Windows.Forms.Label label91;
     }
 }
 

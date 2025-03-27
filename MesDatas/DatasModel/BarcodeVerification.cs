@@ -128,7 +128,7 @@ namespace MesDatas.DatasModel
         /// </summary>
         [SugarColumn(ColumnName = "BarcodeVerS", IsNullable = true)]
         [DisplayName("条码验证")]
-        public bool BarcodeVerS { get; set; }           // 条码验证 
+        public bool IsEnableBarcodeVerify { get; set; } // 条码验证 
 
         /// <summary>
         /// 二维码验证
@@ -172,7 +172,7 @@ namespace MesDatas.DatasModel
             // 7. MES条码验证失败
             bv.MesErrorPrompt = "MES条码验证失败";
             // 条码验证
-            bv.BarcodeVerS = true;
+            bv.IsEnableBarcodeVerify = true;
             // 二维码验证
             bv.IsEnableQRcodeVerify = false;
 

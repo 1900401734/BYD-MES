@@ -9705,71 +9705,38 @@ ADM=5
   <data name="&gt;&gt;chkBanLocalHistoricalData.ZOrder" xml:space="preserve">
     <value>2</value>
   </data>
-  <data name="chkAutoBarcodeWithoutVerify.AutoSize" type="System.Boolean, mscorlib">
+  <data name="chkBanNGDataVerify.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
-  <data name="chkAutoBarcodeWithoutVerify.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+  <data name="chkBanNGDataVerify.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
   </data>
-  <data name="chkAutoBarcodeWithoutVerify.Location" type="System.Drawing.Point, System.Drawing">
-    <value>304, 131</value>
-  </data>
-  <data name="chkAutoBarcodeWithoutVerify.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 4, 4, 4</value>
-  </data>
-  <data name="chkAutoBarcodeWithoutVerify.Size" type="System.Drawing.Size, System.Drawing">
-    <value>369, 34</value>
-  </data>
-  <data name="chkAutoBarcodeWithoutVerify.TabIndex" type="System.Int32, mscorlib">
-    <value>83</value>
-  </data>
-  <data name="chkAutoBarcodeWithoutVerify.Text" xml:space="preserve">
-    <value>自动生成条码（不包含条码验证）</value>
-  </data>
-  <data name="&gt;&gt;chkAutoBarcodeWithoutVerify.Name" xml:space="preserve">
-    <value>chkAutoBarcodeWithoutVerify</value>
-  </data>
-  <data name="&gt;&gt;chkAutoBarcodeWithoutVerify.Type" xml:space="preserve">
-    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;chkAutoBarcodeWithoutVerify.Parent" xml:space="preserve">
-    <value>groupBox32</value>
-  </data>
-  <data name="&gt;&gt;chkAutoBarcodeWithoutVerify.ZOrder" xml:space="preserve">
-    <value>3</value>
-  </data>
-  <data name="chkBypassLocalNgHistoricalData.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="chkBypassLocalNgHistoricalData.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="chkBypassLocalNgHistoricalData.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="chkBanNGDataVerify.Location" type="System.Drawing.Point, System.Drawing">
     <value>16, 180</value>
   </data>
-  <data name="chkBypassLocalNgHistoricalData.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+  <data name="chkBanNGDataVerify.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 4, 4, 4</value>
   </data>
-  <data name="chkBypassLocalNgHistoricalData.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="chkBanNGDataVerify.Size" type="System.Drawing.Size, System.Drawing">
     <value>205, 34</value>
   </data>
-  <data name="chkBypassLocalNgHistoricalData.TabIndex" type="System.Int32, mscorlib">
+  <data name="chkBanNGDataVerify.TabIndex" type="System.Int32, mscorlib">
     <value>83</value>
   </data>
-  <data name="chkBypassLocalNgHistoricalData.Text" xml:space="preserve">
+  <data name="chkBanNGDataVerify.Text" xml:space="preserve">
     <value>屏蔽NG数据验证</value>
   </data>
-  <data name="&gt;&gt;chkBypassLocalNgHistoricalData.Name" xml:space="preserve">
-    <value>chkBypassLocalNgHistoricalData</value>
+  <data name="&gt;&gt;chkBanNGDataVerify.Name" xml:space="preserve">
+    <value>chkBanNGDataVerify</value>
   </data>
-  <data name="&gt;&gt;chkBypassLocalNgHistoricalData.Type" xml:space="preserve">
+  <data name="&gt;&gt;chkBanNGDataVerify.Type" xml:space="preserve">
     <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;chkBypassLocalNgHistoricalData.Parent" xml:space="preserve">
+  <data name="&gt;&gt;chkBanNGDataVerify.Parent" xml:space="preserve">
     <value>groupBox32</value>
   </data>
-  <data name="&gt;&gt;chkBypassLocalNgHistoricalData.ZOrder" xml:space="preserve">
-    <value>4</value>
+  <data name="&gt;&gt;chkBanNGDataVerify.ZOrder" xml:space="preserve">
+    <value>3</value>
   </data>
   <data name="chkBanBarcodeVerificationLocally.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -9802,7 +9769,7 @@ ADM=5
     <value>groupBox32</value>
   </data>
   <data name="&gt;&gt;chkBanBarcodeVerificationLocally.ZOrder" xml:space="preserve">
-    <value>5</value>
+    <value>4</value>
   </data>
   <data name="chkBypassFixtureValidation.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -9835,43 +9802,43 @@ ADM=5
     <value>groupBox32</value>
   </data>
   <data name="&gt;&gt;chkBypassFixtureValidation.ZOrder" xml:space="preserve">
-    <value>6</value>
+    <value>5</value>
   </data>
-  <data name="chkBypassQRcodeValidation.AutoSize" type="System.Boolean, mscorlib">
+  <data name="chkBanQRcodeValidation.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
-  <data name="chkBypassQRcodeValidation.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+  <data name="chkBanQRcodeValidation.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
   </data>
-  <data name="chkBypassQRcodeValidation.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="chkBanQRcodeValidation.Location" type="System.Drawing.Point, System.Drawing">
     <value>16, 267</value>
   </data>
-  <data name="chkBypassQRcodeValidation.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+  <data name="chkBanQRcodeValidation.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 4, 4, 4</value>
   </data>
-  <data name="chkBypassQRcodeValidation.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="chkBanQRcodeValidation.Size" type="System.Drawing.Size, System.Drawing">
     <value>193, 34</value>
   </data>
-  <data name="chkBypassQRcodeValidation.TabIndex" type="System.Int32, mscorlib">
+  <data name="chkBanQRcodeValidation.TabIndex" type="System.Int32, mscorlib">
     <value>82</value>
   </data>
-  <data name="chkBypassQRcodeValidation.Text" xml:space="preserve">
+  <data name="chkBanQRcodeValidation.Text" xml:space="preserve">
     <value>屏蔽二维码验证</value>
   </data>
-  <data name="chkBypassQRcodeValidation.Visible" type="System.Boolean, mscorlib">
+  <data name="chkBanQRcodeValidation.Visible" type="System.Boolean, mscorlib">
     <value>False</value>
   </data>
-  <data name="&gt;&gt;chkBypassQRcodeValidation.Name" xml:space="preserve">
-    <value>chkBypassQRcodeValidation</value>
+  <data name="&gt;&gt;chkBanQRcodeValidation.Name" xml:space="preserve">
+    <value>chkBanQRcodeValidation</value>
   </data>
-  <data name="&gt;&gt;chkBypassQRcodeValidation.Type" xml:space="preserve">
+  <data name="&gt;&gt;chkBanQRcodeValidation.Type" xml:space="preserve">
     <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;chkBypassQRcodeValidation.Parent" xml:space="preserve">
+  <data name="&gt;&gt;chkBanQRcodeValidation.Parent" xml:space="preserve">
     <value>groupBox32</value>
   </data>
-  <data name="&gt;&gt;chkBypassQRcodeValidation.ZOrder" xml:space="preserve">
-    <value>7</value>
+  <data name="&gt;&gt;chkBanQRcodeValidation.ZOrder" xml:space="preserve">
+    <value>6</value>
   </data>
   <data name="chkReadBarcodeSecondly.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -9904,7 +9871,7 @@ ADM=5
     <value>groupBox32</value>
   </data>
   <data name="&gt;&gt;chkReadBarcodeSecondly.ZOrder" xml:space="preserve">
-    <value>8</value>
+    <value>7</value>
   </data>
   <data name="groupBox32.Location" type="System.Drawing.Point, System.Drawing">
     <value>654, 223</value>

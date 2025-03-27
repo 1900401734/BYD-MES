@@ -9,10 +9,12 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Resources;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -84,6 +86,14 @@ namespace MesDatas
             InitMesDatasBD();   // 初始化表格
 
             GetUpdateExe();     // 检查更新
+
+            tbx_userID.GotFocus += Tbx_userID_GotFocus;
+        }
+
+        private void Tbx_userID_GotFocus(object sender, EventArgs e)
+        {
+            // 切换输入法为英文（美国键盘）
+            InputLanguage.CurrentInputLanguage = InputLanguage.FromCulture(new CultureInfo("en-US"));
         }
 
         public async void InitMesDatasBD()
@@ -713,7 +723,5 @@ namespace MesDatas
             }
 
         }
-
-
     }
 }

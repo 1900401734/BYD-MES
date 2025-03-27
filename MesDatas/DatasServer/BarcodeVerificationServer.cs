@@ -11,7 +11,7 @@ namespace MesDatas.DatasServer
 {
     public class BarcodeVerificationServer
     {
-        // 初始化 BarcodeVefictn 
+        // 初始化 BarcodeVerificationServer 
         public static void InitBarcodeVerification()
         {
             try

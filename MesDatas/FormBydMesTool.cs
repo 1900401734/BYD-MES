@@ -73,7 +73,6 @@ namespace BydMesTool
 
         }
 
-
         public void SaveParameter()
         {
             // mes config
@@ -117,7 +116,9 @@ namespace BydMesTool
         }
 
         public string MesUserCheck { get { return UserCheckCmd.Text; } }
+
         public string MesBarCodeCheck { get { return CodeCheckCmd.Text; } }
+
         public string MesBarCodeSend { get { return CodeSendCmd.Text; } }
 
         public void UsersVarify(out bool 验证结果, out string MES反馈, out string XMLOUT)
@@ -147,7 +148,7 @@ namespace BydMesTool
 
         private void Barcode_Click(object sender, EventArgs e)
         {
-            string 产品条码 = textBox1.Text; 
+            string 产品条码 = textBox1.Text;
             bool 验证结果;
             string MES反馈;
             string XMLOUT;
@@ -156,7 +157,7 @@ namespace BydMesTool
 
         private void CodeVarify_Click(object sender, EventArgs e)
         {
-            bool 测试结果 = false; string 产品条码 = textBox1.Text;  string 文件版本 = "00"; string 软件版本 = "01"; string 测试项 = richTextBox1.Text; bool 验证结果; string MES反馈; string XMLOUT;
+            bool 测试结果 = false; string 产品条码 = textBox1.Text; string 文件版本 = "00"; string 软件版本 = "01"; string 测试项 = richTextBox1.Text; bool 验证结果; string MES反馈; string XMLOUT;
             UpDateToMes(测试结果, 产品条码, 文件版本, 软件版本, 测试项, out 验证结果, out MES反馈, out XMLOUT);
         }
 
