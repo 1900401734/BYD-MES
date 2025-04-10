@@ -50,18 +50,20 @@ namespace MesDatas
         IniFiles ini_user = new IniFiles(Application.StartupPath + @"Userdata.INI");
         public Stopwatch sw = new Stopwatch();
         MDBHelper mdb = null;
-        public static string path4 = System.AppDomain.CurrentDomain.BaseDirectory + "SystemDateBase.mdb";
-        public static string xmlPath = System.AppDomain.CurrentDomain.BaseDirectory + "\\xml\\AddSql.xml";
+        public static string path4 = $"{System.AppDomain.CurrentDomain.BaseDirectory}SystemDateBase.mdb";
+        //public static string xmlPath = $"{System.AppDomain.CurrentDomain.BaseDirectory}xml\\AddSql.xml";
         public static string userFileuRL = "D:\\BYD_Users\\Users_Data.MDB";
         public static SytemSetEntity sytemSet = null;
         public static List<UserInfoEntity> user = null;
         public string loginUserName;
+
         public enum Language
         {
             ChineseSimplified,//简体中文
             English, //英语
             Thai //泰语
         }
+
         //当前选择的语言
         private Language CurrentSelectedLanguage = Language.ChineseSimplified;
 
@@ -77,8 +79,6 @@ namespace MesDatas
                 addUserMdb(userFileuRL);
             }
 
-            updateDataBase();   // 更新数据库
-
             GetDeviceName();    // 获取设备名称信息
 
             GetUserInfo();      // 获取用户信息
@@ -87,13 +87,6 @@ namespace MesDatas
 
             GetUpdateExe();     // 检查更新
 
-            tbx_userID.GotFocus += Tbx_userID_GotFocus;
-        }
-
-        private void Tbx_userID_GotFocus(object sender, EventArgs e)
-        {
-            // 切换输入法为英文（美国键盘）
-            InputLanguage.CurrentInputLanguage = InputLanguage.FromCulture(new CultureInfo("en-US"));
         }
 
         public async void InitMesDatasBD()
@@ -180,39 +173,40 @@ namespace MesDatas
 
         public void Fwelcome_Load(object sender, EventArgs e)
         {
-            tbx_userID.Focus();
-            tbx_userID.Select();
-            this.label4.Text = sytemSet.DeviceName;
+            tbxUserID.Focus();
+            tbxUserID.Select();
+
+            lblDeviceName.Text = sytemSet.DeviceName;
 
             FontStyle fontStyle = FontStyle.Bold;//设置字体粗细
             float size = 42F;//字体大小
-            changeLabelFont(label4, size, fontStyle);//内字体随着字数的增加而自动减小
+            changeLabelFont(lblDeviceName, size, fontStyle);//内字体随着字数的增加而自动减小
 
             ////设置combobox的值
             string language = Properties.Settings.Default.DefaultLanguage;
             if (language == "zh-CN")
             {
-                cbxCurrentLanguage.SelectedIndex = 0;
+                cboCurrentLanguage.SelectedIndex = 0;
                 rm = new ResourceManager("MesDatas.Language_Resources.language_Chinese", asm);
             }
             else if (language == "en-US")
             {
-                cbxCurrentLanguage.SelectedIndex = 1;
+                cboCurrentLanguage.SelectedIndex = 1;
                 rm = new ResourceManager("MesDatas.Language_Resources.language_English", asm);
             }
             else if (language == "th-TH")
             {
-                cbxCurrentLanguage.SelectedIndex = 2;
+                cboCurrentLanguage.SelectedIndex = 2;
                 rm = new ResourceManager("MesDatas.Language_Resources.language_Thai", asm);
             }
-            cmbLoginMode.Items.Clear();
-            cmbLoginMethod.Items.Clear();
-            cmbLoginMode.Items.Add(rm.GetString("loginMode"));
-            cmbLoginMode.Items.Add(rm.GetString("loginMode1"));
-            cmbLoginMethod.Items.Add(rm.GetString("comboBox2.Items"));
-            cmbLoginMethod.Items.Add(rm.GetString("comboBox2.Items1"));
-            cmbLoginMode.SelectedIndex = 0;
-            cmbLoginMethod.SelectedIndex = 0;
+            cboLoginMode.Items.Clear();
+            cboLoginMethod.Items.Clear();
+            cboLoginMode.Items.Add(rm.GetString("loginMode"));
+            cboLoginMode.Items.Add(rm.GetString("loginMode1"));
+            cboLoginMethod.Items.Add(rm.GetString("comboBox2.Items"));
+            cboLoginMethod.Items.Add(rm.GetString("comboBox2.Items1"));
+            cboLoginMode.SelectedIndex = 0;
+            cboLoginMethod.SelectedIndex = 0;
         }
 
         #region Label内字体随着字数的增加而自动减小，Label大小不变
@@ -317,65 +311,6 @@ namespace MesDatas
         }
 
         /// <summary>
-        /// 更新数据库
-        /// </summary>
-        /// <returns></returns>
-        private void updateDataBase()
-        {
-            List<string> AddRColList = new List<string>();
-            List<string> SqlList = new List<string>();
-            XmlDocument xmlDoc = new XmlDocument();
-            xmlDoc.Load(xmlPath);
-
-            // 获取根节点
-            XmlNodeList nodeList = xmlDoc.DocumentElement.ChildNodes;//获取全部子节点
-
-            // 遍历子节点
-            foreach (XmlNode item in nodeList)
-            {
-                if (item.Name == "isUpdate" && bool.Parse(item.InnerText) != true)
-                {
-                    break;
-                }
-                if (item.Name == "AddRColList")
-                {
-                    XmlNodeList list = item.ChildNodes;
-                    foreach (XmlNode xn in list)
-                    {
-                        AddRColList.Add(xn.InnerText);
-                    }
-                }
-                //if (item.Name == "SqlList")
-                //{
-                //    XmlNodeList list = item.ChildNodes;
-                //    foreach (XmlNode xn in list)
-                //    {
-                //        SqlList.Add(xn.InnerText);
-                //    }
-                //}
-            }
-            if (AddRColList.Count > 0)
-            {
-                mdb = new MDBHelper(path4);
-                if (AddRColList.Count > 0)
-                {
-                    foreach (string sql in AddRColList)
-                    {
-                        mdb.Add(sql);
-                    }
-                }
-                //if (SqlList.Count > 0)
-                //{
-                //    foreach (string sql in SqlList)
-                //    {
-                //        mdb.Add(sql);
-                //    }
-                //}
-                mdb.CloseConnection();
-            }
-        }
-
-        /// <summary>
         /// 获取设备名称
         /// </summary>
         private void GetDeviceName()
@@ -425,34 +360,34 @@ namespace MesDatas
             //string str = user1.ToJsonString();
             access = 0;
             access_take = 0;//在线
-            if (cmbLoginMode.SelectedIndex == 0 && cmbLoginMethod.SelectedIndex == 0)
+            if (cboLoginMode.SelectedIndex == 0 && cboLoginMethod.SelectedIndex == 0)
             {
                 offLine = 0;
                 checkcard = 0;
             }
-            else if (cmbLoginMode.SelectedIndex == 0 && cmbLoginMethod.SelectedIndex == 1)
+            else if (cboLoginMode.SelectedIndex == 0 && cboLoginMethod.SelectedIndex == 1)
             {
                 offLine = 0;
                 checkcard = 1;
             }//离线
-            else if (cmbLoginMode.SelectedIndex == 1 && cmbLoginMethod.SelectedIndex == 0)
+            else if (cboLoginMode.SelectedIndex == 1 && cboLoginMethod.SelectedIndex == 0)
             {
                 offLine = 1;
                 checkcard = 0;
             }
-            else if (cmbLoginMode.SelectedIndex == 1 && cmbLoginMethod.SelectedIndex == 1)
+            else if (cboLoginMode.SelectedIndex == 1 && cboLoginMethod.SelectedIndex == 1)
             {
                 offLine = 1;
                 checkcard = 1;
             }
 
-            else if (cmbLoginMode.Text == "请选择登录模式" || cmbLoginMode.Text == "")
+            else if (cboLoginMode.Text == "请选择登录模式" || cboLoginMode.Text == "")
             {
                 offLine = 2;
                 checkcard = 2;
                 MessageBox.Show(rm.GetString("ModeTip"));
             }
-            else if (cmbLoginMethod.Text == "请选择登录类型" || cmbLoginMethod.Text == "")
+            else if (cboLoginMethod.Text == "请选择登录类型" || cboLoginMethod.Text == "")
             {
                 offLine = 2;
                 checkcard = 2;
@@ -461,13 +396,13 @@ namespace MesDatas
 
             if (checkcard == 0)
             {
-                if (tbx_userID.Text != "" && tbx_Password.Text != "")
+                if (tbxUserID.Text != "" && tbxPassword.Text != "")
                 {
                     // 根据JSON文件动态配置dev权限的账号密码
                     var devUsername = ConfigManager.GetConfigValue("DevUsername");
                     var devPassword = ConfigManager.GetConfigValue("DevPassword");
 
-                    if (tbx_userID.Text == devUsername && tbx_Password.Text == devPassword)
+                    if (tbxUserID.Text == devUsername && tbxPassword.Text == devPassword)
                     {
                         access = 4;
                         access_take = 1;
@@ -475,18 +410,18 @@ namespace MesDatas
                     else
                     {
 
-                        List<UserInfoEntity> list = user.Where(x => x.Uuser == tbx_userID.Text && x.Upwd == tbx_Password.Text).ToList();
+                        List<UserInfoEntity> list = user.Where(x => x.Uuser == tbxUserID.Text && x.Upwd == tbxPassword.Text).ToList();
 
                         if (list.Count > 0)
                         {
 
                             foreach (var v in list)
                             {
-                                if (tbx_userID.Text == v.Uuser && tbx_Password.Text == v.Upwd)//开发
+                                if (tbxUserID.Text == v.Uuser && tbxPassword.Text == v.Upwd)//开发
                                 {
 
                                     // 判断是否有离线登录权限
-                                    if ((v.Utype != "ADM" && v.Utype != "PE" && v.Utype != "QE") && cmbLoginMode.SelectedIndex == 1)
+                                    if ((v.Utype != "ADM" && v.Utype != "PE" && v.Utype != "QE") && cboLoginMode.SelectedIndex == 1)
                                     {
                                         MessageBox.Show(rm.GetString("offlineTip"));
                                         return;
@@ -561,8 +496,8 @@ namespace MesDatas
                     form1.Setaccess_take(access_take);
                     form1.Setaccess(access);
                     form1.SetloginName(loginUserName);
-                    form1.SetloginUser(tbx_userID.Text);
-                    form1.SetloginPwd(tbx_Password.Text);
+                    form1.SetloginUser(tbxUserID.Text);
+                    form1.SetloginPwd(tbxPassword.Text);
                     form1.Show();
                 }
 
@@ -604,36 +539,36 @@ namespace MesDatas
         /// <param name="e"></param>
         private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (cmbLoginMethod.SelectedIndex == 1)
+            if (cboLoginMethod.SelectedIndex == 1)
             {
 
-                if (cmbLoginMode.SelectedIndex == 1 && cmbLoginMethod.SelectedIndex == 0)       // 离线密码登录
+                if (cboLoginMode.SelectedIndex == 1 && cboLoginMethod.SelectedIndex == 0)       // 离线密码登录
                 {
                     offLine = 1;
                     checkcard = 0;
                 }
-                else if (cmbLoginMode.SelectedIndex == 1 && cmbLoginMethod.SelectedIndex == 1)  // 离线刷卡登录
+                else if (cboLoginMode.SelectedIndex == 1 && cboLoginMethod.SelectedIndex == 1)  // 离线刷卡登录
                 {
                     offLine = 1;
                     checkcard = 1;
                 }
-                else if (cmbLoginMode.SelectedIndex == 0 && cmbLoginMethod.SelectedIndex == 0)  // 在线密码登录
+                else if (cboLoginMode.SelectedIndex == 0 && cboLoginMethod.SelectedIndex == 0)  // 在线密码登录
                 {
                     offLine = 0;
                     checkcard = 0;
                 }
-                else if (cmbLoginMode.SelectedIndex == 0 && cmbLoginMethod.SelectedIndex == 1)  // 在线刷卡登录
+                else if (cboLoginMode.SelectedIndex == 0 && cboLoginMethod.SelectedIndex == 1)  // 在线刷卡登录
                 {
                     offLine = 0;
                     checkcard = 1;
                 }
-                else if (cmbLoginMode.Text == "请选择登录模式" || cmbLoginMode.Text == "")
+                else if (cboLoginMode.Text == "请选择登录模式" || cboLoginMode.Text == "")
                 {
                     offLine = 2;
                     checkcard = 2;
                     MessageBox.Show(rm.GetString("ModeTip"));
                 }
-                else if (cmbLoginMethod.Text == "请选择登录类型" || cmbLoginMethod.Text == "")
+                else if (cboLoginMethod.Text == "请选择登录类型" || cboLoginMethod.Text == "")
                 {
                     offLine = 2;
                     checkcard = 2;
@@ -655,8 +590,8 @@ namespace MesDatas
 
         private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
         {
-            cbxCurrentLanguage.Enabled = false;
-            if (cbxCurrentLanguage.SelectedIndex == 0)
+            cboCurrentLanguage.Enabled = false;
+            if (cboCurrentLanguage.SelectedIndex == 0)
             {
                 //修改默认语言
                 MultiLanguage.SetDefaultLanguage("zh-CN");
@@ -669,7 +604,7 @@ namespace MesDatas
                 }
 
             }
-            else if (cbxCurrentLanguage.SelectedIndex == 1)
+            else if (cboCurrentLanguage.SelectedIndex == 1)
             {
                 //修改默认语言
                 MultiLanguage.SetDefaultLanguage("en-US");
@@ -682,7 +617,7 @@ namespace MesDatas
                 }
 
             }
-            else if (cbxCurrentLanguage.SelectedIndex == 2)
+            else if (cboCurrentLanguage.SelectedIndex == 2)
             {
                 //修改默认语言
                 MultiLanguage.SetDefaultLanguage("th-TH");
@@ -694,7 +629,7 @@ namespace MesDatas
                     LoadAll(form);
                 }
             }
-            cbxCurrentLanguage.Enabled = true;
+            cboCurrentLanguage.Enabled = true;
         }
 
         private void LoadAll(Form form)
@@ -702,16 +637,16 @@ namespace MesDatas
             if (form.Name == "Fwelcome")
             {
                 MultiLanguage.LoadLanguage(form, typeof(Fwelcome));
-                cmbLoginMode.Items.Clear();
-                cmbLoginMethod.Items.Clear();
+                cboLoginMode.Items.Clear();
+                cboLoginMethod.Items.Clear();
 
-                cmbLoginMode.Items.Add(rm.GetString("loginMode"));
-                cmbLoginMode.Items.Add(rm.GetString("loginMode1"));
-                cmbLoginMethod.Items.Add(rm.GetString("comboBox2.Items"));
-                cmbLoginMethod.Items.Add(rm.GetString("comboBox2.Items1"));
-                cmbLoginMode.SelectedIndex = 0;
-                cmbLoginMethod.SelectedIndex = 0;
-                this.label4.Text = sytemSet.DeviceName;
+                cboLoginMode.Items.Add(rm.GetString("loginMode"));
+                cboLoginMode.Items.Add(rm.GetString("loginMode1"));
+                cboLoginMethod.Items.Add(rm.GetString("comboBox2.Items"));
+                cboLoginMethod.Items.Add(rm.GetString("comboBox2.Items1"));
+                cboLoginMode.SelectedIndex = 0;
+                cboLoginMethod.SelectedIndex = 0;
+                this.lblDeviceName.Text = sytemSet.DeviceName;
             }
             else if (form.Name == "Form1")
             {

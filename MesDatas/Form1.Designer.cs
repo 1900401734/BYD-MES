@@ -243,7 +243,7 @@ namespace MesDatas
             this.label87 = new System.Windows.Forms.Label();
             this.tabPage18 = new System.Windows.Forms.TabPage();
             this.richTextBox5 = new System.Windows.Forms.RichTextBox();
-            this.button37 = new System.Windows.Forms.Button();
+            this.btnAccessMES = new System.Windows.Forms.Button();
             this.richTextBox6 = new System.Windows.Forms.RichTextBox();
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
@@ -1929,7 +1929,7 @@ namespace MesDatas
             // tabPage18
             // 
             this.tabPage18.Controls.Add(this.richTextBox5);
-            this.tabPage18.Controls.Add(this.button37);
+            this.tabPage18.Controls.Add(this.btnAccessMES);
             this.tabPage18.Controls.Add(this.richTextBox6);
             resources.ApplyResources(this.tabPage18, "tabPage18");
             this.tabPage18.Name = "tabPage18";
@@ -1940,12 +1940,12 @@ namespace MesDatas
             resources.ApplyResources(this.richTextBox5, "richTextBox5");
             this.richTextBox5.Name = "richTextBox5";
             // 
-            // button37
+            // btnAccessMES
             // 
-            resources.ApplyResources(this.button37, "button37");
-            this.button37.Name = "button37";
-            this.button37.UseVisualStyleBackColor = true;
-            this.button37.Click += new System.EventHandler(this.button37_Click);
+            resources.ApplyResources(this.btnAccessMES, "btnAccessMES");
+            this.btnAccessMES.Name = "btnAccessMES";
+            this.btnAccessMES.UseVisualStyleBackColor = true;
+            this.btnAccessMES.Click += new System.EventHandler(this.button37_Click);
             // 
             // richTextBox6
             // 
@@ -3741,7 +3741,7 @@ namespace MesDatas
         private System.Windows.Forms.ComboBox cboPrintMode;
         private System.Windows.Forms.Label label110;
         private System.Windows.Forms.TabPage tabPage18;
-        private System.Windows.Forms.Button button37;
+        private System.Windows.Forms.Button btnAccessMES;
         private System.Windows.Forms.RichTextBox richTextBox6;
         private System.Windows.Forms.RichTextBox richTextBox5;
         private System.Windows.Forms.TextBox txtViewStatus;

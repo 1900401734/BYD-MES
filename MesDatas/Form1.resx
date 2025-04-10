@@ -9825,9 +9825,6 @@ ADM=5
   <data name="chkBanQRcodeValidation.Text" xml:space="preserve">
     <value>屏蔽二维码验证</value>
   </data>
-  <data name="chkBanQRcodeValidation.Visible" type="System.Boolean, mscorlib">
-    <value>False</value>
-  </data>
   <data name="&gt;&gt;chkBanQRcodeValidation.Name" xml:space="preserve">
     <value>chkBanQRcodeValidation</value>
   </data>
@@ -12242,34 +12239,34 @@ H: short；  I: Int32；  F: float；  J: Int32, ÷100 (0.00 )；  N: Int32，OK
   <data name="&gt;&gt;richTextBox5.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
-  <data name="button37.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+  <data name="btnAccessMES.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
   </data>
-  <data name="button37.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="btnAccessMES.Location" type="System.Drawing.Point, System.Drawing">
     <value>650, 31</value>
   </data>
-  <data name="button37.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+  <data name="btnAccessMES.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 4, 4, 4</value>
   </data>
-  <data name="button37.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="btnAccessMES.Size" type="System.Drawing.Size, System.Drawing">
     <value>136, 65</value>
   </data>
-  <data name="button37.TabIndex" type="System.Int32, mscorlib">
+  <data name="btnAccessMES.TabIndex" type="System.Int32, mscorlib">
     <value>2</value>
   </data>
-  <data name="button37.Text" xml:space="preserve">
+  <data name="btnAccessMES.Text" xml:space="preserve">
     <value>MES访问</value>
   </data>
-  <data name="&gt;&gt;button37.Name" xml:space="preserve">
-    <value>button37</value>
+  <data name="&gt;&gt;btnAccessMES.Name" xml:space="preserve">
+    <value>btnAccessMES</value>
   </data>
-  <data name="&gt;&gt;button37.Type" xml:space="preserve">
+  <data name="&gt;&gt;btnAccessMES.Type" xml:space="preserve">
     <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;button37.Parent" xml:space="preserve">
+  <data name="&gt;&gt;btnAccessMES.Parent" xml:space="preserve">
     <value>tabPage18</value>
   </data>
-  <data name="&gt;&gt;button37.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;btnAccessMES.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
   <data name="richTextBox6.Location" type="System.Drawing.Point, System.Drawing">

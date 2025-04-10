@@ -119,7 +119,7 @@
   </resheader>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="button1.Font" type="System.Drawing.Font, System.Drawing">
-    <value>宋体, 18pt, style=Bold</value>
+    <value>SimSun, 18pt, style=Bold</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="button1.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
@@ -157,13 +157,13 @@
     <value>True</value>
   </data>
   <data name="label1.Font" type="System.Drawing.Font, System.Drawing">
-    <value>宋体, 18pt, style=Bold</value>
+    <value>SimSun, 18pt, style=Bold</value>
   </data>
   <data name="label1.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
   </data>
   <data name="label1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>135, 279</value>
+    <value>135, 282</value>
   </data>
   <data name="label1.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 0, 4, 0</value>
@@ -187,19 +187,19 @@
     <value>panel1</value>
   </data>
   <data name="&gt;&gt;label1.ZOrder" xml:space="preserve">
-    <value>7</value>
+    <value>12</value>
   </data>
   <data name="label2.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
   <data name="label2.Font" type="System.Drawing.Font, System.Drawing">
-    <value>宋体, 18pt, style=Bold</value>
+    <value>SimSun, 18pt, style=Bold</value>
   </data>
   <data name="label2.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
   </data>
   <data name="label2.Location" type="System.Drawing.Point, System.Drawing">
-    <value>135, 332</value>
+    <value>135, 336</value>
   </data>
   <data name="label2.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 0, 4, 0</value>
@@ -223,97 +223,100 @@
     <value>panel1</value>
   </data>
   <data name="&gt;&gt;label2.ZOrder" xml:space="preserve">
-    <value>11</value>
+    <value>10</value>
   </data>
-  <data name="tbx_userID.Font" type="System.Drawing.Font, System.Drawing">
-    <value>宋体, 18pt, style=Bold</value>
+  <data name="tbxUserID.Font" type="System.Drawing.Font, System.Drawing">
+    <value>SimSun, 18pt, style=Bold</value>
   </data>
-  <data name="tbx_userID.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="tbxUserID.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>Disable</value>
+  </data>
+  <data name="tbxUserID.Location" type="System.Drawing.Point, System.Drawing">
     <value>291, 276</value>
   </data>
-  <data name="tbx_userID.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+  <data name="tbxUserID.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 4, 4, 4</value>
   </data>
-  <data name="tbx_userID.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="tbxUserID.Size" type="System.Drawing.Size, System.Drawing">
     <value>293, 49</value>
   </data>
-  <data name="tbx_userID.TabIndex" type="System.Int32, mscorlib">
+  <data name="tbxUserID.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
   </data>
-  <data name="&gt;&gt;tbx_userID.Name" xml:space="preserve">
-    <value>tbx_userID</value>
+  <data name="&gt;&gt;tbxUserID.Name" xml:space="preserve">
+    <value>tbxUserID</value>
   </data>
-  <data name="&gt;&gt;tbx_userID.Type" xml:space="preserve">
+  <data name="&gt;&gt;tbxUserID.Type" xml:space="preserve">
     <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;tbx_userID.Parent" xml:space="preserve">
+  <data name="&gt;&gt;tbxUserID.Parent" xml:space="preserve">
     <value>panel1</value>
   </data>
-  <data name="&gt;&gt;tbx_userID.ZOrder" xml:space="preserve">
-    <value>9</value>
+  <data name="&gt;&gt;tbxUserID.ZOrder" xml:space="preserve">
+    <value>8</value>
   </data>
-  <data name="tbx_Password.Font" type="System.Drawing.Font, System.Drawing">
-    <value>宋体, 18pt, style=Bold</value>
+  <data name="tbxPassword.Font" type="System.Drawing.Font, System.Drawing">
+    <value>SimSun, 18pt, style=Bold</value>
   </data>
-  <data name="tbx_Password.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="tbxPassword.Location" type="System.Drawing.Point, System.Drawing">
     <value>291, 329</value>
   </data>
-  <data name="tbx_Password.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+  <data name="tbxPassword.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 4, 4, 4</value>
   </data>
-  <data name="tbx_Password.PasswordChar" type="System.Char, mscorlib" xml:space="preserve">
+  <data name="tbxPassword.PasswordChar" type="System.Char, mscorlib" xml:space="preserve">
     <value>*</value>
   </data>
-  <data name="tbx_Password.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="tbxPassword.Size" type="System.Drawing.Size, System.Drawing">
     <value>293, 49</value>
   </data>
-  <data name="tbx_Password.TabIndex" type="System.Int32, mscorlib">
+  <data name="tbxPassword.TabIndex" type="System.Int32, mscorlib">
     <value>2</value>
   </data>
-  <data name="&gt;&gt;tbx_Password.Name" xml:space="preserve">
-    <value>tbx_Password</value>
+  <data name="&gt;&gt;tbxPassword.Name" xml:space="preserve">
+    <value>tbxPassword</value>
   </data>
-  <data name="&gt;&gt;tbx_Password.Type" xml:space="preserve">
+  <data name="&gt;&gt;tbxPassword.Type" xml:space="preserve">
     <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;tbx_Password.Parent" xml:space="preserve">
+  <data name="&gt;&gt;tbxPassword.Parent" xml:space="preserve">
     <value>panel1</value>
   </data>
-  <data name="&gt;&gt;tbx_Password.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;tbxPassword.ZOrder" xml:space="preserve">
     <value>6</value>
   </data>
-  <data name="cmbLoginMode.Font" type="System.Drawing.Font, System.Drawing">
-    <value>宋体, 18pt, style=Bold</value>
+  <data name="cboLoginMode.Font" type="System.Drawing.Font, System.Drawing">
+    <value>SimSun, 18pt, style=Bold</value>
   </data>
-  <data name="cmbLoginMode.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="cboLoginMode.Location" type="System.Drawing.Point, System.Drawing">
     <value>291, 384</value>
   </data>
-  <data name="cmbLoginMode.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+  <data name="cboLoginMode.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 4, 4, 4</value>
   </data>
-  <data name="cmbLoginMode.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="cboLoginMode.Size" type="System.Drawing.Size, System.Drawing">
     <value>293, 44</value>
   </data>
-  <data name="cmbLoginMode.TabIndex" type="System.Int32, mscorlib">
+  <data name="cboLoginMode.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
   </data>
-  <data name="&gt;&gt;cmbLoginMode.Name" xml:space="preserve">
-    <value>cmbLoginMode</value>
+  <data name="&gt;&gt;cboLoginMode.Name" xml:space="preserve">
+    <value>cboLoginMode</value>
   </data>
-  <data name="&gt;&gt;cmbLoginMode.Type" xml:space="preserve">
+  <data name="&gt;&gt;cboLoginMode.Type" xml:space="preserve">
     <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;cmbLoginMode.Parent" xml:space="preserve">
+  <data name="&gt;&gt;cboLoginMode.Parent" xml:space="preserve">
     <value>panel1</value>
   </data>
-  <data name="&gt;&gt;cmbLoginMode.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;cboLoginMode.ZOrder" xml:space="preserve">
     <value>3</value>
   </data>
   <data name="button2.BackgroundImageLayout" type="System.Windows.Forms.ImageLayout, System.Windows.Forms">
     <value>None</value>
   </data>
   <data name="button2.Font" type="System.Drawing.Font, System.Drawing">
-    <value>微软雅黑, 24pt, style=Bold</value>
+    <value>Microsoft YaHei, 24pt, style=Bold</value>
   </data>
   <data name="button2.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
@@ -349,13 +352,13 @@
     <value>True</value>
   </data>
   <data name="label3.Font" type="System.Drawing.Font, System.Drawing">
-    <value>宋体, 18pt, style=Bold</value>
+    <value>SimSun, 18pt, style=Bold</value>
   </data>
   <data name="label3.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
   </data>
   <data name="label3.Location" type="System.Drawing.Point, System.Drawing">
-    <value>137, 389</value>
+    <value>137, 388</value>
   </data>
   <data name="label3.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 0, 4, 0</value>
@@ -379,42 +382,42 @@
     <value>panel1</value>
   </data>
   <data name="&gt;&gt;label3.ZOrder" xml:space="preserve">
-    <value>12</value>
+    <value>11</value>
   </data>
-  <data name="label4.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+  <data name="lblDeviceName.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
   </data>
-  <data name="label4.Font" type="System.Drawing.Font, System.Drawing">
-    <value>宋体, 42pt, style=Bold</value>
+  <data name="lblDeviceName.Font" type="System.Drawing.Font, System.Drawing">
+    <value>SimSun, 42pt, style=Bold</value>
   </data>
-  <data name="label4.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+  <data name="lblDeviceName.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
   </data>
-  <data name="label4.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="lblDeviceName.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 0</value>
   </data>
-  <data name="label4.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="lblDeviceName.Size" type="System.Drawing.Size, System.Drawing">
     <value>793, 100</value>
   </data>
-  <data name="label4.TabIndex" type="System.Int32, mscorlib">
+  <data name="lblDeviceName.TabIndex" type="System.Int32, mscorlib">
     <value>9</value>
   </data>
-  <data name="label4.Text" xml:space="preserve">
+  <data name="lblDeviceName.Text" xml:space="preserve">
     <value>机台名称</value>
   </data>
-  <data name="label4.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
+  <data name="lblDeviceName.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
     <value>MiddleCenter</value>
   </data>
-  <data name="&gt;&gt;label4.Name" xml:space="preserve">
-    <value>label4</value>
+  <data name="&gt;&gt;lblDeviceName.Name" xml:space="preserve">
+    <value>lblDeviceName</value>
   </data>
-  <data name="&gt;&gt;label4.Type" xml:space="preserve">
+  <data name="&gt;&gt;lblDeviceName.Type" xml:space="preserve">
     <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;label4.Parent" xml:space="preserve">
+  <data name="&gt;&gt;lblDeviceName.Parent" xml:space="preserve">
     <value>panel2</value>
   </data>
-  <data name="&gt;&gt;label4.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;lblDeviceName.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
   <data name="panel2.Location" type="System.Drawing.Point, System.Drawing">
@@ -438,67 +441,67 @@
   <data name="&gt;&gt;panel2.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
-  <data name="cbxCurrentLanguage.Font" type="System.Drawing.Font, System.Drawing">
-    <value>宋体, 18pt, style=Bold</value>
+  <data name="cboCurrentLanguage.Font" type="System.Drawing.Font, System.Drawing">
+    <value>SimSun, 18pt, style=Bold</value>
   </data>
-  <data name="cbxCurrentLanguage.Items" xml:space="preserve">
+  <data name="cboCurrentLanguage.Items" xml:space="preserve">
     <value>简体中文(默认)</value>
   </data>
-  <data name="cbxCurrentLanguage.Items1" xml:space="preserve">
+  <data name="cboCurrentLanguage.Items1" xml:space="preserve">
     <value>English</value>
   </data>
-  <data name="cbxCurrentLanguage.Items2" xml:space="preserve">
+  <data name="cboCurrentLanguage.Items2" xml:space="preserve">
     <value>ภาษาไทย</value>
   </data>
-  <data name="cbxCurrentLanguage.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="cboCurrentLanguage.Location" type="System.Drawing.Point, System.Drawing">
     <value>291, 495</value>
   </data>
-  <data name="cbxCurrentLanguage.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+  <data name="cboCurrentLanguage.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 4, 4, 4</value>
   </data>
-  <data name="cbxCurrentLanguage.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="cboCurrentLanguage.Size" type="System.Drawing.Size, System.Drawing">
     <value>293, 44</value>
   </data>
-  <data name="cbxCurrentLanguage.TabIndex" type="System.Int32, mscorlib">
+  <data name="cboCurrentLanguage.TabIndex" type="System.Int32, mscorlib">
     <value>5</value>
   </data>
-  <data name="&gt;&gt;cbxCurrentLanguage.Name" xml:space="preserve">
-    <value>cbxCurrentLanguage</value>
+  <data name="&gt;&gt;cboCurrentLanguage.Name" xml:space="preserve">
+    <value>cboCurrentLanguage</value>
   </data>
-  <data name="&gt;&gt;cbxCurrentLanguage.Type" xml:space="preserve">
+  <data name="&gt;&gt;cboCurrentLanguage.Type" xml:space="preserve">
     <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;cbxCurrentLanguage.Parent" xml:space="preserve">
+  <data name="&gt;&gt;cboCurrentLanguage.Parent" xml:space="preserve">
     <value>panel1</value>
   </data>
-  <data name="&gt;&gt;cbxCurrentLanguage.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;cboCurrentLanguage.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
-  <data name="cmbLoginMethod.Font" type="System.Drawing.Font, System.Drawing">
-    <value>宋体, 18pt, style=Bold</value>
+  <data name="cboLoginMethod.Font" type="System.Drawing.Font, System.Drawing">
+    <value>SimSun, 18pt, style=Bold</value>
   </data>
-  <data name="cmbLoginMethod.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="cboLoginMethod.Location" type="System.Drawing.Point, System.Drawing">
     <value>291, 439</value>
   </data>
-  <data name="cmbLoginMethod.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+  <data name="cboLoginMethod.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 4, 4, 4</value>
   </data>
-  <data name="cmbLoginMethod.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="cboLoginMethod.Size" type="System.Drawing.Size, System.Drawing">
     <value>293, 44</value>
   </data>
-  <data name="cmbLoginMethod.TabIndex" type="System.Int32, mscorlib">
+  <data name="cboLoginMethod.TabIndex" type="System.Int32, mscorlib">
     <value>4</value>
   </data>
-  <data name="&gt;&gt;cmbLoginMethod.Name" xml:space="preserve">
-    <value>cmbLoginMethod</value>
+  <data name="&gt;&gt;cboLoginMethod.Name" xml:space="preserve">
+    <value>cboLoginMethod</value>
   </data>
-  <data name="&gt;&gt;cmbLoginMethod.Type" xml:space="preserve">
+  <data name="&gt;&gt;cboLoginMethod.Type" xml:space="preserve">
     <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;cmbLoginMethod.Parent" xml:space="preserve">
+  <data name="&gt;&gt;cboLoginMethod.Parent" xml:space="preserve">
     <value>panel1</value>
   </data>
-  <data name="&gt;&gt;cmbLoginMethod.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;cboLoginMethod.ZOrder" xml:space="preserve">
     <value>2</value>
   </data>
   <data name="pictureBox1.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
@@ -891,13 +894,13 @@
     <value>True</value>
   </data>
   <data name="label6.Font" type="System.Drawing.Font, System.Drawing">
-    <value>宋体, 18pt, style=Bold</value>
+    <value>SimSun, 18pt, style=Bold</value>
   </data>
   <data name="label6.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
   </data>
   <data name="label6.Location" type="System.Drawing.Point, System.Drawing">
-    <value>135, 498</value>
+    <value>135, 499</value>
   </data>
   <data name="label6.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 0, 4, 0</value>
@@ -921,19 +924,19 @@
     <value>panel1</value>
   </data>
   <data name="&gt;&gt;label6.ZOrder" xml:space="preserve">
-    <value>8</value>
+    <value>7</value>
   </data>
   <data name="label5.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
   <data name="label5.Font" type="System.Drawing.Font, System.Drawing">
-    <value>宋体, 18pt, style=Bold</value>
+    <value>SimSun, 18pt, style=Bold</value>
   </data>
   <data name="label5.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
   </data>
   <data name="label5.Location" type="System.Drawing.Point, System.Drawing">
-    <value>135, 442</value>
+    <value>135, 443</value>
   </data>
   <data name="label5.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 0, 4, 0</value>
@@ -957,7 +960,7 @@
     <value>panel1</value>
   </data>
   <data name="&gt;&gt;label5.ZOrder" xml:space="preserve">
-    <value>10</value>
+    <value>9</value>
   </data>
   <data name="panel1.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>

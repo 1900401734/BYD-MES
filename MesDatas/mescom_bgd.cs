@@ -57,6 +57,28 @@ namespace 工艺部信息化组
             XMLOUT = ParamOUT;
         }
 
+        public static async Task<(bool isUserVerifySuccessfully, string MESFeedback, string XMLOUT)> VarifyUserLoginAsync()
+        {
+            string url = $"http://{MesConfig.IP}:{MesConfig.PORT}{MesConfig.URL}";
+            string param =
+                $"&message=" +
+                $"<PRODUCTION_REQUEST>" +
+                $"<USER>" +
+                $"<SITE>{MesConfig.Site}</SITE>" +
+                $"<NAME>{MesConfig.UserName}</NAME>" +
+                $"<PWD>{MesConfig.Password}</PWD>" +
+                $"</USER>" +
+                $"</PRODUCTION_REQUEST>";
+
+            string MESFeedback = await GetHtmlByPostAsync(url, param, MesConfig.TimeOut);
+
+            bool isUserVerifySuccessfully = CutResult(MESFeedback);
+            string XMLOUT = ParamOUT;
+
+            return (isUserVerifySuccessfully, MESFeedback, XMLOUT);
+        }
+
+
         /// <summary>
         /// MES交互2：条码验证
         /// </summary>
@@ -85,22 +107,42 @@ namespace 工艺部信息化组
                 $"</START></PRODUCTION_REQUEST>!erpautogy03!1234567@byd";
 
             barcodeverificationResponse = GetHtmlByPost(url, param, MesConfig.TimeOut);
-            /*barcodeverificationResponse = GetHtmlByPost(url,
-                $"&message=" +
-                $"<PRODUCTION_REQUEST><START><SFC_LIST><SFC><SITE>{MesConfig.Site}</SITE>" +
-                $"<ACTIVITY>XML</ACTIVITY><ID>{barcode}</ID>" +
-                $"<RESOURCE>{MesConfig.Resource}</RESOURCE>" +
-                $"<OPERATION>{MesConfig.Operation}</OPERATION>" +
-                $"<USER>{MesConfig.UserName}</USER>" +
-                $"<QTY></QTY><DATE_TIME></DATE_TIME>" +
-                $"<COMPLEX>N</COMPLEX></SFC></SFC_LIST></START></PRODUCTION_REQUEST>!erpautogy03!1234567@byd",
-                MesConfig.TimeOut);*/
 
             Thread.Sleep(200);
             Application.DoEvents();
             isVerifySuccessfully = CutResult(barcodeverificationResponse);
             XMLOUT = ParamOUT;
         }
+
+        public static async Task<(bool isVerifySuccessfully, string barcodeverificationResponse, string XMLOUT)> VarifyBarcodeAsync(string barcode)
+        {
+            string url = $"http://{MesConfig.IP}:{MesConfig.PORT}{MesConfig.URL}";
+            string param = $"&message=" +
+                $"<PRODUCTION_REQUEST><START>" +
+                $"<SFC_LIST>" +
+                $"<SFC>" +
+                $"<SITE>{MesConfig.Site}</SITE>" +
+                $"<ACTIVITY>XML</ACTIVITY>" +
+                $"<ID>{barcode}</ID>" +
+                $"<RESOURCE>{MesConfig.Resource}</RESOURCE>" +
+                $"<OPERATION>{MesConfig.Operation}</OPERATION>" +
+                $"<USER>{MesConfig.UserName}</USER>" +
+                $"<QTY></QTY>" +
+                $"<DATE_TIME></DATE_TIME>" +
+                $"<COMPLEX>N</COMPLEX>" +
+                $"</SFC>" +
+                $"</SFC_LIST>" +
+                $"</START></PRODUCTION_REQUEST>!erpautogy03!1234567@byd";
+
+            string barcodeverificationResponse = await GetHtmlByPostAsync(url, param, MesConfig.TimeOut);
+
+            await Task.Delay(200);
+            bool isVerifySuccessfully = CutResult(barcodeverificationResponse);
+            string XMLOUT = ParamOUT;
+
+            return (isVerifySuccessfully, barcodeverificationResponse, XMLOUT);
+        }
+
 
         /// <summary>
         /// MES交互3：结果上传
@@ -276,6 +318,45 @@ namespace 工艺部信息化组
                 return ex.Message;
             }
         }
+
+        public static async Task<string> GetHtmlByPostAsync(string URL, string Param, int TimeOut)
+        {
+            ParamOUT = Param;
+            string str;
+            try
+            {
+                byte[] bytes = Encoding.GetEncoding("GB2312").GetBytes(Param);
+                HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create(URL);
+                httpWebRequest.ContentType = "application/x-www-form-urlencoded";
+                httpWebRequest.Accept = "*/*";
+                httpWebRequest.UserAgent = "Mozilla/4.0(compatible;MSIE 6.0;Windows NT 5.1;SV1;Maxthon;.NET CLR 1.1.4322)";
+                httpWebRequest.Method = "POST";
+                httpWebRequest.ContentLength = bytes.Length;
+                httpWebRequest.Timeout = TimeOut;
+                httpWebRequest.ServicePoint.Expect100Continue = false;
+
+                using (Stream requestStream = await httpWebRequest.GetRequestStreamAsync())
+                {
+                    await requestStream.WriteAsync(bytes, 0, bytes.Length);
+                }
+
+                using (HttpWebResponse httpWebResponse = (HttpWebResponse)await httpWebRequest.GetResponseAsync())
+                {
+                    using (StreamReader streamReader = new StreamReader(httpWebResponse.GetResponseStream(), Encoding.GetEncoding("GB2312")))
+                    {
+                        str = await streamReader.ReadToEndAsync();
+                    }
+                }
+
+                httpWebRequest.Abort();
+            }
+            catch (Exception ex)
+            {
+                str = ex.Message;
+            }
+            return str;
+        }
+
 
         #region --------- 版本优化 ---------
 

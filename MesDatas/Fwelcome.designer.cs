@@ -32,16 +32,16 @@
             this.button1 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.tbx_userID = new System.Windows.Forms.TextBox();
-            this.tbx_Password = new System.Windows.Forms.TextBox();
-            this.cmbLoginMode = new System.Windows.Forms.ComboBox();
+            this.tbxUserID = new System.Windows.Forms.TextBox();
+            this.tbxPassword = new System.Windows.Forms.TextBox();
+            this.cboLoginMode = new System.Windows.Forms.ComboBox();
             this.button2 = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
+            this.lblDeviceName = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.cbxCurrentLanguage = new System.Windows.Forms.ComboBox();
-            this.cmbLoginMethod = new System.Windows.Forms.ComboBox();
+            this.cboCurrentLanguage = new System.Windows.Forms.ComboBox();
+            this.cboLoginMethod = new System.Windows.Forms.ComboBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
@@ -73,26 +73,26 @@
             this.label2.ForeColor = System.Drawing.SystemColors.ControlText;
             this.label2.Name = "label2";
             // 
-            // tbx_userID
+            // tbxUserID
             // 
-            this.tbx_userID.BackColor = System.Drawing.SystemColors.Window;
-            resources.ApplyResources(this.tbx_userID, "tbx_userID");
-            this.tbx_userID.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.tbx_userID.Name = "tbx_userID";
+            this.tbxUserID.BackColor = System.Drawing.SystemColors.Window;
+            resources.ApplyResources(this.tbxUserID, "tbxUserID");
+            this.tbxUserID.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.tbxUserID.Name = "tbxUserID";
             // 
-            // tbx_Password
+            // tbxPassword
             // 
-            this.tbx_Password.BackColor = System.Drawing.SystemColors.Window;
-            resources.ApplyResources(this.tbx_Password, "tbx_Password");
-            this.tbx_Password.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.tbx_Password.Name = "tbx_Password";
+            this.tbxPassword.BackColor = System.Drawing.SystemColors.Window;
+            resources.ApplyResources(this.tbxPassword, "tbxPassword");
+            this.tbxPassword.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.tbxPassword.Name = "tbxPassword";
             // 
-            // cmbLoginMode
+            // cboLoginMode
             // 
-            this.cmbLoginMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            resources.ApplyResources(this.cmbLoginMode, "cmbLoginMode");
-            this.cmbLoginMode.FormattingEnabled = true;
-            this.cmbLoginMode.Name = "cmbLoginMode";
+            this.cboLoginMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            resources.ApplyResources(this.cboLoginMode, "cboLoginMode");
+            this.cboLoginMode.FormattingEnabled = true;
+            this.cboLoginMode.Name = "cboLoginMode";
             // 
             // button2
             // 
@@ -110,55 +110,55 @@
             this.label3.ForeColor = System.Drawing.SystemColors.ControlText;
             this.label3.Name = "label3";
             // 
-            // label4
+            // lblDeviceName
             // 
-            resources.ApplyResources(this.label4, "label4");
-            this.label4.Name = "label4";
+            resources.ApplyResources(this.lblDeviceName, "lblDeviceName");
+            this.lblDeviceName.Name = "lblDeviceName";
             // 
             // panel1
             // 
             this.panel1.Controls.Add(this.panel2);
-            this.panel1.Controls.Add(this.cbxCurrentLanguage);
-            this.panel1.Controls.Add(this.cmbLoginMethod);
-            this.panel1.Controls.Add(this.cmbLoginMode);
+            this.panel1.Controls.Add(this.cboCurrentLanguage);
+            this.panel1.Controls.Add(this.cboLoginMethod);
+            this.panel1.Controls.Add(this.cboLoginMode);
             this.panel1.Controls.Add(this.pictureBox1);
             this.panel1.Controls.Add(this.button1);
-            this.panel1.Controls.Add(this.tbx_Password);
-            this.panel1.Controls.Add(this.label1);
+            this.panel1.Controls.Add(this.tbxPassword);
             this.panel1.Controls.Add(this.label6);
-            this.panel1.Controls.Add(this.tbx_userID);
+            this.panel1.Controls.Add(this.tbxUserID);
             this.panel1.Controls.Add(this.label5);
             this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.label3);
+            this.panel1.Controls.Add(this.label1);
             resources.ApplyResources(this.panel1, "panel1");
             this.panel1.Name = "panel1";
             this.panel1.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.button1_KeyDown);
             // 
             // panel2
             // 
-            this.panel2.Controls.Add(this.label4);
+            this.panel2.Controls.Add(this.lblDeviceName);
             resources.ApplyResources(this.panel2, "panel2");
             this.panel2.Name = "panel2";
             // 
-            // cbxCurrentLanguage
+            // cboCurrentLanguage
             // 
-            this.cbxCurrentLanguage.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            resources.ApplyResources(this.cbxCurrentLanguage, "cbxCurrentLanguage");
-            this.cbxCurrentLanguage.FormattingEnabled = true;
-            this.cbxCurrentLanguage.Items.AddRange(new object[] {
-            resources.GetString("cbxCurrentLanguage.Items"),
-            resources.GetString("cbxCurrentLanguage.Items1"),
-            resources.GetString("cbxCurrentLanguage.Items2")});
-            this.cbxCurrentLanguage.Name = "cbxCurrentLanguage";
-            this.cbxCurrentLanguage.SelectedIndexChanged += new System.EventHandler(this.comboBox3_SelectedIndexChanged);
+            this.cboCurrentLanguage.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            resources.ApplyResources(this.cboCurrentLanguage, "cboCurrentLanguage");
+            this.cboCurrentLanguage.FormattingEnabled = true;
+            this.cboCurrentLanguage.Items.AddRange(new object[] {
+            resources.GetString("cboCurrentLanguage.Items"),
+            resources.GetString("cboCurrentLanguage.Items1"),
+            resources.GetString("cboCurrentLanguage.Items2")});
+            this.cboCurrentLanguage.Name = "cboCurrentLanguage";
+            this.cboCurrentLanguage.SelectedIndexChanged += new System.EventHandler(this.comboBox3_SelectedIndexChanged);
             // 
-            // cmbLoginMethod
+            // cboLoginMethod
             // 
-            this.cmbLoginMethod.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            resources.ApplyResources(this.cmbLoginMethod, "cmbLoginMethod");
-            this.cmbLoginMethod.FormattingEnabled = true;
-            this.cmbLoginMethod.Name = "cmbLoginMethod";
-            this.cmbLoginMethod.SelectedIndexChanged += new System.EventHandler(this.comboBox2_SelectedIndexChanged);
+            this.cboLoginMethod.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            resources.ApplyResources(this.cboLoginMethod, "cboLoginMethod");
+            this.cboLoginMethod.FormattingEnabled = true;
+            this.cboLoginMethod.Name = "cboLoginMethod";
+            this.cboLoginMethod.SelectedIndexChanged += new System.EventHandler(this.comboBox2_SelectedIndexChanged);
             // 
             // pictureBox1
             // 
@@ -207,18 +207,18 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox tbx_userID;
-        private System.Windows.Forms.TextBox tbx_Password;
-        private System.Windows.Forms.ComboBox cmbLoginMode;
+        private System.Windows.Forms.TextBox tbxUserID;
+        private System.Windows.Forms.TextBox tbxPassword;
+        private System.Windows.Forms.ComboBox cboLoginMode;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label lblDeviceName;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.ComboBox cmbLoginMethod;
+        private System.Windows.Forms.ComboBox cboLoginMethod;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.ComboBox cbxCurrentLanguage;
+        private System.Windows.Forms.ComboBox cboCurrentLanguage;
         private System.Windows.Forms.Label label6;
     }
 }
