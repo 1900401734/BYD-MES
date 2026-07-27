@@ -32,7 +32,7 @@ namespace BydMesTool
         }
 
         FormBydMesTool Parameter = new FormBydMesTool();
-         
+
         public override void ReceiveCommand(InteractiveEventArgs e)
         {
             if (e.InfoType == InfoType.Command)
@@ -45,7 +45,7 @@ namespace BydMesTool
                     bool 验证结果 = false;
                     string MES反馈 = "";
                     string XMLOUT = "";
-                    Parameter.UsersVarify(out 验证结果, out MES反馈, out XMLOUT);
+                    Parameter.UsersVarify();
                     if (验证结果)
                     {
                         LogMes("用户验证OK");
@@ -70,7 +70,9 @@ namespace BydMesTool
                     //通过InteractiveEventArgs 进行参数传递
 
 
-                    Parameter.BarCodeVarify(产品条码, out 验证结果, out MES反馈, out XMLOUT);
+                    var result = Task.Run(() => Parameter.BarCodeVarify(产品条码));
+                    验证结果 = result.Result.verifyResult;
+
                     if (验证结果)
                     {
                         LogMes("条码验证OK");
@@ -93,7 +95,7 @@ namespace BydMesTool
                     //通过InteractiveEventArgs 进行参数传递
 
 
-                    Parameter.UpDateToMes(测试结果, 产品条码, 文件版本, 软件版本, 测试项, out 验证结果, out MES反馈, out XMLOUT);
+                    Parameter.UpDateToMes(测试结果, 产品条码, 文件版本, 软件版本, 测试项);
                     if (验证结果)
                     {
                         LogMes("条码上传OK");
@@ -112,5 +114,5 @@ namespace BydMesTool
         }
 
     }
-     
+
 }

@@ -60,6 +60,12 @@ namespace MesDatas.Utiey
                 outputStr = CodeNum.DivBy1000Rounded3(plcValue);
             }
 
+            //实际值 (保留两位小数) 
+            else if (number.Equals("7"))
+            {
+                outputStr = CodeNum.FormatNumber(plcValue, "F2");
+            }
+
             return outputStr;
         }
     }

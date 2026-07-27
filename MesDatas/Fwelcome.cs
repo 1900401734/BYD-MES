@@ -96,7 +96,7 @@ namespace MesDatas
                 NLogHelperYY.InitConfigNLog();
                 // 初始化表
                 DatasServer.SytemSetDerivedServer.InitSytemSetDerived();        // 系统设置
-                DatasServer.CodesServer.InitCodes();                            // 条码 PLC点位
+                DatasServer.RecipeManage.InitCodes();                            // 条码 PLC点位
                 DatasServer.BarcodeVerificationServer.InitBarcodeVerification();// 数据 PLC点位
                 DatasServer.PrinterServer.InitPrinterSetting();                 // 打印设置 PLC点位
                 DatasServer.DeviceInformationServer.InitDeviceInformation();    // 其它连接 PLC点位
@@ -274,7 +274,7 @@ namespace MesDatas
         {
             mdb = new MDBHelper(conn);
             MDBHelper.CreateAccessDatabase(conn);
-            MDBHelper.CreateMDBTable(conn, "Users", new System.Collections.ArrayList(new object[] { "用户名", "用户密码", "用户权限", "厂牌UID", "最后登录时间", "登录次数", "工号" }));
+            MDBHelper.TryCreateAccessTable(conn, "Users", new System.Collections.ArrayList(new object[] { "用户名", "用户密码", "用户权限", "厂牌UID", "最后登录时间", "登录次数", "工号" }));
             DataTable dt = new DataTable("Users");
             DataColumn userid = new DataColumn("用户名", typeof(string));
             dt.Columns.Add(userid);

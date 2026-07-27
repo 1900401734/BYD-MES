@@ -45,6 +45,7 @@ namespace BulletinBoard
             this.txtFinalStation = new System.Windows.Forms.TextBox();
             this.txt_GenarateSpeed = new System.Windows.Forms.TextBox();
             this.chkNameToID = new System.Windows.Forms.CheckBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
             this.btnSaveAtStatisticsSettings = new System.Windows.Forms.Button();
@@ -278,6 +279,7 @@ namespace BulletinBoard
             this.tabPage3.Controls.Add(this.txtFinalStation);
             this.tabPage3.Controls.Add(this.txt_GenarateSpeed);
             this.tabPage3.Controls.Add(this.chkNameToID);
+            this.tabPage3.Controls.Add(this.label7);
             this.tabPage3.Controls.Add(this.label13);
             this.tabPage3.Controls.Add(this.label12);
             this.tabPage3.Controls.Add(this.btnSaveAtStatisticsSettings);
@@ -314,6 +316,16 @@ namespace BulletinBoard
             this.chkNameToID.TabIndex = 6;
             this.chkNameToID.Text = "更改工位名称为工位ID";
             this.chkNameToID.UseVisualStyleBackColor = true;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.ForeColor = System.Drawing.Color.Red;
+            this.label7.Location = new System.Drawing.Point(672, 23);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(118, 24);
+            this.label7.TabIndex = 5;
+            this.label7.Text = "(必填项）";
             // 
             // label13
             // 
@@ -1361,6 +1373,7 @@ namespace BulletinBoard
         private System.Windows.Forms.RichTextBox richTextBox2;
         private System.Windows.Forms.Label label35;
         private System.Windows.Forms.Label label34;
+        private System.Windows.Forms.Label label7;
     }
 }
 

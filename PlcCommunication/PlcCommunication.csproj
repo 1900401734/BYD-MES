@@ -53,6 +53,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Language_Resources\language_Chinese.Designer.cs" />
+    <Compile Include="Language_Resources\language_English.Designer.cs" />
+    <Compile Include="Language_Resources\language_Thai.Designer.cs" />
     <Compile Include="PlcCommunicationTool.cs" />
     <Compile Include="FormPlcCommunication.cs">
       <SubType>Form</SubType>
@@ -67,9 +70,15 @@
     <EmbeddedResource Include="FormPlcCommunication.resx">
       <DependentUpon>FormPlcCommunication.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Language_Resources\language_Chinese.resx" />
+    <EmbeddedResource Include="Language_Resources\language_English.resx" />
+    <EmbeddedResource Include="Language_Resources\language_Thai.resx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="AA\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

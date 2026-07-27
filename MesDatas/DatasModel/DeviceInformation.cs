@@ -16,13 +16,13 @@ namespace MesDatas.DatasModel
         /// 设备状态：D1007
         /// </summary>
         [SugarColumn(ColumnName = "DeviceStatus", IsNullable = true)]
-        public string DeviceStatusPoint { get; set; }      // 设备状态 
+        public string DeviceStatusPoint { get; set; }
 
         /// <summary>
         /// 产品型号：D1120
         /// </summary>
         [SugarColumn(ColumnName = "ProductModelNum", IsNullable = true)]
-        public string ProductModelPoint { get; set; }       // 产品型号 
+        public string ProductModelPoint { get; set; }
 
         /// <summary>
         /// 型号长度：10
@@ -48,9 +48,6 @@ namespace MesDatas.DatasModel
         [SugarColumn(ColumnName = "FormulaNumModify", IsNullable = true)]
         public string ModifyRecipeIDPoint { get; set; }
 
-        [SugarColumn(ColumnName = "StartNFC", IsNullable = true)]
-        public string StartNFCPoint { get; set; }
-
         /// <summary>
         /// 刷卡返回：D18040
         /// </summary>
@@ -62,6 +59,30 @@ namespace MesDatas.DatasModel
         /// </summary>
         [SugarColumn(ColumnName = "ViewStatus", IsNullable = true)]
         public string DashboardStatusPoint { get; set; }
+
+        /// <summary>
+        /// 英文机台名称
+        /// </summary>
+        [SugarColumn(ColumnName = "DeviceName_English", IsNullable = true)]
+        public string DeviceName_English { get; set; } = "DeviceName_English";
+
+        /// <summary>
+        /// 泰文机台名称
+        /// </summary>
+        [SugarColumn(ColumnName = "DeviceName_Thai", IsNullable = true)]
+        public string DeviceName_Thai { get; set; } = "ชื่ออุปกรณ์_ไทย";
+
+        /// <summary>
+        /// 工位名称（英文）
+        /// </summary>
+        [SugarColumn(ColumnName = "StationNameSets_English", IsNullable = true)]
+        public string StationNameSets_English { get; set; } = "Left|Right";
+
+        /// <summary>
+        /// 工位名称（泰文）
+        /// </summary>
+        [SugarColumn(ColumnName = "StationNameSets_Thai", IsNullable = true)]
+        public string StationNameSets_Thai { get; set; } = "Left|Right";
 
         public static DeviceInformation DeviceInformationInitalize()
         {

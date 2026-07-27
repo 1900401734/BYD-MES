@@ -121,19 +121,23 @@ namespace BydMesTool
 
         public string MesBarCodeSend { get { return CodeSendCmd.Text; } }
 
-        public void UsersVarify(out bool 验证结果, out string MES反馈, out string XMLOUT)
+        public void UsersVarify()
         {
-            MesIntegrationService.VarifyUserLogin(out 验证结果, out MES反馈, out XMLOUT);
+            MesIntegrationService.VarifyUserLoginAsync();
         }
 
-        public void BarCodeVarify(string 产品条码, out bool 验证结果, out string MES反馈, out string XMLOUT)
+        public async Task<(bool verifyResult, string MESFeedback, string XMLOUT)> BarCodeVarify(string 产品条码)
         {
-            MesIntegrationService.VarifyBarcode(产品条码, out 验证结果, out MES反馈, out XMLOUT);
+            var result = await MesIntegrationService.VarifyBarcodeAsync(产品条码);
+            bool verifyResult = result.isVerifySuccessfully;
+            string MESFeedback = result.MESFeedback;
+            string XMLOUT = result.XMLOUT;
+            return (verifyResult, MESFeedback, XMLOUT);
         }
 
-        public void UpDateToMes(bool 测试结果, string 产品条码, string 文件版本, string 软件版本, string 测试项, out bool 验证结果, out string MES反馈, out string XMLOUT)
+        public void UpDateToMes(bool 测试结果, string 产品条码, string 文件版本, string 软件版本, string 测试项)
         {
-            MesIntegrationService.UploadBarcode(测试结果, 产品条码, 文件版本, 软件版本, 测试项, out 验证结果, out MES反馈, out XMLOUT);
+            MesIntegrationService.UploadBarcodeAsync(测试结果, 产品条码, 文件版本, 软件版本, 测试项);
         }
 
         private void userClick(object sender, EventArgs e)
@@ -142,7 +146,7 @@ namespace BydMesTool
             bool 验证结果;
             string MES反馈;
             string XMLOUT;
-            UsersVarify(out 验证结果, out MES反馈, out XMLOUT);
+            UsersVarify();
 
         }
 
@@ -152,13 +156,13 @@ namespace BydMesTool
             bool 验证结果;
             string MES反馈;
             string XMLOUT;
-            BarCodeVarify(产品条码, out 验证结果, out MES反馈, out XMLOUT);
+            Task.Run(() => BarCodeVarify(产品条码));
         }
 
         private void CodeVarify_Click(object sender, EventArgs e)
         {
             bool 测试结果 = false; string 产品条码 = textBox1.Text; string 文件版本 = "00"; string 软件版本 = "01"; string 测试项 = richTextBox1.Text; bool 验证结果; string MES反馈; string XMLOUT;
-            UpDateToMes(测试结果, 产品条码, 文件版本, 软件版本, 测试项, out 验证结果, out MES反馈, out XMLOUT);
+            UpDateToMes(测试结果, 产品条码, 文件版本, 软件版本, 测试项);
         }
 
         private void 用户登录_Click(object sender, EventArgs e)

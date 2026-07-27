@@ -14,7 +14,6 @@ namespace MesDatas.Utility.SugarDB
 {
     public class DBConnSugClie
     {
-
         static string Dbtypele = "Access";
         static string path4 = System.AppDomain.CurrentDomain.BaseDirectory + "SystemDateBase.mdb";
         static string ConnnectString = " Provider = Microsoft.Jet.OLEDB.4.0; Data Source ={0}; Persist Security Info=True; Jet OLEDB:Database Password=byd; User Id=admin ";

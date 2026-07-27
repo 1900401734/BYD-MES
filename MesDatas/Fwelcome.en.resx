@@ -117,51 +117,81 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="button1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>651, 220</value>
+  </data>
+  <data name="button1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>131, 273</value>
+  </data>
   <data name="button1.Text" xml:space="preserve">
     <value>Login</value>
   </data>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="label1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>99, 279</value>
+    <value>116, 226</value>
   </data>
   <data name="label1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>189, 30</value>
+    <value>224, 36</value>
   </data>
   <data name="label1.Text" xml:space="preserve">
     <value>Employee ID</value>
-  </data>
-  <data name="label1.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>MiddleRight</value>
   </data>
   <data name="label2.ImageAlign" type="System.Drawing.ContentAlignment, System.Drawing">
     <value>MiddleRight</value>
   </data>
   <data name="label2.Location" type="System.Drawing.Point, System.Drawing">
-    <value>141, 332</value>
+    <value>171, 293</value>
   </data>
   <data name="label2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>141, 30</value>
+    <value>167, 36</value>
   </data>
   <data name="label2.Text" xml:space="preserve">
     <value>Password</value>
   </data>
-  <data name="label2.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>MiddleRight</value>
+  <data name="tbxUserID.Location" type="System.Drawing.Point, System.Drawing">
+    <value>363, 220</value>
+  </data>
+  <data name="tbxPassword.Location" type="System.Drawing.Point, System.Drawing">
+    <value>363, 287</value>
+  </data>
+  <data name="tbxPassword.Size" type="System.Drawing.Size, System.Drawing">
+    <value>248, 53</value>
+  </data>
+  <data name="cboLoginMode.Location" type="System.Drawing.Point, System.Drawing">
+    <value>363, 350</value>
+  </data>
+  <data name="cboLoginMode.Size" type="System.Drawing.Size, System.Drawing">
+    <value>248, 41</value>
   </data>
   <data name="label3.ImageAlign" type="System.Drawing.ContentAlignment, System.Drawing">
     <value>MiddleRight</value>
   </data>
   <data name="label3.Location" type="System.Drawing.Point, System.Drawing">
-    <value>189, 389</value>
+    <value>247, 350</value>
   </data>
   <data name="label3.Size" type="System.Drawing.Size, System.Drawing">
-    <value>77, 30</value>
+    <value>91, 36</value>
   </data>
   <data name="label3.Text" xml:space="preserve">
     <value>Mode</value>
   </data>
-  <data name="label3.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>MiddleRight</value>
+  <data name="lblDeviceName.Location" type="System.Drawing.Point, System.Drawing">
+    <value>9, 18</value>
+  </data>
+  <data name="lblDeviceName.Text" xml:space="preserve">
+    <value>Device Name</value>
+  </data>
+  <data name="cboCurrentLanguage.Location" type="System.Drawing.Point, System.Drawing">
+    <value>363, 452</value>
+  </data>
+  <data name="cboCurrentLanguage.Size" type="System.Drawing.Size, System.Drawing">
+    <value>248, 41</value>
+  </data>
+  <data name="cboLoginMethod.Location" type="System.Drawing.Point, System.Drawing">
+    <value>363, 401</value>
+  </data>
+  <data name="cboLoginMethod.Size" type="System.Drawing.Size, System.Drawing">
+    <value>248, 41</value>
   </data>
   <data name="pictureBox1.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -210,7 +240,7 @@
         RudN65tdA8sHzg46DF645Xrr8m2v29fvrLwzMBQydHc4cnjkLvvu5L2key/vZ9yff7DpIfph4SOpR+WP
         lR7X/aj3Y+uI5ciZUdfRvidBTx6Mscae/5T+04fx/Kfkp+UTqhONk2aTp6fcp24+W/1s/Hnq8/npgp+l
         f65+ofviu18cf+mbWTUz/pL/cuHX4lfyr468Xva6e9Z/9vGb5Dfzc4Vv5d8efcd41/s+7P3EfOYH7IeK
-        j3ofuz55f3q4kLyw8Bv3hPP74uYdwgAAAAlwSFlzAAAuIwAALiMBeKU/dgAASEpJREFUeF7t3Xm8fdX8
+        j3ofuz55f3q4kLyw8Bv3hPP74uYdwgAAAAlwSFlzAAAuIgAALiIBquLdkgAASEpJREFUeF7t3Xm8fdX8
         P/BIo6ZPg0KSSkoDEakoY5nKkCEiSWaRvuYfkagoGeobonxJUlKm8jV8M0RShEqFTPEJleZSxt/rde89
         n8+557zOPWu/97jOef3xfNw+q3v3dNbe63X2XnutZf7zn/+YmZmZWYVkoZmZmZnFyUIzMzMzi5OFZmZm
         ZhYnC83MzMwsThaamZmZWZwsNDMzM7M4WWhmZmZmcbLQzMzMzOJkoZmZmZnFyUKLu2qZNafa4pmfi/Bz
@@ -522,29 +552,29 @@
         OFloZmZmZlH/Web/Ayp6eEA5X/0RAAAAAElFTkSuQmCC
 </value>
   </data>
+  <data name="pictureBox1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>363, 107</value>
+  </data>
   <data name="label6.Location" type="System.Drawing.Point, System.Drawing">
-    <value>142, 498</value>
+    <value>171, 452</value>
   </data>
   <data name="label6.Size" type="System.Drawing.Size, System.Drawing">
-    <value>141, 30</value>
+    <value>167, 36</value>
   </data>
   <data name="label6.Text" xml:space="preserve">
     <value>Language</value>
   </data>
-  <data name="label6.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>MiddleRight</value>
-  </data>
   <data name="label5.Location" type="System.Drawing.Point, System.Drawing">
-    <value>110, 442</value>
+    <value>135, 401</value>
   </data>
   <data name="label5.Size" type="System.Drawing.Size, System.Drawing">
-    <value>173, 30</value>
+    <value>205, 36</value>
   </data>
   <data name="label5.Text" xml:space="preserve">
     <value>Login Type</value>
   </data>
-  <data name="label5.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>MiddleRight</value>
+  <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
+    <value>144, 144</value>
   </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>

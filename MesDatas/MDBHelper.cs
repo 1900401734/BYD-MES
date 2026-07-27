@@ -309,7 +309,7 @@ namespace MesDatas
         /// <param name="tableName">表名</param>
         /// <param name="mdbHead">字段名集合</param>
         /// <returns></returns>
-        public static bool CreateMDBTable(string mdbPath, string tableName, ArrayList mdbHead)
+        /*public static bool TryCreateAccessTable(string mdbPath, string tableName, ArrayList mdbHead)
         {
             try
             {
@@ -344,6 +344,104 @@ namespace MesDatas
             catch (Exception ex)
             {
                 Console.WriteLine($"ERROR:{ex}");
+                return false;
+            }
+        }*/
+
+        /// <summary>
+        /// 创建Access数据库表格并添加指定列
+        /// </summary>
+        /// <param name="mdbPath">Access数据库文件(.mdb)的完整路径</param>
+        /// <param name="tableName">要创建的表格名称</param>
+        /// <param name="mdbHead">表格列名集合</param>
+        /// <returns>创建成功返回true，否则返回false</returns>
+        public static bool TryCreateAccessTable(string mdbPath, string tableName, ArrayList mdbHead)
+        {
+            try
+            {
+                // 创建连接字符串，指定Access数据库提供程序、数据源路径及安全凭据
+                string sAccessConnection
+                 = $@"Provider=Microsoft.Jet.OLEDB.4.0; Data Source={mdbPath}; Persist Security Info=True; Jet OLEDB:Database Password=byd; User Id=admin";
+
+                // 创建数据库连接对象
+                ADODB.Connection cn = new ADODB.Connection();
+
+                // 打开数据库连接
+                cn.Open(sAccessConnection, null, null, -1);
+
+                // 创建数据库目录对象，用于访问和管理数据库结构
+                ADOX.CatalogClass cat = new ADOX.CatalogClass();
+
+                // 将目录对象与数据库连接关联，以便访问数据库中的对象
+                cat.ActiveConnection = cn;
+
+                // 检查表格是否已存在（需要在设置ActiveConnection后进行）
+                bool tableExists = false;
+                foreach (ADOX.Table existingTable in cat.Tables)
+                {
+                    // 不区分大小写比较表名
+                    if (existingTable.Name.Equals(tableName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        tableExists = true;
+                        break;
+                    }
+                }
+
+                // 如果表格已存在，记录信息并返回
+                if (tableExists)
+                {
+                    Console.WriteLine($"表格 '{tableName}' 已存在。");
+                    cn.Close();
+                    return false;
+                }
+
+                // 创建新表格对象
+                ADOX.TableClass tb = new ADOX.TableClass();
+
+                // 设置表格的父目录，使其能被添加到数据库
+                tb.ParentCatalog = cat;
+
+                // 设置表格名称
+                tb.Name = tableName;
+
+                // 获取需要创建的列数
+                int size = mdbHead.Count;
+
+                // 循环添加每一列
+                for (int i = 0; i < size; i++)
+                {
+                    // 创建列对象
+                    ADOX.ColumnClass col2 = new ADOX.ColumnClass();
+
+                    // 设置列的父目录
+                    col2.ParentCatalog = cat;
+
+                    // 设置列名
+                    col2.Name = mdbHead[i].ToString();
+
+                    // 设置列属性：允许零长度字符串
+                    col2.Properties["Jet OLEDB:Allow Zero Length"].Value = true;
+
+                    // 将列添加到表格中，指定数据类型为可变长度Unicode字符串，最大长度为500
+                    tb.Columns.Append(col2, ADOX.DataTypeEnum.adVarWChar, 500);
+                }
+
+                // 将表格添加到数据库中（关键步骤：将内存中的表格定义实际写入数据库）
+                cat.Tables.Append(tb);
+
+                // 释放引用
+                tb = null;
+                cat = null;
+
+                // 关闭数据库连接
+                cn.Close();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // 记录异常信息
+                Console.WriteLine($"错误:{ex}");
                 return false;
             }
         }

@@ -6,12 +6,33 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.CompilerServices.RuntimeHelpers;
 
 namespace MesDatas.Utiey
 {
     class CodeNum
     {
         #region ---------- 数值转换 ----------
+
+        public static string FormatNumber(string input, string format)
+        {
+            if (string.IsNullOrEmpty(input))
+            {
+                return input;
+            }
+
+            if (double.TryParse(input, out double number))
+            {
+                if (format.StartsWith("F") || format.StartsWith("f"))
+                {
+                    if (int.TryParse(format.Substring(1), out int decimalPlaces) && decimalPlaces >= 0)
+                    {
+                        return number.ToString($"F{decimalPlaces}");
+                    }
+                }
+            }
+            return input;
+        }
 
         /// <summary>
         /// 将字符串转换为 double，除以 10，再转回字符串。
@@ -371,17 +392,90 @@ namespace MesDatas.Utiey
         /// <summary>
         /// 计算数组中不等于 "NO" 的元素数量。
         /// </summary>
-        /// <param name="testItems">输入的字符串数组</param>
+        /// <param name="array">测试项信息中的测试项、上下限或其它数组</param>
         /// <returns>不等于 "NO" 的元素数量</returns>
-        public static int GetValidItems(string[] testItems)
+        public static int GetValidItems(string[] array, string[] targetStation = null, string staionToken = null, bool isEnableMutiStation = false)
         {
             int count = 0;
 
-            for (int i = 0; i < testItems.Length; i++)
+            for (int i = 0; i < array.Length; i++)
             {
-                if (!testItems[i].Equals("NO"))
+                if (isEnableMutiStation)
+                {
+                    if (array[i] != "NO" && targetStation[i] == staionToken)
+                    {
+                        count++;
+                    }
+                }
+                else
+                {
+                    if (array[i] != "NO")
+                    {
+                        count++;
+                    }
+                }
+            }
+
+            return count;
+        }
+
+        /// <summary>
+        /// 计算数组中等于 "NO" 的元素数量。
+        /// </summary>
+        /// <param name="array">测试项信息中的测试项、上下限或其它数组</param>
+        /// <returns>等于 "NO" 的元素数量</returns>
+        public static int GetInvalidItems(string[] array, string[] targetStation = null, string staionToken = null, bool isEnableMutiStation = false)
+        {
+            /*int count = 0;
+
+            for (int i = 0; i < array.Length; i++)
+            {
+                if (array[i].Equals("NO"))
                 {
                     count++;
+                }
+            }
+            return count;*/
+
+            int count = 0;
+
+            for (int i = 0; i < array.Length; i++)
+            {
+                if (isEnableMutiStation)
+                {
+                    if (array[i] == "NO" && targetStation[i] == staionToken)
+                    {
+                        count++;
+                    }
+                }
+                else
+                {
+                    if (array[i] == "NO")
+                    {
+                        count++;
+                    }
+                }
+            }
+
+            return count;
+        }
+
+        /// <summary>
+        /// 通过工位 ID 获取不等于 NO 的个数
+        /// </summary>
+        /// <param name="testItems"></param>
+        /// <returns></returns>
+        public static int GetValidItemsByStationID(string[] testItemsName, string[] staionID, string stationToken)
+        {
+            int count = 0;
+            for (int i = 0; i < testItemsName.Length; i++)
+            {
+                if (staionID[i].Equals(stationToken))
+                {
+                    if (!testItemsName[i].Equals("NO"))
+                    {
+                        count++;
+                    }
                 }
             }
             return count;
@@ -505,7 +599,7 @@ namespace MesDatas.Utiey
         }
 
         /// <summary>
-        /// 从条码验证型号与工装编号字符串中提取工装编号信息。
+        /// 从条码验证型号与工装编号中提取工装编号数组
         /// 工装编号是以 '|' 分隔的第二个部分，可能包含多个以 '+' 连接的编号。
         /// </summary>
         /// <param name="barcodeAndFixturesInfo">包含条码验证规则和工装编号的字符串</param>
@@ -556,10 +650,10 @@ namespace MesDatas.Utiey
         public static string[] GetProductCodes(string barcodeRule, DataTable recipeInfoTable)
         {
             string[] productCode = new string[] { };
-            DataRow[] rows = recipeInfoTable.Select($"TooName = '{barcodeRule}'");  // TooName:条码验证规则
+            DataRow[] rows = recipeInfoTable.Select($"BarcodeRule = '{barcodeRule}'");  // TooName:条码验证规则
             if (rows.Length > 0)
             {
-                productCode = rows[0]["MateName"].ToString().Split('+');    // MateName:产品编码
+                productCode = rows[0]["ProductCode"].ToString().Split('+');    // MateName:产品编码
             }
             return productCode;
         }
@@ -568,13 +662,13 @@ namespace MesDatas.Utiey
         /// 获取条码规则对应的完整产品编码字符串
         /// </summary>
         /// <returns>完整的产品编码字符串，如果未找到则返回空字符串</returns>
-        public static string GetProductCodeString(string barcodeRule, DataTable recipeInfoTable)
+        public static string GetProductCodeByRule(string barcodeRule, DataTable recipeInfoTable)
         {
             string productCode = "";
-            DataRow[] rows = recipeInfoTable.Select($"TooName = '{barcodeRule}'");
+            DataRow[] rows = recipeInfoTable.Select($"BarcodeRule = '{barcodeRule}'");
             if (rows.Length > 0)
             {
-                productCode = rows[0]["MateName"].ToString();
+                productCode = rows[0]["ProductCode"].ToString();
             }
             return productCode;
         }
@@ -638,6 +732,15 @@ namespace MesDatas.Utiey
                 data = ConvertToOkNg(type);
             }
             return data;
+        }
+
+        public static Dictionary<string, List<List<string>>> deserializeObject11(Dictionary<string, List<List<string>>> keyValuePairs)
+        {
+            if (keyValuePairs == null)
+            {
+                keyValuePairs = new Dictionary<string, List<List<string>>>();
+            }
+            return keyValuePairs;
         }
     }
 }

@@ -31,7 +31,7 @@ namespace MesDatas
         private void Test()
         {
             MDBHelper.CreateAccessDatabase("D:\\tt.mdb");
-            MDBHelper.CreateMDBTable("D:\\tt.mdb", "test040914", new System.Collections.ArrayList(new object[] { "ID", "Name", "tt", "66" }));
+            MDBHelper.TryCreateAccessTable("D:\\tt.mdb", "test040914", new System.Collections.ArrayList(new object[] { "ID", "Name", "tt", "66" }));
             mdb = new MDBHelper("D:\\tt.mdb");
 
 

@@ -19,7 +19,7 @@ namespace MesDatas
         public static void SetDefaultLanguage(string lang)
         {
             System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(lang);
-            DefaultLanguage = lang;
+            //DefaultLanguage = lang;
             Properties.Settings.Default.DefaultLanguage = lang;
             Properties.Settings.Default.Save();
         }

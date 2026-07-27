@@ -61,51 +61,6 @@ namespace MesDatas.Language_Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 条码校验失败.
-        /// </summary>
-        public static string barCode_NG {
-            get {
-                return ResourceManager.GetString("barCode_NG", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 条码校验通过.
-        /// </summary>
-        public static string barCode_OK {
-            get {
-                return ResourceManager.GetString("barCode_OK", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 条码重复扫描.
-        /// </summary>
-        public static string barCode_repeat {
-            get {
-                return ResourceManager.GetString("barCode_repeat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 未获取到条码，请重新扫描！.
-        /// </summary>
-        public static string barCode_State {
-            get {
-                return ResourceManager.GetString("barCode_State", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 开始读取数据.
-        /// </summary>
-        public static string begin_read_data {
-            get {
-                return ResourceManager.GetString("begin_read_data", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to (*.btw)|*.btw.
         /// </summary>
         public static string cboFileFormat_TCP_Items {
@@ -124,29 +79,11 @@ namespace MesDatas.Language_Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 请检查联机参数.
-        /// </summary>
-        public static string Check_param {
-            get {
-                return ResourceManager.GetString("Check_param", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to 请检查账号密码是否正确.
         /// </summary>
         public static string checkIdorpwd {
             get {
                 return ResourceManager.GetString("checkIdorpwd", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 产品名称.
-        /// </summary>
-        public static string CName {
-            get {
-                return ResourceManager.GetString("CName", resourceCulture);
             }
         }
         
@@ -169,20 +106,20 @@ namespace MesDatas.Language_Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 请取下产品继续生产.
+        ///   Looks up a localized string similar to 条码.
         /// </summary>
-        public static string Continue_production {
+        public static string d1Barcode {
             get {
-                return ResourceManager.GetString("Continue_production", resourceCulture);
+                return ResourceManager.GetString("d1Barcode", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 产品编号.
+        ///   Looks up a localized string similar to 工位.
         /// </summary>
-        public static string d2CPBH {
+        public static string d1StationName {
             get {
-                return ResourceManager.GetString("d2CPBH", resourceCulture);
+                return ResourceManager.GetString("d1StationName", resourceCulture);
             }
         }
         
@@ -201,6 +138,15 @@ namespace MesDatas.Language_Resources {
         public static string d2CPTM {
             get {
                 return ResourceManager.GetString("d2CPTM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 产品型号.
+        /// </summary>
+        public static string d2CPXH {
+            get {
+                return ResourceManager.GetString("d2CPXH", resourceCulture);
             }
         }
         
@@ -225,9 +171,9 @@ namespace MesDatas.Language_Resources {
         /// <summary>
         ///   Looks up a localized string similar to 序号.
         /// </summary>
-        public static string d2No {
+        public static string d2NO {
             get {
-                return ResourceManager.GetString("d2No", resourceCulture);
+                return ResourceManager.GetString("d2NO", resourceCulture);
             }
         }
         
@@ -237,6 +183,141 @@ namespace MesDatas.Language_Resources {
         public static string d2SCZT {
             get {
                 return ResourceManager.GetString("d2SCZT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 名称.
+        /// </summary>
+        public static string d3Name {
+            get {
+                return ResourceManager.GetString("d3Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 值.
+        /// </summary>
+        public static string d3Value {
+            get {
+                return ResourceManager.GetString("d3Value", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 标准值.
+        /// </summary>
+        public static string d4BZZ {
+            get {
+                return ResourceManager.GetString("d4BZZ", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 测试结果.
+        /// </summary>
+        public static string d4CSJG {
+            get {
+                return ResourceManager.GetString("d4CSJG", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 测试项目.
+        /// </summary>
+        public static string d4CSXM {
+            get {
+                return ResourceManager.GetString("d4CSXM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 序号.
+        /// </summary>
+        public static string d4NO {
+            get {
+                return ResourceManager.GetString("d4NO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 实际值.
+        /// </summary>
+        public static string d4SJZ {
+            get {
+                return ResourceManager.GetString("d4SJZ", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 上限值.
+        /// </summary>
+        public static string d4SXZ {
+            get {
+                return ResourceManager.GetString("d4SXZ", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 下限值.
+        /// </summary>
+        public static string d4XXZ {
+            get {
+                return ResourceManager.GetString("d4XXZ", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 条码规则.
+        /// </summary>
+        public static string d5BarcodeRule {
+            get {
+                return ResourceManager.GetString("d5BarcodeRule", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 工装编号.
+        /// </summary>
+        public static string d5FixtureID {
+            get {
+                return ResourceManager.GetString("d5FixtureID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 配方编号.
+        /// </summary>
+        public static string d5ID {
+            get {
+                return ResourceManager.GetString("d5ID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 产品编码.
+        /// </summary>
+        public static string d5PCode {
+            get {
+                return ResourceManager.GetString("d5PCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 产品名称.
+        /// </summary>
+        public static string d5PName {
+            get {
+                return ResourceManager.GetString("d5PName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 二维条码验证.
+        /// </summary>
+        public static string d5QRCode {
+            get {
+                return ResourceManager.GetString("d5QRCode", resourceCulture);
             }
         }
         
@@ -286,34 +367,7 @@ namespace MesDatas.Language_Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 工装编号验证失败.
-        /// </summary>
-        public static string Fixture_NG {
-            get {
-                return ResourceManager.GetString("Fixture_NG", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 工装编号验证通过.
-        /// </summary>
-        public static string Fixture_OK {
-            get {
-                return ResourceManager.GetString("Fixture_OK", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 配方编号.
-        /// </summary>
-        public static string ID {
-            get {
-                return ResourceManager.GetString("ID", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 请输入生产工单号:.
+        ///   Looks up a localized string similar to 请输入当前工单号：.
         /// </summary>
         public static string InputBox {
             get {
@@ -322,7 +376,7 @@ namespace MesDatas.Language_Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 次未输入(提示：3次未输入退出系统).
+        ///   Looks up a localized string similar to 次未输入（提示：3次未输入退出系统）.
         /// </summary>
         public static string InputBox1 {
             get {
@@ -394,56 +448,11 @@ namespace MesDatas.Language_Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 产品编码.
+        ///   Looks up a localized string similar to 下限.
         /// </summary>
-        public static string MateName {
+        public static string LowerLimit {
             get {
-                return ResourceManager.GetString("MateName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 物料验证失败，请重新扫描！.
-        /// </summary>
-        public static string material_NG {
-            get {
-                return ResourceManager.GetString("material_NG", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 物料验证通过.
-        /// </summary>
-        public static string material_OK {
-            get {
-                return ResourceManager.GetString("material_OK", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 联机数据上传中.
-        /// </summary>
-        public static string Mes_upload {
-            get {
-                return ResourceManager.GetString("Mes_upload", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 联机数据上传失败.
-        /// </summary>
-        public static string Mes_upload_NG {
-            get {
-                return ResourceManager.GetString("Mes_upload_NG", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 联机数据上传成功.
-        /// </summary>
-        public static string Mes_upload_OK {
-            get {
-                return ResourceManager.GetString("Mes_upload_OK", resourceCulture);
+                return ResourceManager.GetString("LowerLimit", resourceCulture);
             }
         }
         
@@ -466,38 +475,101 @@ namespace MesDatas.Language_Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 单机用户验证成功.
-        /// </summary>
-        public static string OfflineUser_OK {
-            get {
-                return ResourceManager.GetString("OfflineUser_OK", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 联机用户验证失败.
-        /// </summary>
-        public static string onlineUser_NG {
-            get {
-                return ResourceManager.GetString("onlineUser_NG", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 联机用户验证成功.
-        /// </summary>
-        public static string onlineUser_OK {
-            get {
-                return ResourceManager.GetString("onlineUser_OK", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to 操作.
         /// </summary>
         public static string operation {
             get {
                 return ResourceManager.GetString("operation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 请检查联机参数.
+        /// </summary>
+        public static string OT_CheckParam {
+            get {
+                return ResourceManager.GetString("OT_CheckParam", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 请取下产品继续生产.
+        /// </summary>
+        public static string OT_Continue {
+            get {
+                return ResourceManager.GetString("OT_Continue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 请重新上传.
+        /// </summary>
+        public static string OT_Reupload {
+            get {
+                return ResourceManager.GetString("OT_Reupload", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 扫码完成.
+        /// </summary>
+        public static string OT_Scaned {
+            get {
+                return ResourceManager.GetString("OT_Scaned", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 等待扫工装.
+        /// </summary>
+        public static string OT_ScanFixture {
+            get {
+                return ResourceManager.GetString("OT_ScanFixture", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 请继续扫描工装二维码.
+        /// </summary>
+        public static string OT_ScanFixtureContinue {
+            get {
+                return ResourceManager.GetString("OT_ScanFixtureContinue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 请开始生产.
+        /// </summary>
+        public static string OT_StartProduce {
+            get {
+                return ResourceManager.GetString("OT_StartProduce", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 工位1测试NG, 无法进入工位2.
+        /// </summary>
+        public static string OT_Station1NG {
+            get {
+                return ResourceManager.GetString("OT_Station1NG", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 请等待.
+        /// </summary>
+        public static string OT_Wait {
+            get {
+                return ResourceManager.GetString("OT_Wait", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 等待扫描条码.
+        /// </summary>
+        public static string OT_WaitingScan {
+            get {
+                return ResourceManager.GetString("OT_WaitingScan", resourceCulture);
             }
         }
         
@@ -583,33 +655,6 @@ namespace MesDatas.Language_Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 请重新上传.
-        /// </summary>
-        public static string Re_upload {
-            get {
-                return ResourceManager.GetString("Re_upload", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 本地数据保存中.
-        /// </summary>
-        public static string Read_data {
-            get {
-                return ResourceManager.GetString("Read_data", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 本地数据保存完成.
-        /// </summary>
-        public static string Read_data_OK {
-            get {
-                return ResourceManager.GetString("Read_data_OK", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to 关闭读卡器.
         /// </summary>
         public static string readCard_Close {
@@ -637,20 +682,254 @@ namespace MesDatas.Language_Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 条码规则不匹配.
+        /// </summary>
+        public static string RSBarcode_Dismach {
+            get {
+                return ResourceManager.GetString("RSBarcode_Dismach", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 条码内容不规范.
+        /// </summary>
+        public static string RSBarcode_Fault {
+            get {
+                return ResourceManager.GetString("RSBarcode_Fault", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MES条码校验失败.
+        /// </summary>
+        public static string RSBarcode_NG {
+            get {
+                return ResourceManager.GetString("RSBarcode_NG", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 无条码验证规则.
+        /// </summary>
+        public static string RSBarcode_NoRule {
+            get {
+                return ResourceManager.GetString("RSBarcode_NoRule", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 未获取到条码.
+        /// </summary>
+        public static string RSBarcode_Null {
+            get {
+                return ResourceManager.GetString("RSBarcode_Null", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 条码验证通过.
+        /// </summary>
+        public static string RSBarcode_OK {
+            get {
+                return ResourceManager.GetString("RSBarcode_OK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 条码重复扫描.
+        /// </summary>
+        public static string RSBarcode_Repeat {
+            get {
+                return ResourceManager.GetString("RSBarcode_Repeat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 本地数据保存完成.
+        /// </summary>
+        public static string RSData_Saved {
+            get {
+                return ResourceManager.GetString("RSData_Saved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 本地数据保存中.
+        /// </summary>
+        public static string RSData_Saving {
+            get {
+                return ResourceManager.GetString("RSData_Saving", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 开始读取数据.
+        /// </summary>
+        public static string RSData_StartReading {
+            get {
+                return ResourceManager.GetString("RSData_StartReading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 联机数据上传中.
+        /// </summary>
+        public static string RSData_Uploading {
+            get {
+                return ResourceManager.GetString("RSData_Uploading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 联机数据上传失败.
+        /// </summary>
+        public static string RSData_UploadNG {
+            get {
+                return ResourceManager.GetString("RSData_UploadNG", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 联机数据上传成功.
+        /// </summary>
+        public static string RSData_UploadOK {
+            get {
+                return ResourceManager.GetString("RSData_UploadOK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 工装编号验证失败.
+        /// </summary>
+        public static string RSFixture_NG {
+            get {
+                return ResourceManager.GetString("RSFixture_NG", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 无需工装验证.
+        /// </summary>
+        public static string RSFixture_NotRequire {
+            get {
+                return ResourceManager.GetString("RSFixture_NotRequire", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 工装编号验证通过.
+        /// </summary>
+        public static string RSFixture_OK {
+            get {
+                return ResourceManager.GetString("RSFixture_OK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 需要工装验证.
+        /// </summary>
+        public static string RSFixture_RequireValidate {
+            get {
+                return ResourceManager.GetString("RSFixture_RequireValidate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 工装验证中.
+        /// </summary>
+        public static string RSFixture_Validating {
+            get {
+                return ResourceManager.GetString("RSFixture_Validating", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 物料验证失败.
+        /// </summary>
+        public static string RSMaterial_NG {
+            get {
+                return ResourceManager.GetString("RSMaterial_NG", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 物料验证通过.
+        /// </summary>
+        public static string RSMaterial_OK {
+            get {
+                return ResourceManager.GetString("RSMaterial_OK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 工位1无此条码数据.
+        /// </summary>
+        public static string RSStation_NoData {
+            get {
+                return ResourceManager.GetString("RSStation_NoData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 工位1测试结果为NG.
+        /// </summary>
+        public static string RSStation_Station1NG {
+            get {
+                return ResourceManager.GetString("RSStation_Station1NG", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 请先在工位1完成测试.
+        /// </summary>
+        public static string RSStation_TobeCompleted {
+            get {
+                return ResourceManager.GetString("RSStation_TobeCompleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 单机用户验证成功.
+        /// </summary>
+        public static string RSUser_OfflineOK {
+            get {
+                return ResourceManager.GetString("RSUser_OfflineOK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 联机用户验证失败.
+        /// </summary>
+        public static string RSUser_OnlineNG {
+            get {
+                return ResourceManager.GetString("RSUser_OnlineNG", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 联机用户验证成功.
+        /// </summary>
+        public static string RSUser_OnlineOK {
+            get {
+                return ResourceManager.GetString("RSUser_OnlineOK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 用户验证中.
+        /// </summary>
+        public static string RSUser_Verifing {
+            get {
+                return ResourceManager.GetString("RSUser_Verifing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 保存.
         /// </summary>
         public static string save {
             get {
                 return ResourceManager.GetString("save", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 扫码完成.
-        /// </summary>
-        public static string ScanBarCode_OK {
-            get {
-                return ResourceManager.GetString("ScanBarCode_OK", resourceCulture);
             }
         }
         
@@ -682,47 +961,47 @@ namespace MesDatas.Language_Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 条码规则与工装条码.
+        ///   Looks up a localized string similar to 结果.
         /// </summary>
-        public static string TooName {
+        public static string TestResult {
             get {
-                return ResourceManager.GetString("TooName", resourceCulture);
+                return ResourceManager.GetString("TestResult", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 用户验证中.
+        ///   Looks up a localized string similar to 失败.
         /// </summary>
-        public static string user_yzz {
+        public static string UploadState_Failed {
             get {
-                return ResourceManager.GetString("user_yzz", resourceCulture);
+                return ResourceManager.GetString("UploadState_Failed", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 请等待.
+        ///   Looks up a localized string similar to 本地.
         /// </summary>
-        public static string Wait {
+        public static string UploadState_Local {
             get {
-                return ResourceManager.GetString("Wait", resourceCulture);
+                return ResourceManager.GetString("UploadState_Local", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 等待扫工装.
+        ///   Looks up a localized string similar to 成功.
         /// </summary>
-        public static string WaittingSacnFixtures {
+        public static string UploadState_Success {
             get {
-                return ResourceManager.GetString("WaittingSacnFixtures", resourceCulture);
+                return ResourceManager.GetString("UploadState_Success", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 等待扫描条码.
+        ///   Looks up a localized string similar to 上限.
         /// </summary>
-        public static string WaittingScanBarcode {
+        public static string UpperLimit {
             get {
-                return ResourceManager.GetString("WaittingScanBarcode", resourceCulture);
+                return ResourceManager.GetString("UpperLimit", resourceCulture);
             }
         }
     }

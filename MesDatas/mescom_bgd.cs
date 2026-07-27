@@ -2,7 +2,10 @@
 using Newtonsoft.Json;
 using NLog;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -26,11 +29,13 @@ namespace 工艺部信息化组
         public static string Operation;
         public static string NcCode;
         public static int TimeOut;
+        public static string Language;
     }
 
     public class MesIntegrationService
     {
-        private static string ParamOUT;
+        public static string ParamOUT;
+        private static readonly HttpClient client = new HttpClient();
 
         /// <summary>
         /// MES交互1：用户验证
@@ -38,46 +43,24 @@ namespace 工艺部信息化组
         /// <param name="userVerificationResult">用户验证结果</param>
         /// <param name="MESFeedback"></param>
         /// <param name="XMLOUT"></param>
-        public static void VarifyUserLogin(out bool userVerificationResult, out string MESFeedback, out string XMLOUT)
-        {
-            string url = $"http://{MesConfig.IP}:{MesConfig.PORT}{MesConfig.URL}";
-            string param =
-                $"&message=" +
-                $"<PRODUCTION_REQUEST>" +
-                $"<USER>" +
-                $"<SITE>{MesConfig.Site}</SITE>" +
-                $"<NAME>{MesConfig.UserName}</NAME>" +
-                $"<PWD>{MesConfig.Password}</PWD>" +
-                $"</USER>" +
-                $"</PRODUCTION_REQUEST>";
-
-            MESFeedback = GetHtmlByPost(url, param, MesConfig.TimeOut);
-
-            userVerificationResult = CutResult(MESFeedback);
-            XMLOUT = ParamOUT;
-        }
-
         public static async Task<(bool isUserVerifySuccessfully, string MESFeedback, string XMLOUT)> VarifyUserLoginAsync()
         {
             string url = $"http://{MesConfig.IP}:{MesConfig.PORT}{MesConfig.URL}";
             string param =
-                $"&message=" +
-                $"<PRODUCTION_REQUEST>" +
-                $"<USER>" +
+                $"<PRODUCTION_REQUEST><USER>" +
                 $"<SITE>{MesConfig.Site}</SITE>" +
                 $"<NAME>{MesConfig.UserName}</NAME>" +
                 $"<PWD>{MesConfig.Password}</PWD>" +
-                $"</USER>" +
-                $"</PRODUCTION_REQUEST>";
+                $"</USER></PRODUCTION_REQUEST>";
 
-            string MESFeedback = await GetHtmlByPostAsync(url, param, MesConfig.TimeOut);
-
-            bool isUserVerifySuccessfully = CutResult(MESFeedback);
+            //string userVerifyResponse = await GetHtmlByPostAsync(url, param, MesConfig.TimeOut);
+            string userVerifyResponse = await SendPoseRequestAsync(url, param, MesConfig.TimeOut);
             string XMLOUT = ParamOUT;
 
-            return (isUserVerifySuccessfully, MESFeedback, XMLOUT);
-        }
+            bool isUserVerifySuccessfully = CutResult(userVerifyResponse);
 
+            return (isUserVerifySuccessfully, userVerifyResponse, XMLOUT);
+        }
 
         /// <summary>
         /// MES交互2：条码验证
@@ -86,10 +69,10 @@ namespace 工艺部信息化组
         /// <param name="isVerifySuccessfully"></param>
         /// <param name="barcodeverificationResponse"></param>
         /// <param name="XMLOUT"></param>
-        public static void VarifyBarcode(string barcode, out bool isVerifySuccessfully, out string barcodeverificationResponse, out string XMLOUT)
+        public static async Task<(bool isVerifySuccessfully, string MESFeedback, string XMLOUT)> VarifyBarcodeAsync(string barcode)
         {
             string url = $"http://{MesConfig.IP}:{MesConfig.PORT}{MesConfig.URL}";
-            string param = $"&message=" +
+            string param =
                 $"<PRODUCTION_REQUEST><START>" +
                 $"<SFC_LIST>" +
                 $"<SFC>" +
@@ -106,35 +89,8 @@ namespace 工艺部信息化组
                 $"</SFC_LIST>" +
                 $"</START></PRODUCTION_REQUEST>!erpautogy03!1234567@byd";
 
-            barcodeverificationResponse = GetHtmlByPost(url, param, MesConfig.TimeOut);
-
-            Thread.Sleep(200);
-            Application.DoEvents();
-            isVerifySuccessfully = CutResult(barcodeverificationResponse);
-            XMLOUT = ParamOUT;
-        }
-
-        public static async Task<(bool isVerifySuccessfully, string barcodeverificationResponse, string XMLOUT)> VarifyBarcodeAsync(string barcode)
-        {
-            string url = $"http://{MesConfig.IP}:{MesConfig.PORT}{MesConfig.URL}";
-            string param = $"&message=" +
-                $"<PRODUCTION_REQUEST><START>" +
-                $"<SFC_LIST>" +
-                $"<SFC>" +
-                $"<SITE>{MesConfig.Site}</SITE>" +
-                $"<ACTIVITY>XML</ACTIVITY>" +
-                $"<ID>{barcode}</ID>" +
-                $"<RESOURCE>{MesConfig.Resource}</RESOURCE>" +
-                $"<OPERATION>{MesConfig.Operation}</OPERATION>" +
-                $"<USER>{MesConfig.UserName}</USER>" +
-                $"<QTY></QTY>" +
-                $"<DATE_TIME></DATE_TIME>" +
-                $"<COMPLEX>N</COMPLEX>" +
-                $"</SFC>" +
-                $"</SFC_LIST>" +
-                $"</START></PRODUCTION_REQUEST>!erpautogy03!1234567@byd";
-
-            string barcodeverificationResponse = await GetHtmlByPostAsync(url, param, MesConfig.TimeOut);
+            //string barcodeverificationResponse = await GetHtmlByPostAsync(url, param, MesConfig.TimeOut);
+            string barcodeverificationResponse = await SendPoseRequestAsync(url, param, MesConfig.TimeOut);
 
             await Task.Delay(200);
             bool isVerifySuccessfully = CutResult(barcodeverificationResponse);
@@ -143,57 +99,110 @@ namespace 工艺部信息化组
             return (isVerifySuccessfully, barcodeverificationResponse, XMLOUT);
         }
 
-
         /// <summary>
         /// MES交互3：结果上传
         /// </summary>
-        /// <param name="测试结果"></param>
-        /// <param name="产品条码"></param>
-        /// <param name="文件版本"></param>
-        /// <param name="软件版本"></param>
-        /// <param name="测试项"></param>
+        /// <param name="ProductStatus"></param>
+        /// <param name="barcode"></param>
+        /// <param name="fileVersion"></param>
+        /// <param name="appVersion"></param>
+        /// <param name="testItem"></param>
         /// <param name="验证结果"></param>
         /// <param name="resultFeedback"></param>
         /// <param name="XMLOUT"></param>
-        public static void UploadBarcode(bool 测试结果, string 产品条码, string 文件版本, string 软件版本, string 测试项,
-                                   out bool 验证结果, out string resultFeedback, out string XMLOUT)
+        public static async Task<(bool isUploadSuccessfully, string MESFeedback, string XMLOUT)> UploadBarcodeAsync(bool ProductStatus, string barcode, string fileVersion, string appVersion, string testItem)
         {
-            string mge = "";
+            string rawMESFeedback;
 
-            if (测试结果 == true)
+            if (ProductStatus == true)
             {
-                mge = PassValidate(产品条码, 文件版本, 软件版本, 测试项);
+                rawMESFeedback = await PassValidate(barcode, fileVersion, appVersion, testItem);
             }
             else
             {
-                mge = ErrorValidate(产品条码, 文件版本, 软件版本, 测试项);
+                rawMESFeedback = await ErrorValidate(barcode, fileVersion, appVersion, testItem);
             }
 
-            resultFeedback = mge;
-            验证结果 = CutResult(resultFeedback);
-            XMLOUT = ParamOUT;
+            bool uploadResult = CutResult(rawMESFeedback);
+            string XMLOUT = ParamOUT;
+
+            return (uploadResult, rawMESFeedback, XMLOUT);
         }
 
         /// <summary>
         /// MES交互4：绑定工单
         /// </summary>
-        /// <param name="工单号"></param>
+        /// <param name="orderNumber"></param>
         /// <param name="isBindingSuccessfully">是否绑定成功</param>
-        /// <param name="MES反馈"></param>
+        /// <param name="MESFeedback"></param>
         /// <param name="XMLOUT"></param>
-        public static void BindWorkOrder(string 工单号, out bool isBindingSuccessfully, out string MES反馈, out string XMLOUT)
+        public static async Task<(bool isBindingSuccessfully, string MESFeedback, string XMLOUT)> BindWorkOrderAsync(string orderNumber)
         {
-            MES反馈 = GetHtmlByPost("http://" + MesConfig.IP + ":" + MesConfig.PORT + MesConfig.URL, "&message=" + ("<PRODUCTION_REQUEST><RESOURCE_BANDING_SHOPORDER><SITE>" + MesConfig.Site + "</SITE><NAME>" + MesConfig.UserName + "</NAME><PWD>" + MesConfig.Password + "</PWD><RESOURCE>" + MesConfig.Resource + "</RESOURCE><SHOPORDER>" + 工单号 + "</SHOPORDER></RESOURCE_BANDING_SHOPORDER></PRODUCTION_REQUEST>"), MesConfig.TimeOut);
-            isBindingSuccessfully = CutResult(MES反馈);
-            XMLOUT = ParamOUT;
+            string url = $"http://{MesConfig.IP}:{MesConfig.PORT}{MesConfig.URL}";
+            string param =
+                $"<PRODUCTION_REQUEST><RESOURCE_BANDING_SHOPORDER>" +
+                $"<SITE>{MesConfig.Site}</SITE>" +
+                $"<NAME>{MesConfig.UserName}</NAME>" +
+                $"<PWD>{MesConfig.Password}</PWD>" +
+                $"<RESOURCE>{MesConfig.Resource}</RESOURCE>" +
+                $"<SHOPORDER>{orderNumber}</SHOPORDER>" +
+                $"</RESOURCE_BANDING_SHOPORDER></PRODUCTION_REQUEST>";
+
+            string MESFeedback = await SendPoseRequestAsync(url, param, MesConfig.TimeOut);
+            bool isBindingSuccessfully = CutResult(MESFeedback);
+            string XMLOUT = ParamOUT;
+
+            return (isBindingSuccessfully, MESFeedback, XMLOUT);
         }
 
-        private static string PassValidate(string 产品条码, string 文件版本, string 软件版本, string 测试项)
+        /// <summary>
+        /// MES交互5：工单信息查询
+        /// </summary>
+        /// <param name="orderNumber"></param>
+        /// <param name="MESFeedback"></param>
+        /// <param name="XMLOUT"></param>
+        public static async Task<(string orderQuantity, string completedQuantity, string completeRate)> FetchOrderNumberInfo(string orderNumber)
+        {
+            string url = $"http://{MesConfig.IP}:{MesConfig.PORT}{MesConfig.URL}";
+            string param =
+                $"<PRODUCTION_REQUEST><SHOP_ORDER>" +
+                $"<SITE>{MesConfig.Site}</SITE>" +
+                $"<USER>{MesConfig.UserName}</USER>" +
+                $"<ORDER>{orderNumber}</ORDER>" +
+                $"<RESOURCE>{MesConfig.Resource}</RESOURCE>" +
+                $"<SFC></SFC>" +
+                $"</SHOP_ORDER></PRODUCTION_REQUEST>";
+
+            string orderCheckResponse = await SendPoseRequestAsync(url, param, MesConfig.TimeOut);
+
+            string orderQuantity = string.Empty;
+            string completedQuantity = string.Empty;
+            string completeRate = string.Empty;
+
+            try
+            {
+                // 使用简单的字符串操作提取数据
+                orderQuantity = ExtractBetweenTags(orderCheckResponse, "<ORDER_NUM>", "</ORDER_NUM>");
+                completedQuantity = ExtractBetweenTags(orderCheckResponse, "<COMP_NUM>", "</COMP_NUM>");
+                completeRate = ExtractBetweenTags(orderCheckResponse, "<COMP_RATE>", "</COMP_RATE>");
+
+                Console.WriteLine($"查询工单 {orderNumber} 成功: 工单数量={orderQuantity}, 完成数量={completedQuantity}, 完成率={completeRate}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"解析工单信息时发生错误: {ex.Message}");
+            }
+
+            // 返回结果元组
+            return (orderQuantity, completedQuantity, completeRate);
+        }
+
+        private static async Task<string> PassValidate(string 产品条码, string 文件版本, string 软件版本, string 测试项)
         {
             try
             {
-                string url = $"http://{MesConfig.IP}:{MesConfig.PORT}{MesConfig.URL}";
-                string param = $"&message=" +
+                string targetUrl = $"http://{MesConfig.IP}:{MesConfig.PORT}{MesConfig.URL}";
+                string parameters =
                     $"PASS<PRODUCTION_REQUEST>" +
                     $"<COMPLETE>" +
                     $"<SFC_LIST>" +
@@ -212,7 +221,7 @@ namespace 工艺部信息化组
                     $"</COMPLETE>" +
                     $"</PRODUCTION_REQUEST>!erpautogy03!1234567@byd!PASS,{文件版本},{软件版本},{测试项}";
 
-                return GetHtmlByPost(url, param, MesConfig.TimeOut);
+                return await SendPoseRequestAsync(targetUrl, parameters, MesConfig.TimeOut);
             }
             catch (Exception ex)
             {
@@ -221,12 +230,12 @@ namespace 工艺部信息化组
             }
         }
 
-        private static string ErrorValidate(string 产品条码, string 文件版本, string 软件版本, string 测试项)
+        private static async Task<string> ErrorValidate(string 产品条码, string 文件版本, string 软件版本, string 测试项)
         {
             try
             {
                 string url = $"http://{MesConfig.IP}:{MesConfig.PORT}{MesConfig.URL}";
-                string param = $"&message=" +
+                string param =
                     $"ERROR<PRODUCTION_REQUEST>" +
                     $"<NC_LOG_COMPLETE>" +
                     $"<SITE>{MesConfig.Site}</SITE>" +
@@ -246,7 +255,7 @@ namespace 工艺部信息化组
                     $"</NC_LOG_COMPLETE>" +
                     $"</PRODUCTION_REQUEST>!erpautogy03!1234567@byd!ERROR,{文件版本},{软件版本},{测试项}";
 
-                return GetHtmlByPost(url, param, MesConfig.TimeOut);
+                return await SendPoseRequestAsync(url, param, MesConfig.TimeOut);
             }
             catch (Exception ex)
             {
@@ -265,64 +274,26 @@ namespace 工艺部信息化组
             return html.Contains("</b>Y</td>") ? true : false;
         }
 
-        /// <summary>
-        /// 使用POST方法发送HTTP请求并获取响应内容
-        /// </summary>
-        /// <param name="url">目标URL地址</param>
-        /// <param name="requestParameters">请求参数</param>
-        /// <param name="timeout">请求超时时间（毫秒）</param>
-        /// <returns>服务器响应的文本内容</returns>
-        private static string GetHtmlByPost(string url, string requestParameters, int timeout)
+        private static string ExtractBetweenTags(string source, string startTag, string endTag)
         {
-            // 用于存储外部传入的请求参数（如果需要）
-            ParamOUT = requestParameters;
+            int startIndex = source.IndexOf(startTag);
+            if (startIndex < 0) return string.Empty;
 
-            try
-            {
-                // 使用GB2312编码转换请求参数
-                byte[] requestBytes = Encoding.GetEncoding("GB2312").GetBytes(requestParameters);
-                // 创建HTTP请求
-                HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create(url);
-                // 设置请求头信息
-                httpWebRequest.ContentType = "application/x-www-form-urlencoded";
-                httpWebRequest.Accept = "*/*";
-                httpWebRequest.UserAgent = "Mozilla/4.0(compatible;MSIE 6.0;Windows NT 5.1;SV1;Maxthon;.NET CLR 1.1.4322)";
-                httpWebRequest.Method = "POST";
-                httpWebRequest.ContentLength = (long)requestBytes.Length;
-                httpWebRequest.Timeout = timeout;
-                httpWebRequest.ServicePoint.Expect100Continue = false;
+            startIndex += startTag.Length;
+            int endIndex = source.IndexOf(endTag, startIndex);
+            if (endIndex < 0) return string.Empty;
 
-                // 写入请求数据
-                using (Stream requestStream = httpWebRequest.GetRequestStream())
-                {
-                    requestStream.Write(requestBytes, 0, requestBytes.Length);
-                }
-                // 获取响应
-                using (HttpWebResponse httpWebResponse = (HttpWebResponse)httpWebRequest.GetResponse())
-                {
-                    using (StreamReader streamReader = new StreamReader(httpWebResponse.GetResponseStream(), Encoding.GetEncoding("GB2312")))
-                    {
-                        // 读取响应内容
-                        string responseContent = streamReader.ReadToEnd();
-
-                        // 关闭请求
-                        httpWebRequest.Abort();
-
-                        // 替换特殊字符并返回
-                        return responseContent.Replace("&lt;", "<").Replace("&gt;", ">");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
+            return source.Substring(startIndex, endIndex - startIndex);
         }
 
-        public static async Task<string> GetHtmlByPostAsync(string URL, string Param, int TimeOut)
+        public static async Task<string> SendPoseRequestAsync(string URL, string Param, int TimeOut)
         {
-            ParamOUT = Param;
-            string str;
+            URL = $"{URL}&returnCharacter=utf8";
+            Param = $"&message={Param}";
+            ParamOUT = $"{Environment.NewLine}请求参数：{Param}";
+
+            string responseContent;
+
             try
             {
                 byte[] bytes = Encoding.GetEncoding("GB2312").GetBytes(Param);
@@ -334,6 +305,7 @@ namespace 工艺部信息化组
                 httpWebRequest.ContentLength = bytes.Length;
                 httpWebRequest.Timeout = TimeOut;
                 httpWebRequest.ServicePoint.Expect100Continue = false;
+                httpWebRequest.Headers.Add("language", MesConfig.Language);
 
                 using (Stream requestStream = await httpWebRequest.GetRequestStreamAsync())
                 {
@@ -342,9 +314,9 @@ namespace 工艺部信息化组
 
                 using (HttpWebResponse httpWebResponse = (HttpWebResponse)await httpWebRequest.GetResponseAsync())
                 {
-                    using (StreamReader streamReader = new StreamReader(httpWebResponse.GetResponseStream(), Encoding.GetEncoding("GB2312")))
+                    using (StreamReader streamReader = new StreamReader(httpWebResponse.GetResponseStream(), Encoding.UTF8))
                     {
-                        str = await streamReader.ReadToEndAsync();
+                        responseContent = (await streamReader.ReadToEndAsync()).Replace("&lt;", "<").Replace("&gt;", ">");
                     }
                 }
 
@@ -352,161 +324,10 @@ namespace 工艺部信息化组
             }
             catch (Exception ex)
             {
-                str = ex.Message;
+                responseContent = ex.Message;
             }
-            return str;
+            return responseContent;
         }
-
-
-        #region --------- 版本优化 ---------
-
-        private static string _lastRequestMessage;
-
-        private static async Task<string> SendMesRequestAsync(string message)
-        {
-            string baseUrl = $"http://{MesConfig.IP}:{MesConfig.PORT}{MesConfig.URL}";
-            string requestParam = $"&message={message}";
-            _lastRequestMessage = requestParam;
-
-            try
-            {
-                var handler = new HttpClientHandler();
-                handler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
-
-                using (handler)
-                using (var client = new HttpClient(handler))
-                {
-                    client.Timeout = TimeSpan.FromMilliseconds(MesConfig.TimeOut);
-
-                    Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-                    var encoding = Encoding.GetEncoding("GB2312");
-                    var content = new StringContent(requestParam, encoding, "application/x-www-form-urlencoded");
-
-                    var response = await client.PostAsync(baseUrl, content);
-                    response.EnsureSuccessStatusCode();
-                    var result = await response.Content.ReadAsStringAsync();
-                    return result.Replace("&lt;", "<").Replace("&gt;", ">");
-                }
-
-            }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
-        }
-
-        public static async Task<(bool Success, string Response, string RequestXml)> BindWorkOrderAsync(string workOrderNumber)
-        {
-            string requestMessage = $@"
-                <PRODUCTION_REQUEST>
-                    <RESOURCE_BANDING_SHOPORDER>
-                        <SITE>{MesConfig.Site}</SITE>
-                        <NAME>{MesConfig.UserName}</NAME>
-                        <PWD>{MesConfig.Password}</PWD>
-                        <RESOURCE>{MesConfig.Resource}</RESOURCE>
-                        <SHOPORDER>{workOrderNumber}</SHOPORDER>
-                    </RESOURCE_BANDING_SHOPORDER>
-                </PRODUCTION_REQUEST>";
-
-            var response = await SendMesRequestAsync(requestMessage);
-            return (ParseMesResponse(response), response, _lastRequestMessage);
-        }
-
-        public static async Task<(bool Success, string Response, string RequestXml)> VerifyUserLoginAsync()
-        {
-            string requestMessage = $@"
-                <PRODUCTION_REQUEST>
-                    <USER>
-                        <SITE>{MesConfig.Site}</SITE>
-                        <NAME>{MesConfig.UserName}</NAME>
-                        <PWD>{MesConfig.Password}</PWD>
-                    </USER>
-                </PRODUCTION_REQUEST>";
-
-            var response = await SendMesRequestAsync(requestMessage);
-            return (ParseMesResponse(response), response, _lastRequestMessage);
-        }
-
-        private static bool ParseMesResponse(string response) =>
-            response.Contains("</b>Y</td>");
-
-        public static async Task<(bool Success, string Response, string RequestXml)> VerifyBarcodeAsync(string productBarcode)
-        {
-            string requestMessage = $@"
-                <PRODUCTION_REQUEST>
-                    <START>
-                        <SFC_LIST>
-                            <SFC>
-                                <SITE>{MesConfig.Site}</SITE>
-                                <ACTIVITY>XML</ACTIVITY>
-                                <ID>{productBarcode}</ID>
-                                <RESOURCE>{MesConfig.Resource}</RESOURCE>
-                                <OPERATION>{MesConfig.Operation}</OPERATION>
-                                <USER>{MesConfig.UserName}</USER>
-                                <QTY></QTY>
-                                <DATE_TIME></DATE_TIME>
-                                <COMPLEX>N</COMPLEX>
-                            </SFC>
-                        </SFC_LIST>
-                    </START>
-                </PRODUCTION_REQUEST>!erpautogy03!1234567@byd";
-
-            var response = await SendMesRequestAsync(requestMessage);
-            await Task.Delay(200);
-            Application.DoEvents();
-            return (ParseMesResponse(response), response, _lastRequestMessage);
-        }
-
-        private static async Task<string> UploadPassResultAsync(string productBarcode, string fileVersion,
-            string softwareVersion, string testItem)
-        {
-            string requestMessage = $@"PASS<PRODUCTION_REQUEST>
-                <COMPLETE>
-                    <SFC_LIST>
-                        <SFC>
-                            <SITE>{MesConfig.Site}</SITE>
-                            <ACTIVITY>XML</ACTIVITY>
-                            <ID>{productBarcode}</ID>
-                            <RESOURCE>{MesConfig.Resource}</RESOURCE>
-                            <OPERATION>{MesConfig.Operation}</OPERATION>
-                            <USER>{MesConfig.UserName}</USER>
-                            <QTY>1</QTY>
-                            <DATE_TIME></DATE_TIME>
-                            <DATE_STARTED></DATE_STARTED>
-                        </SFC>
-                    </SFC_LIST>
-                </COMPLETE>
-            </PRODUCTION_REQUEST>!erpautogy03!1234567@byd!PASS,{fileVersion},{softwareVersion}{testItem}";
-
-            return await SendMesRequestAsync(requestMessage);
-        }
-
-        private static async Task<string> UploadFailResultAsync(string productBarcode, string fileVersion,
-            string softwareVersion, string testItem)
-        {
-            string requestMessage = $@"ERROR<PRODUCTION_REQUEST>
-                <NC_LOG_COMPLETE>
-                    <SITE>{MesConfig.Site}</SITE>
-                    <OWNER TYPE=""USER"">{MesConfig.UserName}</OWNER>
-                    <NC_CONTEXT>{productBarcode}</NC_CONTEXT>
-                    <QTY></QTY>
-                    <IDENTIFIER></IDENTIFIER>
-                    <FAILURE_ID></FAILURE_ID>
-                    <DEFECT_COUNT>1</DEFECT_COUNT>
-                    <COMMENTS></COMMENTS>
-                    <DATE_TIME></DATE_TIME>
-                    <RESOURCE>{MesConfig.Resource}</RESOURCE>
-                    <OPERATION>{MesConfig.Operation}</OPERATION>
-                    <ROOT_CAUSE_OPER></ROOT_CAUSE_OPER>
-                    <NC_CODE>{MesConfig.NcCode}</NC_CODE>
-                    <ACTIVITY>XML</ACTIVITY>
-                </NC_LOG_COMPLETE>
-            </PRODUCTION_REQUEST>!erpautogy03!1234567@byd!ERROR,{fileVersion},{softwareVersion}{testItem}";
-
-            return await SendMesRequestAsync(requestMessage);
-        }
-
-        #endregion
     }
 
     public class BydWorkCom
@@ -528,7 +349,8 @@ namespace 工艺部信息化组
         public static string GetParamsAsy(string paraams)
         {
             string Params = "&message=" + (paraams);
-            string outMES = PostMes("http://" + MesConfig.IP + ":" + MesConfig.PORT + MesConfig.URL, Params, MesConfig.TimeOut);
+            //string outMES = PostMes("http://" + MesConfig.IP + ":" + MesConfig.PORT + MesConfig.URL, Params, MesConfig.TimeOut);
+            string outMES = PostMes($"http://{MesConfig.IP}:{MesConfig.PORT}{MesConfig.URL}", Params, MesConfig.TimeOut);
             return outMES;
         }
 

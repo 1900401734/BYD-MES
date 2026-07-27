@@ -22,6 +22,5 @@ namespace MesDatas.Utility.IniLaguagePath
         public static string ErrorBtnDelete = "删除失败";
         public static string UnknownError = "程序错误";
         public static string ExistUserUID = "厂牌UID存在";
-
     }
 }

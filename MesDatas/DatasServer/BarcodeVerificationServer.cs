@@ -118,7 +118,7 @@ namespace MesDatas.DatasServer
             }
         }
 
-        //获取BindingListBarcodeVerification列表 
+        // 获取BindingListBarcodeVerification列表 
         public static BindingList<BarcodeVerification> GetBarcodeVerificationBindingList()
         {
             return new BindingList<BarcodeVerification>(GetAllBarcodeVerifications());
@@ -140,7 +140,7 @@ namespace MesDatas.DatasServer
             }
         }
 
-        // 获取{tableName} 
+        // 获取tableName
         public static BarcodeVerification GetLangBarcodeVefictn(int LanguageId)
         {
             try

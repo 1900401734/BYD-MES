@@ -6,7 +6,7 @@ namespace MesDatas.DatasModel
     [SugarTable("BarcodeVefictn")]
     public class BarcodeVerification
     {
-        [SugarColumn(ColumnName = "ID", IsPrimaryKey = true, IsIdentity = true)]
+        [SugarColumn(ColumnName = "ID", IsPrimaryKey = true, IsIdentity = false)]
         [DisplayName("ID")]
         public int ID { get; set; }                     // ID 
 
@@ -31,11 +31,11 @@ namespace MesDatas.DatasModel
         public string BarcodePositionPLC { get; set; }  // 读取条码点位 
 
         /// <summary>
-        /// 条码长度：10位
+        /// 条码长度
         /// </summary>
         [SugarColumn(ColumnName = "BarcodeLengthPLC", IsNullable = false)]
         [DisplayName("读取条码长度点位")]
-        public string BarcodeLengthPLC { get; set; }    // 读取条码长度点位 
+        public string BarcodeLengthPLC { get; set; }
 
         /// <summary>
         /// <para>D1003</para>

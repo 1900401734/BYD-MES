@@ -134,6 +134,12 @@ namespace MesDatas.DatasModel
         [SugarColumn(ColumnName = "AutoAddDate", IsNullable = true)]
         public bool IsAutoAddDate { get; set; }
 
+        /// <summary>
+        /// 启用流水号
+        /// </summary>
+        [SugarColumn(ColumnName = "IsEnableSN", IsNullable = true)]
+        public bool IsEnableSN { get; set; }
+
         #endregion
 
         #region 文件配置

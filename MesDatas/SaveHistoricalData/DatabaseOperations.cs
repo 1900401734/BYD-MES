@@ -51,7 +51,7 @@ public class DatabaseOperations
     {
         MDBHelper.CreateAccessDatabase(conn);
         var (columnNames, arrayList) = PrepareColumnData();
-        MDBHelper.CreateMDBTable(conn, "Sheet1", arrayList);
+        MDBHelper.TryCreateAccessTable(conn, "Sheet1", arrayList);
     }
 
     private (string columnNames, ArrayList arrayList) PrepareColumnData()
@@ -110,7 +110,7 @@ public class DatabaseOperations
         values.Append($"'{CP}',");
         values.Append($"'{txtWorkOrder}',");
         values.Append($"'{txtFixtureBinding}',");
-        values.Append($"'{CodeNum.GetProductCodeString(cboBarcodeRuleAndFixtures, codesTable)}',");
+        values.Append($"'{CodeNum.GetProductCodeByRule(cboBarcodeRuleAndFixtures, codesTable)}',");
         values.Append($"'{barcode}',");
         values.Append($"'{LoginUser}',");
         values.Append($"'{now:yyyy年MM月dd日 HH:mm:ss}',");

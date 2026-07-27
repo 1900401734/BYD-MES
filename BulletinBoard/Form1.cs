@@ -26,7 +26,7 @@ namespace BulletinBoard
         private Socket socketWatch;
         private bool IsServerStart;
         private Action<string> ShowMsgAction;
-        DataTable stationTable;     // 机台
+        DataTable stationTable;     // 工位
         DataTable clientInfoTable;  // 运行状态界面 > 已连接的客户端的信息
 
         Logger rawMsgLogger = LogManager.GetLogger("ReceivedMsg");
@@ -47,6 +47,7 @@ namespace BulletinBoard
         {
             LoadMESConfig();                // 加载MES参数配置
             InitializeProductModelBoard();  // 初始化产品型号面板
+            LoadStationList();              // 加载工位信息
             LoadServerConfig();             // 加载服务器基本配置
             RefreshStatus();                // 加载已连接的客户端信息
 
@@ -78,48 +79,6 @@ namespace BulletinBoard
             Environment.Exit(0);
         }
 
-        /// <summary>
-        /// 管理数据库文件的月度切换
-        /// </summary>
-        /// <remarks>
-        /// 1. 确保当月数据库文件存在
-        /// 2. 将上月数据库文件移动到存档目录
-        /// </remarks>
-        private void ManageMonthlyDatabaseSwitch()
-        {
-            Invoke(new Action(() =>
-            {
-                string currentMonth = $"{lblDatabasePath.Text}\\{DateTime.Now:Y}产线数据.mdb";
-                string lastMonth = $"{lblDatabasePath.Text}\\{DateTime.Now.AddMonths(-1):Y}产线数据.mdb";
-                string Archive = $"{lblDatabasePath.Text}\\path\\{DateTime.Now.AddMonths(-1):Y}产线数据.mdb";
-                try
-                {
-                    if (!File.Exists(currentMonth))
-                    {
-                        GenerateProductLineDatabase();  // 生成产线数据库
-                        mdbABC.TryConnectDatabase(currentMonth);
-                    }
-                    if (File.Exists(lastMonth))
-                    {
-                        // 确保目标路径存在
-                        string destinationDirectory = Path.GetDirectoryName(Archive);
-                        if (!Directory.Exists(destinationDirectory))
-                        {
-                            Directory.CreateDirectory(destinationDirectory);
-                        }
-                        mdbABC.CloseConnection();
-                        // 移动文件
-                        File.Move(lastMonth, Archive);
-                        Console.WriteLine("数据库文件移动成功。");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"发生错误: {ex.Message}");
-                }
-            }));
-        }
-
         public bool IsRunningCheckCard = true;
         public int accesscard;
         public int access;
@@ -131,8 +90,6 @@ namespace BulletinBoard
         /// </summary>
         private void LoadServerConfig()
         {
-            LoadStationList();  // 加载工位信息
-
             dbHelper = new MDBHelper(databasePath);
             DataTable dashboardCongfig = dbHelper.Find(" SELECT * FROM Bulletins WHERE ID = '1' ");
 
@@ -403,6 +360,236 @@ namespace BulletinBoard
 
         #region------------- 消息处理 -------------
 
+        /// <summary>
+        /// 接收消息
+        /// </summary>
+        /// <param name="clientSocket"></param>
+        public void ReceiveMessage(Socket clientSocket)
+        {
+            Task.Factory.StartNew(() =>
+            {
+                while (IsServerStart)
+                {
+                    try
+                    {
+                        // 定义接收缓冲区（3MB）
+                        const int BUFFER_SIZE = 1024 * 1024 * 3;
+                        byte[] messageBuffer = new byte[BUFFER_SIZE];
+
+                        // 接收到的信息大小(所占字节数)
+                        int receivedBytes = clientSocket.Receive(messageBuffer);
+                        Console.WriteLine($"接收到数据大小: {receivedBytes} 字节");
+
+                        if (receivedBytes > 0)
+                        {
+                            // 将接收到的字节转换为字符串
+                            string receivedMsg = Encoding.UTF8.GetString(messageBuffer, 0, receivedBytes);
+                            IPEndPoint endPoint = clientSocket.RemoteEndPoint as IPEndPoint;
+
+                            //Logger.Info($"从客户端 [{endPoint}] 接收到消息");
+                            rawMsgLogger.Trace($"客户端 [{endPoint}] 原始消息内容:\n{receivedMsg}");
+
+                            // 处理心跳信息
+                            if (receivedMsg == "heartbeat")
+                            {
+                                ShowMsg($"收到【{endPoint}】心跳：{receivedMsg}");
+
+                                FeedbackToHeartbeat(clientSocket, "OK");   // 发送心跳响应
+                            }
+                            else
+                            {
+                                // 服务器显示客户端的端口号和消息
+                                Task.Run(() =>
+                                {
+                                    // 数据库文件处理
+                                    ManageMonthlyDatabaseSwitch();
+                                    // 处理接收到的数据
+                                    ProcessReceivedData(receivedMsg, clientSocket.RemoteEndPoint.ToString());
+                                });
+                            }
+                        }
+
+                    }
+                    catch (Exception)
+                    {
+                        // 移除添加在字典中的服务器和客户端之间的线程
+                        clientList.Remove(clientSocket.RemoteEndPoint.ToString());
+                        // 关闭客户端
+                        clientSocket.Close();
+                        break;
+                    }
+                }
+            });
+        }
+
+        /// <summary>
+        /// 管理数据库文件的月度切换
+        /// </summary>
+        /// <remarks>
+        /// 1. 确保当月数据库文件存在
+        /// 2. 将上月数据库文件移动到存档目录
+        /// </remarks>
+        private void ManageMonthlyDatabaseSwitch()
+        {
+            Invoke(new Action(() =>
+            {
+                string currentMonth = $"{lblDatabasePath.Text}\\{DateTime.Now:Y}产线数据.mdb";
+                string lastMonth = $"{lblDatabasePath.Text}\\{DateTime.Now.AddMonths(-1):Y}产线数据.mdb";
+                string Archive = $"{lblDatabasePath.Text}\\path\\{DateTime.Now.AddMonths(-1):Y}产线数据.mdb";
+                try
+                {
+                    if (!File.Exists(currentMonth))
+                    {
+                        GenerateProductLineDatabase();  // 生成产线数据库
+                        mdbABC.TryConnectDatabase(currentMonth);
+                    }
+                    if (File.Exists(lastMonth))
+                    {
+                        // 确保目标路径存在
+                        string destinationDirectory = Path.GetDirectoryName(Archive);
+                        if (!Directory.Exists(destinationDirectory))
+                        {
+                            Directory.CreateDirectory(destinationDirectory);
+                        }
+                        mdbABC.CloseConnection();
+                        // 移动文件
+                        File.Move(lastMonth, Archive);
+                        Console.WriteLine("数据库文件移动成功。");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"发生错误: {ex.Message}");
+                }
+            }));
+        }
+
+        /// <summary>
+        /// 处理来自客户端的数据并存入数据库
+        /// </summary>
+        /// <param name="receivedData">接收到的原始数据字符串</param>
+        /// <param name="sourceIP">数据来源的IP地址</param>
+        private void ProcessReceivedData(string receivedData, string sourceIP)
+        {
+            Invoke(new Action(() =>
+            {
+                // 用于存储解析后的数据数组
+                List<string[]> parsedDataList = new List<string[]>();
+
+                // 判断数据格式：包含加号的按分隔符处理，否则尝试按JSON处理
+                if (receivedData.Contains("+"))
+                {
+                    // 首先按竖线分割数据块
+                    string[] dataBlocks = receivedData.Split('|');
+
+                    foreach (string block in dataBlocks)
+                    {
+                        // 再按加号分割每个数据块
+                        string[] dataArray = block.Split(new char[] { '+' });
+                        if (dataArray.Length > 0 && !string.IsNullOrWhiteSpace(dataArray[0]))
+                        {
+                            parsedDataList.Add(dataArray);
+                        }
+                    }
+                }
+                else
+                {
+                    try
+                    {
+                        // JSON格式处理
+                        using (JsonTextReader reader = new JsonTextReader(new StringReader(receivedData)))
+                        {
+                            reader.SupportMultipleContent = true;
+                            while (reader.Read())
+                            {
+                                JsonSerializer serializer = new JsonSerializer();
+                                string[] dateJson = serializer.Deserialize<string[]>(reader);
+                                parsedDataList.Add(dateJson);
+                            }
+                        }
+                    }
+                    catch (JsonReaderException)
+                    {
+                        // JSON解析失败，作为普通字符串处理
+                        parsedDataList.Add(new string[] { receivedData });
+                    }
+                }
+
+                string formattedMsg = FormatParsedData(parsedDataList);
+                parsedMsg.Trace($"客户端[{sourceIP}]\n{formattedMsg}");
+
+                // 处理解析后的每组数据
+                foreach (var dataGroup in parsedDataList)
+                {
+                    string[] processedData = new string[] { };
+                    processedData = dataGroup;
+
+                    // 清理数据：去除空格，将null转换为空字符串
+                    for (int i = 0; i < processedData.Length; i++)
+                    {
+                        processedData[i] = processedData[i].Trim();
+
+                        if (string.IsNullOrWhiteSpace(processedData[i]) ||
+                            processedData[i].Equals("null"))
+                        {
+                            processedData[i] = string.Empty;
+                        }
+                    }
+                    mdbABC.EnsureConnectionOpened();
+
+                    // 根据数据类型进行相应处理
+                    // 0: 新工位配置；0+工位名称集合
+                    // 1: 故障信息
+                    // 1+故障所在工位+机台名称+故障状态+故障的描述+触发故障的开始时间 
+                    // 1+故障所在工位+机台名称+故障状态+故障的描述+触发故障的结束时间
+                    // 2: 生产信息
+                    // 2+工位名称+当前工单号+产品条码+操作人员+测试时间+测试结果+测试节拍+测试项名称+测试项上限+测试项下限+测式项实际值
+                    // 3: 统计信息
+                    // 3+机台名称+工单号+工单数量+完成数量+完成率+合格率+整体/生产/整线节拍+生产总数+工序时间+利用时间+负荷时间+直通率+产品型号
+                    // 4: 易损件信息
+                    // 4+易损件所在工位+机台名称+ 易损件所在位置+易损件名称+易损件理论使用次数易损件已使用次数
+                    // 5: 机台配置；|5+机台名称|
+                    // 6: 日志信息
+                    // 7: 创建对应工位数据库
+                    // 8: 对应工位生产数据添加到对应数据库
+
+                    switch (processedData[0])
+                    {
+                        case "0":   // 工位配置信息处理
+                            ProcessStationConfig(processedData);
+                            break;
+                        case "1":   // 故障信息处理
+                            MapStationNameWithStationID(processedData);
+                            ProcessFaultsTable(processedData);
+                            break;
+                        case "2":   // 生产信息处理
+                            MapStationNameWithStationID(processedData);
+                            ProcessProductTable(processedData);
+                            break;
+                        case "3":   // 统计信息
+                            ProcessProductionStatisticsAsync(processedData);
+                            break;
+                        case "4":   // 易损件信息
+                            MapStationNameWithStationID(processedData);
+                            ProcessConsumablePartsInfo(processedData);
+                            break;
+                        case "5":   // 客户端连接处理
+                            AddStationName(sourceIP, processedData);
+                            break;
+                        case "6":   // 日志信息处理
+                            LogMsg(processedData[1]);
+                            break;
+                        case "7":
+                            CreateStationDataBase(processedData);
+                            break;
+                        case "8":
+                            InsertStationDataBase(processedData);
+                            break;
+                    }
+                }
+            }));
+        }
+
         private string FormatParsedData(List<string[]> parsedDataList)
         {
             StringBuilder sb = new StringBuilder();
@@ -453,173 +640,7 @@ namespace BulletinBoard
         }
 
         /// <summary>
-        /// 处理来自客户端的数据并存入数据库
-        /// </summary>
-        /// <param name="receivedData">接收到的原始数据字符串</param>
-        /// <param name="sourceIP">数据来源的IP地址</param>
-        private void ProcessReceivedData(string receivedData, string sourceIP)
-        {
-            Invoke(new Action(() =>
-            {
-                // 用于存储解析后的数据数组
-                List<string[]> parsedDataList = new List<string[]>();
-
-                // 判断数据格式：包含加号的按分隔符处理，否则尝试按JSON处理
-                if (receivedData.Contains("+"))
-                {
-                    // 首先按竖线分割数据块
-                    string[] dataBlocks = receivedData.Split('|');
-
-                    foreach (string block in dataBlocks)
-                    {
-                        // 再按加号分割每个数据块
-                        string[] dataArray = block.Split(new char[] { '+' });
-                        if (dataArray.Length > 0 && !string.IsNullOrWhiteSpace(dataArray[0]))
-                        {
-                            parsedDataList.Add(dataArray);
-                        }
-                    }
-                }
-                else
-                {
-                    try
-                    {
-                        // JSON格式处理
-                        using (JsonTextReader reader = new JsonTextReader(new StringReader(receivedData)))
-                        {
-                            reader.SupportMultipleContent = true;
-                            while (reader.Read())
-                            {
-                                JsonSerializer serializer = new JsonSerializer();
-                                string[] dateJson = serializer.Deserialize<string[]>(reader);
-                                parsedDataList.Add(dateJson);
-                            }
-                        }// 作用域结束时自动调用 Dispose
-
-                        /*JsonTextReader reader = new JsonTextReader(new StringReader(strdata));
-                        while (true)
-                        {
-                            if (!reader.Read())
-                            {
-                                break;
-                            }
-                            JsonSerializer serializer = new JsonSerializer();
-                            string[] dateJson = serializer.Deserialize<string[]>(reader);
-                            listjson.Add(dateJson);
-                        }
-                        // AdateJson = dateJson;*/
-                    }
-                    catch (JsonReaderException)
-                    {
-                        // JSON解析失败，作为普通字符串处理
-                        parsedDataList.Add(new string[] { receivedData });
-                    }
-                }
-
-                string formattedMsg = FormatParsedData(parsedDataList);
-                parsedMsg.Trace($"客户端[{sourceIP}]\n{formattedMsg}");
-
-                // 处理解析后的每组数据
-                foreach (var dataGroup in parsedDataList)
-                {
-                    string[] processedData = new string[] { };
-                    processedData = dataGroup;
-
-                    // 清理数据：去除空格，将null转换为空字符串
-                    for (int i = 0; i < processedData.Length; i++)
-                    {
-                        processedData[i] = processedData[i].Trim();
-
-                        if (string.IsNullOrWhiteSpace(processedData[i]) ||
-                            processedData[i].Equals("null"))
-                        {
-                            processedData[i] = string.Empty;
-                        }
-                    }
-                    mdbABC.EnsureConnectionOpened();
-
-                    // 根据数据类型进行相应处理
-                    // 0: 新工位配置；0+工位名称集合
-                    // 1: 故障信息
-                    // 1+故障所在工位+机台名称+故障状态+故障的描述+触发故障的开始时间 
-                    // 1+故障所在工位+机台名称+故障状态+故障的描述+触发故障的结束时间
-                    // 2: 生产信息
-                    // 2+工位名称+当前工单号+产品条码+操作人员+测试时间+测试结果+测试节拍+测试项名称+测试项上限+测试项下限+测式项实际值
-                    // 3: 统计信息
-                    // 3+工位+工单数量+完成数量+完成率+合格率+整体节拍+生产产品数量（总数）+ 工序时间+利用时间+负荷时间
-                    // 4: 易损件信息
-                    // 4+易损件所在工位+机台名称+ 易损件所在位置+易损件名称+易损件理论使用次数易损件已使用次数
-                    // 5: 工位状态；|5+机台名称|
-                    // 6: 日志信息
-
-                    switch (processedData[0])
-                    {
-                        case "0":   // 工位配置信息处理
-                            // 原先逻辑：
-                            /*DataRow[] existingStations = stationTable.Select("Model = '" + processedData[1] + "'");
-
-                            if (existingStations.Length == 0)
-                            {
-                                try
-                                {
-                                    int stationCount = stationTable.Rows.Count + 1;
-
-                                    // 创建数据库帮助类实例
-                                    mdbDatas dbHelper = new mdbDatas(path4);//conndnew connt
-
-                                    // 插入新工位记录
-                                    string insertSql = "insert into [Model] ([Model],[Mname]) values ('"
-                                    + processedData[1] + "','" + "工位" + stationCount + "')";
-                                    dbHelper.Add(insertSql.ToString());
-
-                                    // 关闭连接
-                                    dbHelper.CloseConnection();
-
-                                    SystBoardnt(); // 重新加载工位信息
-
-                                    // 更新数据库结构和数据
-                                    string alterTableSql = "ALTER TABLE [产线信息] ADD " + "工位" + stationCount + "  varchar(200)";
-                                    mdbABC.Add(alterTableSql);
-
-                                    string updateSql = "update  [产线信息] set 产线工位数量 ='" + stationCount +
-                                    "',[工位" + stationCount + "]='" + processedData[1] + "'where ID=1 ";
-                                    mdbABC.Add(updateSql.ToString());
-                                }
-                                catch
-                                {
-                                }
-                                //button8_Click(null, null);    // 刷新状态
-                            }*/
-                            ProcessStationConfig(processedData);
-                            break;
-                        case "1":   // 故障信息处理
-                            MapStationNameWithStationID(processedData);
-                            ProcessFaultsTable(processedData);
-                            break;
-                        case "2":   // 生产信息处理
-                            MapStationNameWithStationID(processedData);
-                            ProcessProductTable(processedData);
-                            break;
-                        case "3":   // 统计信息
-                            ProcessProductionStatisticsAsync(processedData);
-                            break;
-                        case "4":   // 易损件信息
-                            MapStationNameWithStationID(processedData);
-                            ProcessConsumablePartsInfo(processedData);
-                            break;
-                        case "5":   // 工位状态处理
-                            AddStationName(sourceIP, processedData);
-                            break;
-                        case "6":   // 日志信息处理
-                            LogMsg(processedData[1]);
-                            break;
-                    }
-                }
-            }));
-        }
-
-        /// <summary>
-        /// 处理工位配置信息
+        /// 处理工位配置信息：添加相应的工位
         /// </summary>
         /// <remarks>
         /// configData[0] -> 0 ; 
@@ -628,6 +649,7 @@ namespace BulletinBoard
         private void ProcessStationConfig(string[] configData)  // 新增方法，原来在case "0"中的逻辑
         {
             DataRow[] existingStations = stationTable.Select($" Model = '{configData[1]}' ");
+
             if (existingStations.Length == 0)
             {
                 try
@@ -644,9 +666,10 @@ namespace BulletinBoard
                     dbHelper.CloseConnection();
 
                     // 重新加载工位信息
-                    LoadServerConfig();
+                    //LoadServerConfig();
+                    LoadStationList();
 
-                    // 更新数据库结构和数据
+                    // 产线数据库也添加对应工位
                     string alterTableSql = $"ALTER TABLE [产线信息] ADD 工位{stationCount} varchar(200)";
                     mdbABC.Add(alterTableSql);
 
@@ -679,20 +702,22 @@ namespace BulletinBoard
         }
 
         /// <summary>
-        /// 更新客户端连接信息
+        /// 添加机台名称
         /// </summary>
-        /// <param name="sourceIP"></param>
-        /// <param name="dataArray"></param>
+        /// <param name="sourceIP">客户端终结点</param>
+        /// <param name="dataArray">
+        /// dataArray[0] = "5"; dataArray[1] = "机台名称";
+        /// </param>
         private void AddStationName(string sourceIP, string[] dataArray)
         {
             DataRow[] rows = clientInfoTable.Select($" 名称 = '{dataArray[1]}' ");
+
             if (rows.Length == 0)
             {
                 clientInfoTable.Rows.Add(dataArray[1], sourceIP, DateTime.Now.ToString(), "成功");
             }
             else
             {
-                // productTable[dateshuzu[1]].;
                 // Mname as 名称, IP as IP,conndnew as 时间 ,connt as 状态
                 if (rows[0]["名称"].Equals(dataArray[1]))
                 {
@@ -719,9 +744,6 @@ namespace BulletinBoard
         private void ProcessConsumablePartsInfo(string[] processedData)
         {
             // 4+易损件所在工位+机台名称+ 易损件所在位置+易损件名称+易损件理论使用次数+易损件已使用次数
-            // "易损件所在工位", "机台名称", "易损件所在位置", "易损件名称", "易损件理论使用次数",
-            // "易损件已使用次数","易损件剩余使用次数"
-
             int theoryCount = 0;
             int usedCount = 0;
             int remainingCount = 0;
@@ -732,9 +754,6 @@ namespace BulletinBoard
                 remainingCount = theoryCount - usedCount;
             }
 
-            //DataTable consumablePartsTable = mdbABC.Find("select * from 易损件信息 where 易损件所在工位='" + processedData[1] + "'and 机台名称='"
-            //    + processedData[2] + "'and 易损件所在位置='" + processedData[3] + "'and 易损件名称='" + processedData[4] + "'");
-
             DataTable consumablePartsTable = mdbABC.Find($"SELECT * FROM 易损件信息 WHERE 易损件所在工位='{processedData[1]}' " +
                 $"AND 机台名称='{processedData[2]}' " +
                 $"AND 易损件所在位置='{processedData[3]}' " +
@@ -743,15 +762,11 @@ namespace BulletinBoard
             // 存在则更新使用次数信息
             if (consumablePartsTable.Rows.Count > 0)
             {
-                //string updateSql = "update [易损件信息] set [易损件已使用次数]='" + usedCount + "'," +
-                //    "[易损件理论使用次数]='" + theoryCount + "', [易损件剩余使用次数] = '" + remainingCount + "'" +
-                //    " where [机台名称] = '" + processedData[2] + "'and 易损件名称='" + processedData[4] + "'";
-
                 string updateSql = $@"UPDATE [易损件信息] 
                         SET [易损件已使用次数]='{usedCount}',
                             [易损件理论使用次数]='{theoryCount}', 
                             [易损件剩余使用次数]='{remainingCount}'
-                        WHERE [机台名称]='{processedData[2]}' 
+                      WHERE [机台名称]='{processedData[2]}' 
                         AND 易损件名称='{processedData[4]}'";
 
                 var result = mdbABC.Change(updateSql);
@@ -764,11 +779,6 @@ namespace BulletinBoard
             // 不存在则新增易损件记录
             else
             {
-                /*string insertSql = "insert into 易损件信息 (易损件所在工位, 机台名称, 易损件所在位置, 易损件名称, " +
-                    "易损件理论使用次数,易损件已使用次数,易损件剩余使用次数)" +
-                    " values ('" + processedData[1] + "','" + processedData[2] + "','" + processedData[3] + "','" + processedData[4] + "','"
-                    + theoryCount + "','" + usedCount + "','" + remainingCount + "')";*/
-
                 string insertSql = $@"INSERT INTO 易损件信息 (
                     易损件所在工位, 
                     机台名称, 
@@ -801,24 +811,25 @@ namespace BulletinBoard
         /// </summary>
         List<Dictionary<string, List<string>>> productionStationList = new List<Dictionary<string, List<string>>>();
 
+        // 3 + 机台名称 + 工单号 + 工单数量 + 完成数量 + 完成率 + 合格率 + 整体/生产/整线节拍 + 生产总数 + 工序时间 + 利用时间 + 负荷时间 + 直通率 + 产品型号
         /// <summary>
         /// 处理生产统计信息并更新数据库
         /// </summary>
         /// <param name="productionData">生产数据数组:
         /// [0] - 类型标识符
-        /// [1] - 工位名称
+        /// [1] - 机台名称
         /// [2] - 工单号
         /// [3] - 工单数量
         /// [4] - 完成数量
         /// [5] - 完成率
         /// [6] - 合格率
         /// [7] - 整体节拍
-        /// [8] - 生产产品总数
+        /// [8] - 生产总数
         /// [9] - 工序时间
         /// [10] - 利用时间
         /// [11] - 负荷时间
         /// [12] - 直通率
-        /// [13] - 成品名称
+        /// [13] - 产品型号
         /// </param>
         private async void ProcessProductionStatisticsAsync(string[] productionData)
         {
@@ -1225,6 +1236,68 @@ namespace BulletinBoard
             }
         }
 
+        // 创建表
+        // 7+工位名称+条码+产线名称+工单号+工装编号+产品编码+产品型号+用户工号+测试时间+产品状态+实际节拍
+        // +测试项目
+        public void CreateStationDataBase(string[] data)
+        {
+            Task.Run(() =>
+            {
+                //创建表
+                ArrayList arrayList = new ArrayList();
+                arrayList.Add("工位名称");
+                for (int i = 2; i < data.Length; i++)
+                {
+                    arrayList.Add(data[i]);
+                }
+                string conn = $"{lblDatabasePath.Text}\\{DateTime.Now:Y}产线数据.mdb";
+                bool flag = MDBHelper.CreateMDBTableNoneID(conn, data[1], arrayList);
+                if (flag)
+                {
+                    ShowMsg(data[1] + "数据库的生产数据表创建成功!");
+                }
+                else
+                {
+                    ShowMsg(data[1] + "数据库的生产数据表创建失败/已存在");
+                }
+            });
+        }
+
+        // 存储数据
+        // 8+工位名称+条码+产线名称(产品名+产线编号)+当前工单号+工装编号+产品编码+当前配方名称+操作人工号+测试时间+测试总结果+实际节拍
+        // +测试项目
+        public void InsertStationDataBase(string[] data)
+        {
+            Task.Run(() =>
+            {
+                string sql = "insert into " + data[1] + " values(";
+
+                for (int i = 1; i < data.Length; i++)
+                {
+                    if (i == data.Length - 1)
+                    {
+                        sql += "'" + data[i] + "'";
+                    }
+                    else
+                    {
+                        sql += "'" + data[i] + "',";
+                    }
+
+                }
+                sql += ");";
+
+                bool result = mdbABC.Add(sql);
+                if (result)
+                {
+                    ShowMsg(data[1] + "数据添加成功!");
+                }
+                else
+                {
+                    ShowMsg(data[1] + "数据添加失败!");
+                }
+            });
+        }
+
         #endregion
 
         #region------------- 产品型号 -------------
@@ -1435,68 +1508,6 @@ namespace BulletinBoard
             IsServerStart = false;
             // ShowBtnState();
             ShowMsg("信息:停止监听!");
-        }
-
-        /// <summary>
-        /// 接收消息
-        /// </summary>
-        /// <param name="clientSocket"></param>
-        public void ReceiveMessage(Socket clientSocket)
-        {
-            Task.Factory.StartNew(() =>
-            {
-                while (IsServerStart)
-                {
-                    try
-                    {
-                        // 定义接收缓冲区（3MB）
-                        const int BUFFER_SIZE = 1024 * 1024 * 3;
-                        byte[] messageBuffer = new byte[BUFFER_SIZE];
-
-                        // 接收到的信息大小(所占字节数)
-                        int receivedBytes = clientSocket.Receive(messageBuffer);
-                        Console.WriteLine($"接收到数据大小: {receivedBytes} 字节");
-
-                        if (receivedBytes > 0)
-                        {
-                            // 将接收到的字节转换为字符串
-                            string receivedMsg = Encoding.UTF8.GetString(messageBuffer, 0, receivedBytes);
-                            IPEndPoint endPoint = clientSocket.RemoteEndPoint as IPEndPoint;
-
-                            //Logger.Info($"从客户端 [{endPoint}] 接收到消息");
-                            rawMsgLogger.Trace($"客户端 [{endPoint}] 原始消息内容:\n{receivedMsg}");
-
-                            // 处理心跳信息
-                            if (receivedMsg == "heartbeat")
-                            {
-                                ShowMsg($"收到【{endPoint}】心跳：{receivedMsg}");
-
-                                FeedbackToHeartbeat(clientSocket, "OK");   // 发送心跳响应
-                            }
-                            else
-                            {
-                                // 服务器显示客户端的端口号和消息
-                                Task.Run(() =>
-                                {
-                                    // 数据库文件处理
-                                    ManageMonthlyDatabaseSwitch();
-                                    // 处理接收到的数据
-                                    ProcessReceivedData(receivedMsg, clientSocket.RemoteEndPoint.ToString());
-                                });
-                            }
-                        }
-
-                    }
-                    catch (Exception)
-                    {
-                        // 移除添加在字典中的服务器和客户端之间的线程
-                        clientList.Remove(clientSocket.RemoteEndPoint.ToString());
-                        // 关闭客户端
-                        clientSocket.Close();
-                        break;
-                    }
-                }
-            });
         }
 
         /// <summary>
@@ -1810,7 +1821,7 @@ namespace BulletinBoard
         #region ---------- 设备状态页面 ----------
 
         /// <summary>
-        /// 刷新客户端连接状态
+        /// 刷新客户端连接数
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>

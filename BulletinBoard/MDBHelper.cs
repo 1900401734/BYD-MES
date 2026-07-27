@@ -354,6 +354,45 @@ namespace MesDatas
             }
         }
 
+        public static bool CreateMDBTableNoneID(string mdbPath, string tableName, ArrayList mdbHead)
+        {
+            try
+            {
+                ADOX.CatalogClass cat = new ADOX.CatalogClass();
+                string sAccessConnection
+                 = @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + mdbPath + ";Persist Security Info=True";
+                ADODB.Connection cn = new ADODB.Connection();
+                cn.Open(sAccessConnection, null, null, -1);
+                cat.ActiveConnection = cn;
+
+                //新建一个表 
+                ADOX.TableClass tbl = new ADOX.TableClass();
+                tbl.ParentCatalog = cat;
+                tbl.Name = tableName;
+
+                int size = mdbHead.Count;
+                for (int i = 0; i < size; i++)
+                {
+                    //增加一个文本字段 
+                    ADOX.ColumnClass col2 = new ADOX.ColumnClass();
+                    col2.ParentCatalog = cat;
+                    col2.Name = mdbHead[i].ToString();//列的名称 
+                    col2.Properties["Jet OLEDB:Allow Zero Length"].Value = true;
+                    tbl.Columns.Append(col2, ADOX.DataTypeEnum.adVarWChar, 500);
+                }
+                cat.Tables.Append(tbl); //这句把表加入数据库(非常重要) 
+                tbl = null;
+                cat = null;
+                cn.Close();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                string str = ex.Message;
+                return false;
+            }
+        }
+
         // 读取mdb数据 
         public static DataTable ReadAllData(string tableName, string mdbPath, ref bool success)
         {

@@ -21,15 +21,15 @@ namespace MesDatas.Utility.IniLaguagePath
             {
                 case 0://zh-CN 中文
                     inipath = inipathLanguagezhCN;
-                    Section="zh-CN";
+                    Section = "zh-CN";
                     break;
                 case 1://en-US 英文
                     inipath = inipathLanguageenUS;
-                    Section ="en-US";
+                    Section = "en-US";
                     break;
                 case 2://th-TH 泰文
                     inipath = inipathLanguagethTH;
-                    Section="th-TH";
+                    Section = "th-TH";
                     break;
                 default:
                     inipath = inipathLanguagezhCN;
@@ -46,7 +46,7 @@ namespace MesDatas.Utility.IniLaguagePath
         /// <returns></returns>
         public static string IniLanguageValue(string key, int LanguageId)
         {
-           GetiniFiles(LanguageId);
+            GetiniFiles(LanguageId);
             Directory.CreateDirectory(inipathPath);
             if (!File.Exists(inipath))
             {
@@ -69,8 +69,6 @@ namespace MesDatas.Utility.IniLaguagePath
         private static extern long WritePrivateProfileString(string section, string key, string val, string filePath);
         [DllImport("kernel32")]
         private static extern int GetPrivateProfileString(string section, string key, string def, StringBuilder retVal, int size, string filePath);
-
-
 
         /// <summary> 
         /// 写入INI文件 

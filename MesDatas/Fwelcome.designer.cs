@@ -38,15 +38,11 @@
             this.button2 = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.lblDeviceName = new System.Windows.Forms.Label();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.panel2 = new System.Windows.Forms.Panel();
             this.cboCurrentLanguage = new System.Windows.Forms.ComboBox();
             this.cboLoginMethod = new System.Windows.Forms.ComboBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.panel1.SuspendLayout();
-            this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -115,31 +111,6 @@
             resources.ApplyResources(this.lblDeviceName, "lblDeviceName");
             this.lblDeviceName.Name = "lblDeviceName";
             // 
-            // panel1
-            // 
-            this.panel1.Controls.Add(this.panel2);
-            this.panel1.Controls.Add(this.cboCurrentLanguage);
-            this.panel1.Controls.Add(this.cboLoginMethod);
-            this.panel1.Controls.Add(this.cboLoginMode);
-            this.panel1.Controls.Add(this.pictureBox1);
-            this.panel1.Controls.Add(this.button1);
-            this.panel1.Controls.Add(this.tbxPassword);
-            this.panel1.Controls.Add(this.label6);
-            this.panel1.Controls.Add(this.tbxUserID);
-            this.panel1.Controls.Add(this.label5);
-            this.panel1.Controls.Add(this.label2);
-            this.panel1.Controls.Add(this.label3);
-            this.panel1.Controls.Add(this.label1);
-            resources.ApplyResources(this.panel1, "panel1");
-            this.panel1.Name = "panel1";
-            this.panel1.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.button1_KeyDown);
-            // 
-            // panel2
-            // 
-            this.panel2.Controls.Add(this.lblDeviceName);
-            resources.ApplyResources(this.panel2, "panel2");
-            this.panel2.Name = "panel2";
-            // 
             // cboCurrentLanguage
             // 
             this.cboCurrentLanguage.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -183,10 +154,22 @@
             // Fwelcome
             // 
             this.AcceptButton = this.button1;
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             resources.ApplyResources(this, "$this");
-            this.Controls.Add(this.panel1);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+            this.Controls.Add(this.cboCurrentLanguage);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.cboLoginMethod);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.cboLoginMode);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.button2);
+            this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.lblDeviceName);
+            this.Controls.Add(this.button1);
+            this.Controls.Add(this.tbxPassword);
+            this.Controls.Add(this.tbxUserID);
             this.DoubleBuffered = true;
             this.MaximizeBox = false;
             this.Name = "Fwelcome";
@@ -194,11 +177,9 @@
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Fwelcome_FormClosed);
             this.Load += new System.EventHandler(this.Fwelcome_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.button1_KeyDown);
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
-            this.panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -207,16 +188,14 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox tbxUserID;
-        private System.Windows.Forms.TextBox tbxPassword;
-        private System.Windows.Forms.ComboBox cboLoginMode;
+        public System.Windows.Forms.TextBox tbxUserID;
+        public System.Windows.Forms.TextBox tbxPassword;
+        public System.Windows.Forms.ComboBox cboLoginMode;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label lblDeviceName;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.ComboBox cboLoginMethod;
+        public System.Windows.Forms.ComboBox cboLoginMethod;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ComboBox cboCurrentLanguage;
         private System.Windows.Forms.Label label6;

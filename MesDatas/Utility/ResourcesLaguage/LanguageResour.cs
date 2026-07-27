@@ -13,7 +13,8 @@ namespace MesDatas.Utility.ResourcesLaguage
     {
         static Assembly asm = Assembly.GetExecutingAssembly();
         static ResourceManager resources = null;
-        public static ResourceManager GetResourceManagerAS()
+
+        public static ResourceManager GetResourceManager()
         {
             string language = Properties.Settings.Default.DefaultLanguage;
             if (language == "zh-CN")
@@ -30,10 +31,12 @@ namespace MesDatas.Utility.ResourcesLaguage
             }
             return resources;
         }
+
         public static ResourceManager resourceManager
         {
-            get { return resources ??  (resources = GetResourceManagerAS()); }
+            get { return resources ?? (resources = GetResourceManager()); }
         }
+
         public static string SystemDefaultDataNotDel = resourceManager.GetString("SystemDefaultDataNotDel");
         public static string PassBtnSave = resourceManager.GetString("PassBtnSave");
         public static string ErrorBtnSave = resourceManager.GetString("ErrorBtnSave");

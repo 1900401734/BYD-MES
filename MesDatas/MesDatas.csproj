@@ -284,24 +284,26 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="DatasDataGridView\BarcodeVefictnDataGridView.cs" />
-    <Compile Include="DatasDataGridView\CodesDataGridView.cs" />
+    <Compile Include="DatasDataGridView\RecipeDataGridView.cs" />
     <Compile Include="DatasDataGridView\DeviceInformationDataGridView.cs" />
     <Compile Include="DatasDataGridView\PrinterDataGridView\PrintersBtwDataGridView.cs" />
     <Compile Include="DatasDataGridView\PrinterDataGridView\PrintersDataGridView.cs" />
     <Compile Include="DatasDataGridView\PrinterDataGridView\PrinterSettingDataGridView.cs" />
     <Compile Include="DatasDataGridView\SytemSetDerivedDataGridView.cs" />
     <Compile Include="DatasModel\BarcodeVerification.cs" />
-    <Compile Include="DatasModel\Codes.cs" />
+    <Compile Include="DatasModel\RecipeEntity.cs" />
     <Compile Include="DatasModel\DeviceInformation.cs" />
     <Compile Include="DatasModel\PrinterModel\Printer.cs" />
+    <Compile Include="DatasModel\SytemSetAll.cs" />
     <Compile Include="DatasModel\SytemSetDerived.cs" />
     <Compile Include="DatasServer\BarcodeVerificationServer.cs" />
-    <Compile Include="DatasServer\CodesServer.cs" />
+    <Compile Include="DatasServer\RecipeManage.cs" />
     <Compile Include="DatasServer\DeviceInformationServer.cs" />
     <Compile Include="DatasServer\PrinterServer\PrinterServer.cs" />
     <Compile Include="DatasServer\SytemSetDerivedServer.cs" />
-    <Compile Include="Entity\MaxMinValue.cs" />
+    <Compile Include="Entity\TestItemData.cs" />
     <Compile Include="Entity\StatisticsValue.cs" />
+    <Compile Include="Entity\PascalCaseConverter.cs" />
     <Compile Include="ErrReason.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
@@ -393,6 +395,7 @@
     <Compile Include="Fwelcome.designer.cs">
       <DependentUpon>Fwelcome.cs</DependentUpon>
     </Compile>
+    <Compile Include="FwelcomeExtension.cs" />
     <Compile Include="IniFiles.cs" />
     <Compile Include="Language_Resources\language_Chinese.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -410,6 +413,12 @@
       <DependentUpon>language_Thai.resx</DependentUpon>
     </Compile>
     <Compile Include="LogConfig\NLogHelperYY.cs" />
+    <Compile Include="FormChangeLoginMode.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormChangeLoginMode.Designer.cs">
+      <DependentUpon>FormChangeLoginMode.cs</DependentUpon>
+    </Compile>
     <Compile Include="MCore.cs" />
     <Compile Include="MDBHelper.cs" />
     <Compile Include="MdbTool.cs" />
@@ -429,6 +438,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RawPrinterHelper.cs" />
     <Compile Include="SaveHistoricalData\DatabaseOperations.cs" />
+    <Compile Include="Services\AutoLaunch.cs" />
+    <Compile Include="Services\FixtureValidationManager.cs" />
+    <Compile Include="Services\SplitContainerExtensions.cs" />
     <Compile Include="SqlConverter\SqlToJsonConverter.cs" />
     <Compile Include="UIUpdateUtils.cs" />
     <Compile Include="UpdateModel\ConiferFile.cs" />
@@ -439,8 +451,9 @@
     <Compile Include="Utility\ResourcesLaguage\LanguageResour.cs" />
     <Compile Include="Utility\SugarDB\DBConnSugClie.cs" />
     <Compile Include="Utility\IniLaguagePath\inipathLanguage.cs" />
-    <Compile Include="Utility\LabelFontSizes\LabelFontY.cs" />
+    <Compile Include="Utility\LabelFontSizes\FontAutoResizer.cs" />
     <Compile Include="Utility\IniLaguagePath\LanguageUtiye.cs" />
+    <Compile Include="Utility\SugarDB\Repository.cs" />
     <Compile Include="Utility\SugarDB\SugType.cs" />
     <Compile Include="Utility\SugarDB\TypeSugarClass.cs" />
     <Compile Include="SytemInfoEntity.cs" />
@@ -466,7 +479,13 @@
       <DependentUpon>Form1.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Form1.tg-Cyrl.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form1.th.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form1.zh.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form2.resx">
@@ -538,6 +557,9 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>language_Thai.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormChangeLoginMode.resx">
+      <DependentUpon>FormChangeLoginMode.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
